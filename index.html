@@ -7,19 +7,23 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
     body { min-height: 100vh; background: linear-gradient(145deg, #e9f0fc, #d9e4f5); display: flex; align-items: center; justify-content: center; }
-    .login-card { background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); width: 400px; padding: 36px 32px; border-radius: 40px; box-shadow: 0 25px 45px -10px rgba(0,20,50,0.2); }
-    .brand { text-align: center; margin-bottom: 30px; }
-    .brand-icon { background: #2e5a9c; width: 60px; height: 60px; margin: 0 auto 16px; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; }
-    h1 { color: #1a2e4b; font-weight: 650; }
-    .input-group { margin-bottom: 20px; }
-    label { color: #1e3a5f; font-weight: 550; margin-left: 6px; }
+    .login-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); width: 420px; padding: 36px 32px; border-radius: 40px; box-shadow: 0 25px 45px -10px rgba(0,20,50,0.2); }
+    .brand { text-align: center; margin-bottom: 28px; }
+    .brand-icon { font-size: 48px; margin-bottom: 8px; }
+    h1 { color: #1a2e4b; }
+    .sub { color: #59748f; margin: 6px 0 16px; font-size: 14px; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: #eef3fa; border-radius: 30px; padding: 4px; }
+    .tab { flex: 1; text-align: center; padding: 10px; border-radius: 30px; cursor: pointer; font-weight: 550; color: #1e3a5f; transition: 0.2s; }
+    .tab.active { background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.04); }
+    .form { display: none; }
+    .form.active { display: block; }
+    .input-group { margin-bottom: 16px; }
+    label { color: #1e3a5f; font-weight: 550; margin-left: 6px; display: block; margin-bottom: 4px; }
     input { width: 100%; padding: 14px 18px; border: 1.5px solid #cfdde9; border-radius: 28px; font-size: 16px; outline: none; }
     input:focus { border-color: #2e5a9c; box-shadow: 0 0 0 4px rgba(46,90,156,0.12); }
-    .btn { width: 100%; background: #1e3a5f; color: white; border: none; padding: 15px; font-size: 18px; font-weight: 600; border-radius: 36px; cursor: pointer; margin-top: 10px; }
-    .error { color: #c7453c; text-align: center; min-height: 24px; margin: 8px 0; }
-    .demo-hint { background: #eef3fa; padding: 14px; border-radius: 26px; margin-top: 20px; font-size: 14px; }
-    .demo-badge { background: white; padding: 6px 14px; border-radius: 30px; margin: 4px; display: inline-block; cursor: pointer; border: 1px solid #cdddec; }
-    .status { font-size: 13px; color: #59748f; margin-bottom: 10px; }
+    .btn { width: 100%; background: #1e3a5f; color: white; border: none; padding: 15px; font-size: 18px; font-weight: 600; border-radius: 36px; cursor: pointer; margin-top: 8px; }
+    .error { color: #c7453c; text-align: center; min-height: 20px; margin: 8px 0; }
+    .divider { text-align: center; margin: 16px 0; color: #7a8fa0; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -27,132 +31,153 @@
   <div class="brand">
     <div class="brand-icon">📋</div>
     <h1>班级办事通</h1>
-    <div style="color:#59748f;">意见箱 · 班委协同</div>
+    <div class="sub">意见箱 · 学号注册/登录</div>
   </div>
-  <div class="status" id="fileStatus">正在读取账号文件...</div>
-  <form id="loginForm">
+
+  <div class="tabs">
+    <div class="tab active" data-tab="login">登录</div>
+    <div class="tab" data-tab="register">注册</div>
+  </div>
+
+  <!-- 登录表单 -->
+  <div class="form active" id="loginForm">
     <div class="input-group">
-      <label>账号</label>
-      <input type="text" id="username" placeholder="例如: zhangsan" autocomplete="off" required>
+      <label>学号</label>
+      <input type="text" id="loginStudentId" placeholder="例如 20240001">
     </div>
     <div class="input-group">
       <label>密码</label>
-      <input type="password" id="password" placeholder="••••••••" required>
+      <input type="password" id="loginPassword" placeholder="••••••••">
     </div>
-    <div class="error" id="errorMsg"></div>
-    <button type="submit" class="btn">进入办事通</button>
-  </form>
-  <div class="demo-hint">
-    <div style="font-weight:600; margin-bottom:8px;">📋 测试账号（点击填充）</div>
-    <div id="demoAccounts"></div>
-    <div style="margin-top:10px; font-size:12px;">账号密码存储于 username.txt，支持热加载</div>
+    <div class="error" id="loginError"></div>
+    <button class="btn" id="loginBtn">登录</button>
   </div>
+
+  <!-- 注册表单 -->
+  <div class="form" id="registerForm">
+    <div class="input-group">
+      <label>学号</label>
+      <input type="text" id="regStudentId" placeholder="请输入已录入的学号">
+    </div>
+    <div class="input-group">
+      <label>姓名</label>
+      <input type="text" id="regName" placeholder="与花名册一致的姓名">
+    </div>
+    <div class="input-group">
+      <label>设置密码（至少6位）</label>
+      <input type="password" id="regPassword" placeholder="••••••••">
+    </div>
+    <div class="error" id="regError"></div>
+    <button class="btn" id="registerBtn">注册</button>
+  </div>
+
+  <div class="divider">注册需学号与姓名在班级名单中</div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  (function() {
-    const fileStatus = document.getElementById('fileStatus');
-    const demoDiv = document.getElementById('demoAccounts');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const errorMsg = document.getElementById('errorMsg');
+  const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const DEFAULT_USERS = [
-      { username: 'admin', password: 'admin123', role: 'admin', realName: '管理员' },
-      { username: 'zhangsan', password: '123456', role: 'student', realName: '张三' },
-      { username: 'lisi', password: '123456', role: 'student', realName: '李四' }
-    ];
+  // 标签切换
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.dataset.tab;
+      document.getElementById('loginForm').classList.toggle('active', target === 'login');
+      document.getElementById('registerForm').classList.toggle('active', target === 'register');
+      document.getElementById('loginError').textContent = '';
+      document.getElementById('regError').textContent = '';
+    });
+  });
 
-    let userDB = [];
-
-    function parseUserTxt(text) {
-      const lines = text.split(/\r?\n/);
-      const users = [];
-      lines.forEach(line => {
-        line = line.trim();
-        if (line === '' || line.startsWith('#')) return;
-        const parts = line.split(':');
-        if (parts.length >= 4) {
-          users.push({
-            username: parts[0].trim(),
-            password: parts[1].trim(),
-            role: parts[2].trim(),
-            realName: parts[3].trim()
-          });
-        }
-      });
-      return users;
-    }
-
-    function renderDemoBadges(users) {
-      demoDiv.innerHTML = users.map(u => 
-        `<span class="demo-badge" data-user="${u.username}" data-pass="${u.password}">${u.realName} (${u.role==='admin'?'管理员':'同学'})</span>`
-      ).join('');
-      document.querySelectorAll('.demo-badge').forEach(badge => {
-        badge.addEventListener('click', () => {
-          usernameInput.value = badge.dataset.user;
-          passwordInput.value = badge.dataset.pass;
-          errorMsg.textContent = '';
-        });
-      });
-    }
-
-    async function loadUserDatabase() {
-      try {
-        const response = await fetch('username.txt');
-        if (!response.ok) throw new Error('文件不存在');
-        const text = await response.text();
-        userDB = parseUserTxt(text);
-        if (userDB.length === 0) throw new Error('文件无有效数据');
-        fileStatus.textContent = `✅ 已从 username.txt 加载 ${userDB.length} 个账号`;
-        fileStatus.style.color = '#2e7d32';
-      } catch (err) {
-        console.warn('读取username.txt失败，使用内置默认账号', err);
-        userDB = DEFAULT_USERS;
-        fileStatus.textContent = `⚠️ 使用内置默认账号（username.txt 读取失败）`;
-        fileStatus.style.color = '#b85c00';
-      }
-      renderDemoBadges(userDB);
-    }
-
-    function doLogin(username, password) {
-      const user = userDB.find(u => u.username === username && u.password === password);
-      if (!user) {
-        errorMsg.textContent = '账号或密码错误';
-        return false;
-      }
+  // 登录 (学号→邮箱)
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const studentId = document.getElementById('loginStudentId').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!studentId || !password) return document.getElementById('loginError').textContent = '请填写完整';
+    
+    const email = studentId + '@class.local';
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+      document.getElementById('loginError').textContent = error.message;
+    } else {
+      const { data: profile } = await supabaseClient.from('profiles').select('student_id,real_name,role,position').eq('id', data.user.id).single();
       const sessionUser = {
-        id: user.username,
-        username: user.username,
-        real_name: user.realName,
-        role: user.role,
-        position: user.role === 'admin' ? '班主任' : null
+        id: data.user.id,
+        student_id: profile.student_id,
+        real_name: profile.real_name,
+        role: profile.role,
+        position: profile.position
       };
       sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
-      
-      // 初始化系统数据
-      if (!localStorage.getItem('classroom_opinions')) localStorage.setItem('classroom_opinions', '[]');
-      if (!localStorage.getItem('classroom_replies')) localStorage.setItem('classroom_replies', '[]');
-      if (!localStorage.getItem('classroom_likes')) localStorage.setItem('classroom_likes', '{}');
-      if (!localStorage.getItem('classroom_ratings')) localStorage.setItem('classroom_ratings', '[]');
-      if (!localStorage.getItem('classroom_notifications')) localStorage.setItem('classroom_notifications', '[]');
-      
       window.location.href = 'main.html';
-      return true;
+    }
+  });
+
+  // 注册 (校验花名册)
+  document.getElementById('registerBtn').addEventListener('click', async () => {
+    const studentId = document.getElementById('regStudentId').value.trim();
+    const realName = document.getElementById('regName').value.trim();
+    const password = document.getElementById('regPassword').value;
+    if (!studentId || !realName || !password) return document.getElementById('regError').textContent = '请填写完整';
+    if (password.length < 6) return document.getElementById('regError').textContent = '密码至少6位';
+
+    // 1. 查询花名册是否存在且未注册
+    const { data: roster, error: rosterError } = await supabaseClient
+      .from('student_roster')
+      .select('*')
+      .eq('student_id', studentId)
+      .eq('real_name', realName)
+      .maybeSingle();
+    
+    if (rosterError || !roster) {
+      document.getElementById('regError').textContent = '学号或姓名不在班级名单中，或已被注册';
+      return;
+    }
+    if (roster.registered) {
+      document.getElementById('regError').textContent = '该学号已被注册过了';
+      return;
     }
 
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-      if (!username || !password) {
-        errorMsg.textContent = '请输入账号和密码';
-        return;
+    // 2. 执行注册 (邮箱=学号@class.local)
+    const email = studentId + '@class.local';
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          student_id: studentId,
+          real_name: realName
+        }
       }
-      doLogin(username, password);
     });
-
-    loadUserDatabase();
-  })();
+    if (error) {
+      document.getElementById('regError').textContent = error.message;
+      return;
+    }
+    if (data.user && data.session) {
+      // 注册成功并自动登录 (因为关闭了邮箱验证)
+      // 触发器会自动在 profiles 中插入行，并将花名册标记为已注册
+      // 需要小延迟确保触发器完成
+      setTimeout(async () => {
+        const { data: profile } = await supabaseClient.from('profiles').select('student_id,real_name,role,position').eq('id', data.user.id).single();
+        const sessionUser = {
+          id: data.user.id,
+          student_id: profile.student_id,
+          real_name: profile.real_name,
+          role: profile.role,
+          position: profile.position
+        };
+        sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
+        window.location.href = 'main.html';
+      }, 500);
+    } else {
+      document.getElementById('regError').textContent = '注册失败，请稍后重试';
+    }
+  });
 </script>
 </body>
 </html>
