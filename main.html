@@ -144,6 +144,7 @@
     <span class="close-icon" onclick="document.getElementById('pwdModal').style.display='none'">&times;</span>
     <h3>修改密码</h3>
     <input type="password" id="newPwd" placeholder="新密码（至少6位）" class="input-field">
+    <input type="password" id="newPwdConform" placeholder="确认密码" class="input-field">
     <button class="btn" id="submitPwdChange">确认修改</button>
   </div>
 </div>
@@ -446,7 +447,9 @@
   });
   document.getElementById('submitPwdChange').addEventListener('click', async () => {
     const newPwd = document.getElementById('newPwd').value;
+    const newPwdConform = document.getElementById('newPwdConform').value;
     if (!newPwd || newPwd.length < 6) return alert('新密码至少6位');
+    if (newPwd!=newPwdConform) return alert('两次输入的密码不一致');
     const { error } = await supabaseClient.auth.updateUser({ password: newPwd });
     if (error) alert(error.message);
     else {

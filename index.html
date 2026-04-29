@@ -29,9 +29,7 @@
 <body>
 <div class="login-card">
   <div class="brand">
-    <div class="brand-icon">📋</div>
     <h1>班级办事通</h1>
-    <div class="sub">意见箱 · 学号注册/登录</div>
   </div>
 
   <div class="tabs">
@@ -43,11 +41,11 @@
   <div class="form active" id="loginForm">
     <div class="input-group">
       <label>学号</label>
-      <input type="text" id="loginStudentId" placeholder="例如 20240001">
+      <input type="text" id="loginStudentId">
     </div>
     <div class="input-group">
       <label>密码</label>
-      <input type="password" id="loginPassword" placeholder="••••••••">
+      <input type="password" id="loginPassword">
     </div>
     <div class="error" id="loginError"></div>
     <button class="btn" id="loginBtn">登录</button>
@@ -61,11 +59,15 @@
     </div>
     <div class="input-group">
       <label>姓名</label>
-      <input type="text" id="regName" placeholder="与花名册一致的姓名">
+      <input type="text" id="regName" placeholder="请输入真实姓名">
     </div>
     <div class="input-group">
       <label>设置密码（至少6位）</label>
-      <input type="password" id="regPassword" placeholder="••••••••">
+      <input type="password" id="regPassword" placeholder="••••••">
+    </div>
+    <div class="input-group">
+      <label>确认密码</label>
+      <input type="password" id="regPasswordConform" placeholder="••••••">
     </div>
     <div class="error" id="regError"></div>
     <button class="btn" id="registerBtn">注册</button>
@@ -122,8 +124,10 @@
     const studentId = document.getElementById('regStudentId').value.trim();
     const realName = document.getElementById('regName').value.trim();
     const password = document.getElementById('regPassword').value;
+    const passwordConform = document.getElementById('regPasswordConform').value;
     if (!studentId || !realName || !password) return document.getElementById('regError').textContent = '请填写完整';
     if (password.length < 6) return document.getElementById('regError').textContent = '密码至少6位';
+    if (password!=passwordConform) return document.getElementById('regError').textContent = '两次输入的密码不一致';
 
     // 1. 查询花名册是否存在且未注册
     const { data: roster, error: rosterError } = await supabaseClient
