@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>班级办事通 · 意见箱</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
+    body { background: #f5f9ff; min-height: 100vh; }
+    .navbar { background: white; padding: 12px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between; position: relative; }
+    .logo { font-size: 22px; font-weight: 650; color: #1e3a5f; }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .badge { background: #eef3fa; padding: 6px 16px; border-radius: 30px; }
+    .btn { background: #1e3a5f; color: white; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-weight: 500; }
+    .btn-outline { background: transparent; border: 1.5px solid #1e3a5f; color: #1e3a5f; }
+    .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+
+    /* 通知 */
+    .notification-bell { position: relative; cursor: pointer; font-size: 24px; margin-right: 8px; }
+    .notification-badge { position: absolute; top: -5px; right: -8px; background: #e03a3a; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+    .notification-dropdown { position: absolute; top: 55px; right: 20px; background: white; width: 320px; max-height: 400px; overflow-y: auto; box-shadow: 0 12px 28px rgba(0,0,0,0.15); border-radius: 20px; padding: 12px; display: none; z-index: 100; }
+    .notification-item { padding: 10px 14px; border-bottom: 1px solid #f0f3f8; font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; }
+    .notification-item.unread { background: #eef3ff; font-weight: 500; }
+
+    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); text-align: center; }
+    .stat-value { font-size: 2em; font-weight: 700; color: #1e3a5f; }
+    .stat-label { font-size: 14px; color: #5d7997; margin-top: 4px; }
+
+    .post-box { background: white; border-radius: 24px; padding: 24px; margin-bottom: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+    .input-field, textarea, select { width: 100%; padding: 12px 16px; border: 1.5px solid #dde5ed; border-radius: 18px; margin-bottom: 16px; font-size: 15px; }
+    .sort-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+    .sort-btn { background: white; border: 1px solid #cfdde9; padding: 8px 24px; border-radius: 30px; cursor: pointer; }
+    .sort-btn.active { background: #1e3a5f; color: white; border-color: #1e3a5f; }
+
+    /* 进度条 */
+    .progress-steps { display: flex; align-items: center; gap: 10px; margin: 15px 0 5px; }
+    .step { flex: 1; text-align: center; font-size: 12px; color: #b0bec5; }
+    .step.active { color: #1e3a5f; font-weight: 600; }
+    .step.completed { color: #2e7d32; }
+    .progress-bar { width: 100%; height: 8px; background: #e0e7ef; border-radius: 4px; margin: 8px 0 12px; position: relative; }
+    .progress-fill { height: 100%; background: #2e5a9c; border-radius: 4px; transition: width 0.3s; }
+
+    .opinion-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 6px 14px rgba(0,0,0,0.02); border: 1px solid #eef2f7; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+    .target-tag { background: #e1eaf1; padding: 4px 12px; border-radius: 30px; font-size: 13px; }
+    .actions { display: flex; gap: 16px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+    .like-btn { display: flex; align-items: center; gap: 4px; cursor: pointer; color: #5d7997; }
+
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 32px; padding: 24px; overflow-y: auto; }
+    .reply-item { background: #f5f9ff; padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; }
+    .close-icon { float: right; font-size: 24px; cursor: pointer; }
+
+    /* 星级评分 */
+    .star-rating { display: flex; gap: 6px; align-items: center; margin: 8px 0; }
+    .star { font-size: 28px; cursor: pointer; color: #ccc; transition: color 0.15s; }
+    .star.active, .star.hover { color: #f5b342; }
+    .rating-text { font-weight: 600; margin-left: 8px; }
+  </style>
+</head>
+<body>
+<div class="navbar">
+  <div class="logo">📋 班级办事通</div>
+  <div class="user-info">
+    <div class="notification-bell" id="notificationBell">🔔<span class="notification-badge" id="unreadCount" style="display:none;">0</span></div>
+    <span class="badge" id="userDisplay"></span>
+    <button class="btn-outline btn" id="logoutBtn">退出</button>
+  </div>
+  <div class="notification-dropdown" id="notificationDropdown"></div>
+</div>
+
+<div class="container">
+  <div class="dashboard" id="dashboard"></div>
+
+  <div class="post-box">
+    <h3 style="margin-bottom: 16px;">📝 提出意见或问题</h3>
+    <input type="text" id="titleInput" class="input-field" placeholder="意见标题">
+    <textarea id="contentInput" rows="3" placeholder="详细描述..."></textarea>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <select id="targetSelect" style="flex:2;">
+        <option value="班长">反馈给：班长</option>
+        <option value="团支书">团支书</option>
+        <option value="学习委员">学习委员</option>
+        <option value="生活委员">生活委员</option>
+        <option value="班主任">班主任</option>
+      </select>
+      <label style="display: flex; align-items: center; gap: 6px;">
+        <input type="checkbox" id="anonymousCheck"> 匿名发布
+      </label>
+      <button class="btn" id="submitOpinionBtn" style="flex:1;">发布</button>
+    </div>
+  </div>
+
+  <div class="sort-bar">
+    <button class="sort-btn active" data-sort="heat">🔥 按热度</button>
+    <button class="sort-btn" data-sort="time">⏱️ 按时间</button>
+  </div>
+
+  <div id="opinionsList"></div>
+</div>
+
+<!-- 详情模态框 -->
+<div class="modal" id="detailModal">
+  <div class="modal-content">
+    <span class="close-icon" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle"></h3>
+    <div id="modalMeta" style="margin: 12px 0;"></div>
+    <div id="repliesContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;"></div>
+
+    <!-- 学生留言区（普通回复） -->
+    <div id="replyInputArea" style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <input type="text" id="replyInput" placeholder="输入回复/追问..." style="flex:1; padding: 12px; border-radius: 30px; border:1px solid #ccc;">
+      <button class="btn" id="sendReplyBtn">发送</button>
+    </div>
+
+    <!-- 管理员操作面板（动态显示） -->
+    <div id="adminActions" style="margin-top: 16px; display: none;">
+      <hr style="margin:16px 0;">
+      <!-- 提出阶段：开始处理按钮 -->
+      <div id="actionStart" style="display: none;">
+        <button class="btn" id="startProcessBtn">🚀 开始处理</button>
+        <p style="font-size:12px; color:#7a8fa0; margin-top:4px;">进入解决中状态，可进行回复与分配</p>
+      </div>
+      <!-- 解决中阶段：追问、重分配、直接完结 -->
+      <div id="actionInProgress" style="display: none;">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <input type="text" id="finalReplyInput" placeholder="输入最终解决方案（必填）" style="flex:1; padding: 12px; border-radius: 30px; border:1px solid #ccc;">
+          <button class="btn" id="closeWithReplyBtn">✅ 完结并回复</button>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select id="assignSelect" style="padding: 8px; border-radius: 20px;">
+            <option value="班长">班长</option>
+            <option value="团支书">团支书</option>
+            <option value="学习委员">学习委员</option>
+            <option value="生活委员">生活委员</option>
+            <option value="班主任">班主任</option>
+          </select>
+          <button class="btn-outline btn" id="assignBtn">🔄 重新分配</button>
+        </div>
+      </div>
+      <!-- 已完结阶段：可重新打开（可选） -->
+      <div id="actionClosed" style="display: none;">
+        <button class="btn-outline btn" id="reopenBtn">🔓 重新打开问题</button>
+      </div>
+    </div>
+
+    <!-- 评分区域（仅作者可见且状态为已完结） -->
+    <div id="ratingArea" style="margin-top: 16px; display: none;">
+      <span>评分：</span>
+      <div class="star-rating" id="starRating">
+        <span class="star" data-val="1">★</span>
+        <span class="star" data-val="2">★</span>
+        <span class="star" data-val="3">★</span>
+        <span class="star" data-val="4">★</span>
+        <span class="star" data-val="5">★</span>
+        <span class="rating-text" id="ratingText">未评分</span>
+      </div>
+      <button class="btn" id="submitRatingBtn">提交评分</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- 存储键 ----------
+  const STORAGE_OPINIONS = 'classroom_opinions';
+  const STORAGE_REPLIES = 'classroom_replies';
+  const STORAGE_LIKES = 'classroom_likes';
+  const STORAGE_RATINGS = 'classroom_ratings';
+  const STORAGE_NOTIFICATIONS = 'classroom_notifications';
+
+  let currentUser = null;
+  let currentSort = 'heat';
+  let opinionsData = [];
+  let currentOpinionId = null;
+  let selectedStars = 0;
+
+  // ---------- localStorage 安全操作 ----------
+  function getStore(key) {
+    try {
+      const data = localStorage.getItem(key);
+      if (data === null) return [];
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+  }
+  function setStore(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+  function getLikesMap() { try { return JSON.parse(localStorage.getItem(STORAGE_LIKES) || '{}'); } catch { return {}; } }
+
+  // ---------- 通知系统 ----------
+  function addNotification(userId, type, opinionId, opinionTitle) {
+    if (!userId) return;
+    const notifs = getStore(STORAGE_NOTIFICATIONS);
+    notifs.push({
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2,6),
+      user_id: userId,
+      type,
+      opinion_id: opinionId,
+      opinion_title: opinionTitle,
+      read: false,
+      created_at: new Date().toISOString()
+    });
+    setStore(STORAGE_NOTIFICATIONS, notifs);
+    updateNotificationBadge();
+  }
+  function getNotificationsForUser(userId) {
+    return getStore(STORAGE_NOTIFICATIONS).filter(n => n.user_id === userId).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+  function unreadCount(userId) { return getNotificationsForUser(userId).filter(n => !n.read).length; }
+  function updateNotificationBadge() {
+    const count = unreadCount(currentUser?.id);
+    const badge = document.getElementById('unreadCount');
+    badge.style.display = count > 0 ? 'flex' : 'none';
+    badge.textContent = count;
+  }
+  function renderNotificationDropdown() {
+    const dropdown = document.getElementById('notificationDropdown');
+    const notifs = getNotificationsForUser(currentUser.id);
+    dropdown.innerHTML = notifs.length === 0 ? '<div style="padding:12px;color:#888;">暂无通知</div>' :
+      notifs.map(n => `
+        <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${n.id}" data-opinion="${n.opinion_id}">
+          ${n.type === 'reply' ? '💬' : n.type === 'closed' ? '✅' : n.type === 'reassign' ? '🔄' : n.type === 'in_progress' ? '🚀' : '🔔'}
+          <strong>${n.opinion_title}</strong> - ${n.type === 'reply' ? '有新回复' : n.type === 'closed' ? '问题已完结' : n.type === 'reassign' ? '已重新分配' : '进入解决阶段'}
+          <div style="font-size:11px;color:#7a8fa0;">${new Date(n.created_at).toLocaleString()}</div>
+        </div>
+      `).join('');
+    dropdown.querySelectorAll('.notification-item').forEach(item => {
+      item.addEventListener('click', () => {
+        markNotificationRead(item.dataset.id);
+        openDetail(item.dataset.opinion);
+        dropdown.style.display = 'none';
+      });
+    });
+  }
+  function markNotificationRead(notifId) {
+    const notifs = getStore(STORAGE_NOTIFICATIONS);
+    const idx = notifs.findIndex(n => n.id === notifId);
+    if (idx !== -1) notifs[idx].read = true;
+    setStore(STORAGE_NOTIFICATIONS, notifs);
+    updateNotificationBadge();
+  }
+
+  // ---------- 初始化 ----------
+  function init() {
+    const userStr = sessionStorage.getItem('currentUser');
+    if (!userStr) { window.location.href = 'index.html'; return; }
+    currentUser = JSON.parse(userStr);
+    document.getElementById('userDisplay').innerText = `${currentUser.real_name} (${currentUser.role==='admin'?'管理员':'同学'})`;
+    updateNotificationBadge();
+    loadOpinions();
+    updateDashboard();
+  }
+
+  // ---------- 看板 ----------
+  function updateDashboard() {
+    const opinions = getStore(STORAGE_OPINIONS);
+    const ratings = getStore(STORAGE_RATINGS);
+    const total = opinions.length;
+    const closed = opinions.filter(o => o.status === 'closed').length;
+    const resolveRate = total ? ((closed / total) * 100).toFixed(0) + '%' : '0%';
+    const closedOpinions = opinions.filter(o => o.status === 'closed');
+    let avgSatisfaction = 0;
+    let avgTime = '--';
+    if (closedOpinions.length) {
+      const scores = [];
+      closedOpinions.forEach(o => {
+        const opRatings = ratings.filter(r => r.opinion_id === o.id);
+        opRatings.forEach(r => scores.push(r.score));
+      });
+      avgSatisfaction = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : '0.0';
+      const times = closedOpinions.map(o => {
+        const created = new Date(o.created_at);
+        const replies = getStore(STORAGE_REPLIES).filter(r => r.opinion_id === o.id);
+        const endTime = replies.length ? new Date(replies[replies.length-1].created_at) : new Date();
+        return (endTime - created) / (1000 * 60 * 60);
+      }).filter(t => t >= 0);
+      avgTime = times.length ? (times.reduce((a,b)=>a+b,0)/times.length).toFixed(1) + 'h' : '--';
+    }
+    document.getElementById('dashboard').innerHTML = `
+      <div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">📌 提问数</div></div>
+      <div class="stat-card"><div class="stat-value">${resolveRate}</div><div class="stat-label">✅ 解决率</div></div>
+      <div class="stat-card"><div class="stat-value">${avgSatisfaction}</div><div class="stat-label">⭐ 满意率</div></div>
+      <div class="stat-card"><div class="stat-value">${avgTime}</div><div class="stat-label">⏱️ 平均用时</div></div>
+    `;
+  }
+
+  // ---------- 获取进度状态 ----------
+  function getProgressStatus(op) {
+    // 检查作者是否已评分
+    const ratings = getStore(STORAGE_RATINGS);
+    const authorRated = ratings.some(r => r.opinion_id === op.id && r.user_id === op.author_id);
+    if (authorRated) return 3; // 已评分 (completed all)
+    if (op.status === 'closed') return 2; // 已完结
+    if (op.status === 'in_progress') return 1; // 解决中
+    return 0; // 提出
+  }
+
+  // ---------- 渲染列表 ----------
+  function loadOpinions() {
+    const opinions = getStore(STORAGE_OPINIONS);
+    const likesMap = getLikesMap();
+    const ratings = getStore(STORAGE_RATINGS);
+    const replies = getStore(STORAGE_REPLIES);
+    opinionsData = opinions.map(op => {
+      const likeCount = Object.values(likesMap).filter(v => v === op.id).length;
+      const opRatings = ratings.filter(r => r.opinion_id === op.id);
+      const avgRating = opRatings.length ? (opRatings.reduce((s, r) => s + r.score, 0) / opRatings.length).toFixed(1) : null;
+      const replyCount = replies.filter(r => r.opinion_id === op.id).length;
+      return { ...op, likeCount, avgRating, replyCount };
+    });
+    if (currentSort === 'heat') {
+      opinionsData.sort((a, b) => b.likeCount - a.likeCount || new Date(b.created_at) - new Date(a.created_at));
+    } else {
+      opinionsData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+    renderOpinions();
+  }
+
+  function renderOpinions() {
+    const container = document.getElementById('opinionsList');
+    if (opinionsData.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:40px; color:#888;">还没有任何意见，快来发布第一条吧 ✍️</div>';
+      return;
+    }
+    container.innerHTML = opinionsData.map(op => {
+      const progress = getProgressStatus(op);
+      const steps = ['问题提出', '解决中', '已完结', '已评分'];
+      const progressPercent = [0, 33, 66, 100][progress];
+      const stepHtml = steps.map((s, i) => {
+        let cls = 'step';
+        if (i < progress) cls += ' completed';
+        else if (i === progress) cls += ' active';
+        return `<span class="${cls}">${s}</span>`;
+      }).join(' → ');
+      return `
+      <div class="opinion-card">
+        <div class="card-header">
+          <strong>${escapeHtml(op.title)}</strong>
+          <span class="target-tag">@${op.assigned_to || op.target_role}</span>
+        </div>
+        <p style="margin: 12px 0; color: #334e68;">${escapeHtml(op.content)}</p>
+        <div style="display: flex; gap: 20px; font-size: 14px; color: #6b85a0;">
+          <span>👤 ${op.is_anonymous ? '匿名同学' : op.author_name}</span>
+          <span>📅 ${new Date(op.created_at).toLocaleString()}</span>
+          <span>⭐ ${op.avgRating || '暂无'}</span>
+          <span>💬 ${op.replyCount || 0}</span>
+        </div>
+        <div class="progress-steps">${stepHtml}</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${progressPercent}%"></div></div>
+        <div class="actions">
+          <span class="like-btn" data-id="${op.id}">❤️ ${op.likeCount}</span>
+          <button class="btn-outline btn" style="padding:4px 16px;" onclick="openDetail('${op.id}')">查看详情</button>
+          ${op.status === 'closed' ? '<span style="color:green;">✅ 已完结</span>' : op.status === 'in_progress' ? '<span style="color:#c90;">⏳ 解决中</span>' : '<span style="color:#999;">📌 待处理</span>'}
+        </div>
+      </div>`;
+    }).join('');
+
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const likesMap = getLikesMap();
+        const key = `${currentUser.id}_${id}`;
+        if (likesMap[key]) { alert('您已经点过赞了'); return; }
+        likesMap[key] = id;
+        localStorage.setItem(STORAGE_LIKES, JSON.stringify(likesMap));
+        loadOpinions();
+      });
+    });
+  }
+
+  // ---------- 发布 ----------
+  document.getElementById('submitOpinionBtn').addEventListener('click', () => {
+    const title = document.getElementById('titleInput').value.trim();
+    const content = document.getElementById('contentInput').value.trim();
+    const target = document.getElementById('targetSelect').value;
+    const anonymous = document.getElementById('anonymousCheck').checked;
+    if (!title || !content) { alert('请填写完整'); return; }
+    const opinions = getStore(STORAGE_OPINIONS);
+    const newOp = {
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2,6),
+      title, content,
+      target_role: target,
+      assigned_to: target,
+      is_anonymous: anonymous,
+      author_id: currentUser.id,
+      author_name: currentUser.real_name,
+      status: 'open',
+      created_at: new Date().toISOString()
+    };
+    opinions.push(newOp);
+    setStore(STORAGE_OPINIONS, opinions);
+    document.getElementById('titleInput').value = '';
+    document.getElementById('contentInput').value = '';
+    loadOpinions();
+    updateDashboard();
+  });
+
+  // ---------- 排序 ----------
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSort = btn.dataset.sort;
+      loadOpinions();
+    });
+  });
+
+  // ---------- 详情模态框 ----------
+  window.openDetail = function(opinionId) {
+    currentOpinionId = opinionId;
+    const opinion = opinionsData.find(o => o.id === opinionId);
+    if (!opinion) return;
+    document.getElementById('modalTitle').innerText = opinion.title;
+    document.getElementById('modalMeta').innerHTML = `发布者：${opinion.is_anonymous ? '匿名同学' : opinion.author_name} | 状态：${opinion.status}`;
+
+    const replies = getStore(STORAGE_REPLIES).filter(r => r.opinion_id === opinionId).sort((a,b)=> new Date(a.created_at) - new Date(b.created_at));
+    document.getElementById('repliesContainer').innerHTML = replies.map(r => `
+      <div class="reply-item"><strong>${r.user_name}</strong>：${escapeHtml(r.content)} <span style="font-size:12px;color:#888;">${new Date(r.created_at).toLocaleString()}</span></div>
+    `).join('') || '<div style="color:#888;">暂无回复</div>';
+
+    // 普通回复区始终可见
+    document.getElementById('replyInputArea').style.display = 'flex';
+    document.getElementById('replyInput').value = '';
+
+    // 管理员动态面板
+    const isAdmin = currentUser.role === 'admin';
+    const adminDiv = document.getElementById('adminActions');
+    adminDiv.style.display = isAdmin ? 'block' : 'none';
+
+    // 重置所有管理员子面板
+    document.getElementById('actionStart').style.display = 'none';
+    document.getElementById('actionInProgress').style.display = 'none';
+    document.getElementById('actionClosed').style.display = 'none';
+    document.getElementById('finalReplyInput').value = '';
+
+    if (isAdmin) {
+      if (opinion.status === 'open') {
+        document.getElementById('actionStart').style.display = 'block';
+      } else if (opinion.status === 'in_progress') {
+        document.getElementById('actionInProgress').style.display = 'block';
+      } else if (opinion.status === 'closed') {
+        document.getElementById('actionClosed').style.display = 'block';
+      }
+    }
+
+    // 评分区：仅作者本人 且 状态为 closed
+    const isAuthor = (currentUser.id === opinion.author_id);
+    const canRate = isAuthor && opinion.status === 'closed';
+    const ratingDiv = document.getElementById('ratingArea');
+    ratingDiv.style.display = canRate ? 'block' : 'none';
+    if (canRate) {
+      selectedStars = 0;
+      highlightStars(0);
+      document.getElementById('ratingText').textContent = '未评分';
+    }
+
+    document.getElementById('detailModal').style.display = 'flex';
+  };
+
+  window.closeModal = function() { document.getElementById('detailModal').style.display = 'none'; };
+
+  // ---------- 发送普通回复（所有人可用） ----------
+  document.getElementById('sendReplyBtn').addEventListener('click', () => {
+    const content = document.getElementById('replyInput').value.trim();
+    if (!content || !currentOpinionId) return;
+    const replies = getStore(STORAGE_REPLIES);
+    replies.push({
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2,6),
+      opinion_id: currentOpinionId,
+      user_id: currentUser.id,
+      user_name: currentUser.real_name,
+      content,
+      created_at: new Date().toISOString()
+    });
+    setStore(STORAGE_REPLIES, replies);
+    const opinion = getStore(STORAGE_OPINIONS).find(o => o.id === currentOpinionId);
+    if (opinion && opinion.author_id !== currentUser.id) {
+      addNotification(opinion.author_id, 'reply', currentOpinionId, opinion.title);
+    }
+    document.getElementById('replyInput').value = '';
+    openDetail(currentOpinionId);
+    loadOpinions();
+  });
+
+  // ---------- 管理员操作 ----------
+  // 1. 开始处理
+  document.getElementById('startProcessBtn').addEventListener('click', () => {
+    const opinions = getStore(STORAGE_OPINIONS);
+    const idx = opinions.findIndex(o => o.id === currentOpinionId);
+    if (idx !== -1) {
+      opinions[idx].status = 'in_progress';
+      setStore(STORAGE_OPINIONS, opinions);
+      addNotification(opinions[idx].author_id, 'in_progress', opinions[idx].id, opinions[idx].title);
+    }
+    loadOpinions();
+    closeModal();
+    updateDashboard();
+  });
+
+  // 2. 重分配
+  document.getElementById('assignBtn').addEventListener('click', () => {
+    const newAssignee = document.getElementById('assignSelect').value;
+    const opinions = getStore(STORAGE_OPINIONS);
+    const idx = opinions.findIndex(o => o.id === currentOpinionId);
+    if (idx !== -1) {
+      opinions[idx].assigned_to = newAssignee;
+      opinions[idx].assigned_at = new Date().toISOString();
+      setStore(STORAGE_OPINIONS, opinions);
+      addNotification(opinions[idx].author_id, 'reassign', opinions[idx].id, opinions[idx].title);
+    }
+    loadOpinions();
+    closeModal();
+    updateDashboard();
+  });
+
+  // 3. 完结并回复（最终方案）
+  document.getElementById('closeWithReplyBtn').addEventListener('click', () => {
+    const finalReply = document.getElementById('finalReplyInput').value.trim();
+    if (!finalReply) { alert('请输入最终解决方案'); return; }
+    const opinions = getStore(STORAGE_OPINIONS);
+    const idx = opinions.findIndex(o => o.id === currentOpinionId);
+    if (idx === -1) return;
+    opinions[idx].status = 'closed';
+    opinions[idx].closed_at = new Date().toISOString();
+    setStore(STORAGE_OPINIONS, opinions);
+    // 添加最终回复
+    const replies = getStore(STORAGE_REPLIES);
+    replies.push({
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2,6),
+      opinion_id: currentOpinionId,
+      user_id: currentUser.id,
+      user_name: currentUser.real_name,
+      content: finalReply,
+      created_at: new Date().toISOString()
+    });
+    setStore(STORAGE_REPLIES, replies);
+    addNotification(opinions[idx].author_id, 'closed', opinions[idx].id, opinions[idx].title);
+    loadOpinions();
+    updateDashboard();
+    closeModal();
+  });
+
+  // 4. 重新打开（已完结）
+  document.getElementById('reopenBtn').addEventListener('click', () => {
+    const opinions = getStore(STORAGE_OPINIONS);
+    const idx = opinions.findIndex(o => o.id === currentOpinionId);
+    if (idx !== -1) {
+      opinions[idx].status = 'in_progress';
+      setStore(STORAGE_OPINIONS, opinions);
+    }
+    loadOpinions();
+    closeModal();
+    updateDashboard();
+  });
+
+  // ---------- 星级评分（仅作者本人） ----------
+  const stars = document.querySelectorAll('#starRating .star');
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      selectedStars = parseInt(star.dataset.val);
+      highlightStars(selectedStars);
+      document.getElementById('ratingText').textContent = selectedStars + '.0';
+    });
+    star.addEventListener('mouseenter', () => highlightStars(parseInt(star.dataset.val)));
+    star.addEventListener('mouseleave', () => highlightStars(selectedStars));
+  });
+  function highlightStars(count) {
+    stars.forEach(s => {
+      s.classList.toggle('active', parseInt(s.dataset.val) <= count);
+    });
+  }
+
+  document.getElementById('submitRatingBtn').addEventListener('click', () => {
+    if (selectedStars === 0) { alert('请点击星星评分'); return; }
+    const ratings = getStore(STORAGE_RATINGS);
+    const existingIdx = ratings.findIndex(r => r.opinion_id === currentOpinionId && r.user_id === currentUser.id);
+    if (existingIdx !== -1) {
+      ratings[existingIdx].score = selectedStars;
+    } else {
+      ratings.push({
+        opinion_id: currentOpinionId,
+        user_id: currentUser.id,
+        score: selectedStars,
+        created_at: new Date().toISOString()
+      });
+    }
+    setStore(STORAGE_RATINGS, ratings);
+    loadOpinions();
+    updateDashboard();
+    closeModal();
+  });
+
+  // ---------- 通知面板 ----------
+  document.getElementById('notificationBell').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('notificationDropdown');
+    if (dropdown.style.display === 'block') {
+      dropdown.style.display = 'none';
+    } else {
+      renderNotificationDropdown();
+      dropdown.style.display = 'block';
+    }
+  });
+  document.addEventListener('click', () => { document.getElementById('notificationDropdown').style.display = 'none'; });
+
+  // 退出登录
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  });
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  init();
+</script>
+</body>
+</html>
