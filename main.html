@@ -82,7 +82,18 @@
       <button class="btn" id="submitOpinionBtn">发布</button>
     </div>
   </div>
-
+<!-- 课表入口卡片（临时模块） -->
+<div class="post-box" style="cursor:pointer; text-align:center; transition: transform 0.2s;" 
+     onclick="window.location.href='schedule.html'"
+     onmouseover="this.style.transform='scale(1.01)'" 
+     onmouseout="this.style.transform='scale(1)'">
+  <div style="display:flex; align-items:center; justify-content:center; gap:16px;">
+    <span style="font-size:40px;">📅</span>
+    <div>
+      <h3 style="margin:0; color:#1e3a5f;">【限时板块】课表统计</h3>
+    </div>
+  </div>
+</div>
   <div class="sort-bar">
     <button class="sort-btn active" data-sort="heat">🔥 按热度</button>
     <button class="sort-btn" data-sort="time">⏱️ 按时间</button>
@@ -149,7 +160,7 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
   // ---------- 请替换为你的 Supabase 信息 ----------
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
