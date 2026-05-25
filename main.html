@@ -3,78 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>班级办事通 · 意见箱</title>
+  <title>班级办事通 · 控制台</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
-    body { background: #f0f4fa; min-height: 100vh; }
+    body { background: linear-gradient(160deg, #e8eef5, #dce4f0); min-height: 100vh; }
 
-    /* 导航栏 */
-    .navbar { background: white; padding: 12px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; position: relative; flex-wrap: wrap; gap: 8px; }
+    .navbar { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); padding: 14px 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px; }
     .logo { font-size: 22px; font-weight: 650; color: #1e3a5f; white-space: nowrap; }
-    .user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .user-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .badge { background: #eef3fa; padding: 6px 16px; border-radius: 30px; font-size: 14px; color: #1e3a5f; font-weight: 500; }
-
-    /* 按钮 */
     .btn { background: #1e3a5f; color: white; border: none; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.2s; white-space: nowrap; }
     .btn:hover { background: #2a4d7a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30,58,95,0.25); }
-    .btn:active { transform: translateY(0); }
     .btn-outline { background: transparent; border: 1.5px solid #1e3a5f; color: #1e3a5f; }
-    .btn-outline:hover { background: #eef3fa; transform: translateY(-1px); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-outline:hover { background: #eef3fa; }
 
-    .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+    .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
 
-    /* 数据看板 */
-    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 20px; padding: 22px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); text-align: center; transition: transform 0.2s; }
-    .stat-card:hover { transform: translateY(-2px); }
-    .stat-value { font-size: 2em; font-weight: 700; color: #1e3a5f; }
-    .stat-label { font-size: 14px; color: #5d7997; margin-top: 4px; }
+    .welcome { text-align: center; margin-bottom: 36px; }
+    .welcome h1 { font-size: 28px; color: #1e3a5f; margin-bottom: 8px; }
+    .welcome p { color: #6b85a0; font-size: 15px; }
 
-    /* 发布框 */
-    .post-box { background: white; border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
-    .input-field, textarea, select { width: 100%; padding: 12px 16px; border: 1.5px solid #dde5ed; border-radius: 16px; margin-bottom: 14px; font-size: 15px; outline: none; transition: border-color 0.2s; background: #fafbfc; }
-    .input-field:focus, textarea:focus, select:focus { border-color: #2e5a9c; box-shadow: 0 0 0 3px rgba(46,90,156,0.1); background: white; }
+    .hub-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
 
-    /* 排序 */
-    .sort-bar { display: flex; gap: 12px; margin-bottom: 20px; }
-    .sort-btn { background: white; border: 1.5px solid #cfdde9; padding: 8px 24px; border-radius: 30px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-    .sort-btn:hover { border-color: #1e3a5f; }
-    .sort-btn.active { background: #1e3a5f; color: white; border-color: #1e3a5f; }
+    .hub-card { background: white; border-radius: 24px; padding: 28px 24px; box-shadow: 0 8px 28px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 20px; text-decoration: none; color: inherit; border: 1px solid #eef2f7; position: relative; overflow: hidden; }
+    .hub-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); border-color: #cfdde9; }
+    .hub-card:active { transform: translateY(-1px); }
+    .hub-card .icon { font-size: 52px; flex-shrink: 0; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px; }
+    .hub-card .icon.opinions { background: #e3f0ff; }
+    .hub-card .icon.treehole { background: #f0ebe0; }
+    .hub-card .icon.timed { background: #fce4ec; }
+    .hub-card .info { flex: 1; min-width: 0; }
+    .hub-card .info h2 { font-size: 20px; color: #1e3a5f; margin-bottom: 6px; }
+    .hub-card .info p { font-size: 14px; color: #6b85a0; line-height: 1.5; }
+    .hub-card .arrow { font-size: 28px; color: #b0bec5; flex-shrink: 0; transition: transform 0.2s; }
+    .hub-card:hover .arrow { transform: translateX(4px); color: #1e3a5f; }
+    .hub-card .badge-new { position: absolute; top: 16px; right: 16px; background: #e03a3a; color: white; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
 
-    /* 意见卡片 */
-    .opinion-card { background: white; border-radius: 20px; padding: 22px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid #eef2f7; transition: box-shadow 0.2s; }
-    .opinion-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-    .card-header { display: flex; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-    .target-tag { background: #e1eaf1; padding: 4px 14px; border-radius: 30px; font-size: 13px; color: #1e3a5f; font-weight: 500; }
-    .progress-steps { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; flex-wrap: wrap; }
-    .step { font-size: 12px; color: #b0bec5; white-space: nowrap; }
-    .step.active { color: #1e3a5f; font-weight: 600; }
-    .step.completed { color: #2e7d32; }
-    .progress-bar { width: 100%; height: 6px; background: #e8edf3; border-radius: 3px; margin: 6px 0 12px; }
-    .progress-fill { height: 100%; background: #2e5a9c; border-radius: 3px; transition: width 0.4s ease; }
-    .actions { display: flex; gap: 16px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
-    .like-btn { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #5d7997; padding: 4px 12px; border-radius: 20px; transition: all 0.2s; user-select: none; }
-    .like-btn:hover { color: #e03a3a; background: #fff0f0; }
-    .like-btn.liked { color: #e03a3a; }
-
-    /* 模态框 */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
-    .modal.active { display: flex; }
-    .modal-content { background: white; width: 92%; max-width: 620px; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-    .reply-item { background: #f5f9ff; padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; }
-    .close-icon { float: right; font-size: 26px; cursor: pointer; color: #7a8fa0; line-height: 1; transition: color 0.2s; }
-    .close-icon:hover { color: #1e3a5f; }
-
-    /* 星级评分 */
-    .star-rating { display: flex; gap: 6px; align-items: center; margin: 8px 0; }
-    .star { font-size: 30px; cursor: pointer; color: #dde; transition: color 0.15s, transform 0.15s; }
-    .star:hover { transform: scale(1.15); }
-    .star.active { color: #f5b342; }
-    .rating-text { font-weight: 600; margin-left: 8px; }
-
-    /* 通知 */
-    .notification-bell { position: relative; cursor: pointer; font-size: 24px; margin-right: 8px; padding: 4px; border-radius: 12px; transition: background 0.2s; }
+    /* 通知铃铛 */
+    .notification-bell { position: relative; cursor: pointer; font-size: 24px; padding: 4px; border-radius: 12px; transition: background 0.2s; }
     .notification-bell:hover { background: #f0f3f8; }
     .notification-badge { position: absolute; top: -4px; right: -6px; background: #e03a3a; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
     .notification-dropdown { position: absolute; top: 55px; right: 20px; background: white; width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 36px rgba(0,0,0,0.15); border-radius: 20px; padding: 12px; display: none; z-index: 100; }
@@ -82,7 +48,15 @@
     .notification-item:hover { background: #f5f9ff; }
     .notification-item.unread { background: #eef3ff; font-weight: 500; }
 
-    /* Toast */
+    /* 改密弹窗 */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; width: 92%; max-width: 420px; border-radius: 24px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+    .close-icon { float: right; font-size: 26px; cursor: pointer; color: #7a8fa0; line-height: 1; transition: color 0.2s; }
+    .close-icon:hover { color: #1e3a5f; }
+    .input-field { width: 100%; padding: 12px 16px; border: 1.5px solid #dde5ed; border-radius: 16px; margin-bottom: 14px; font-size: 15px; outline: none; transition: border-color 0.2s; background: #fafbfc; }
+    .input-field:focus { border-color: #2e5a9c; box-shadow: 0 0 0 3px rgba(46,90,156,0.1); background: white; }
+
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
     .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
     .toast.success { background: #2e7d32; }
@@ -90,54 +64,16 @@
     .toast.warn { background: #e65100; }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    /* Loading */
-    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #cfdde9; border-top-color: #1e3a5f; border-radius: 50%; animation: spin 0.6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.5); z-index: 999; align-items: center; justify-content: center; }
-    .loading-overlay.active { display: flex; }
-
-    /* 评分大弹窗 */
-    .rating-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 2000; }
-    .rating-popup.active { display: flex; }
-    .rating-popup-content { background: white; width: 92%; max-width: 500px; border-radius: 28px; padding: 32px 28px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: popIn 0.3s ease; }
-    @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .rating-popup-content .final-reply-box { background: #f0f6ff; border-left: 4px solid #2e5a9c; padding: 16px 20px; border-radius: 14px; margin: 16px 0; text-align: left; color: #334e68; font-size: 15px; line-height: 1.6; max-height: 180px; overflow-y: auto; }
-    .rating-popup-content .star-rating-popup { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
-    .rating-popup-content .star-popup { font-size: 44px; cursor: pointer; color: #dde; transition: color 0.15s, transform 0.15s; }
-    .rating-popup-content .star-popup:hover { transform: scale(1.2); }
-    .rating-popup-content .star-popup.active { color: #f5b342; }
-    .rating-popup-content .btn-submit { background: #1e3a5f; color: white; border: none; padding: 14px 48px; border-radius: 30px; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
-    .rating-popup-content .btn-submit:hover { background: #2a4d7a; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,58,95,0.3); }
-    .rating-popup-content .btn-skip { background: none; border: none; color: #8899aa; cursor: pointer; margin-top: 12px; font-size: 14px; text-decoration: underline; }
-
-    /* 步骤条 */
-    .stepper { display: flex; align-items: center; justify-content: center; margin: 18px 0 6px; padding: 0 8px; }
-    .step-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 auto; }
-    .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: #e8edf3; color: #8899aa; transition: all 0.35s; position: relative; }
-    .step-dot.done { background: #2e7d32; color: white; }
-    .step-dot.current { background: #1e3a5f; color: white; box-shadow: 0 0 0 6px rgba(30,58,95,0.12); }
-    .step-line { flex: 1; height: 3px; background: #e8edf3; margin: 0 2px 20px; border-radius: 2px; transition: background 0.35s; min-width: 16px; }
-    .step-line.done { background: #2e7d32; }
-    .step-caption { font-size: 11px; color: #8899aa; margin-top: 5px; white-space: nowrap; transition: color 0.3s; font-weight: 500; }
-    .step-caption.done { color: #2e7d32; }
-    .step-caption.current { color: #1e3a5f; font-weight: 650; }
-
-    /* 响应式 */
     @media (max-width: 640px) {
       .navbar { padding: 10px 16px; }
       .logo { font-size: 18px; }
-      .container { padding: 0 12px; }
-      .dashboard { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .stat-card { padding: 16px; }
-      .stat-value { font-size: 1.5em; }
-      .opinion-card { padding: 16px; }
-      .actions { gap: 10px; }
-      .modal-content { width: 96%; padding: 16px; border-radius: 20px; }
+      .hub-card { padding: 20px 16px; gap: 14px; }
+      .hub-card .icon { font-size: 40px; width: 60px; height: 60px; border-radius: 16px; }
+      .hub-card .info h2 { font-size: 17px; }
     }
   </style>
 </head>
 <body>
-<div class="loading-overlay" id="loadingOverlay"><div class="spinner" style="width:44px;height:44px;border-width:4px;"></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="navbar">
@@ -152,121 +88,50 @@
 </div>
 
 <div class="container">
-  <div class="dashboard" id="dashboard"></div>
-
-  <div class="post-box">
-    <h3 style="margin-bottom:16px; color:#1e3a5f;">📝 提出意见或问题</h3>
-    <input type="text" id="titleInput" class="input-field" placeholder="意见标题（必填）">
-    <textarea id="contentInput" rows="3" placeholder="详细描述你的意见或问题..."></textarea>
-    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-      <select id="targetSelect" style="flex:2; min-width:140px;">
-        <option value="班长">反馈给：班长</option>
-        <option value="团支书">团支书</option>
-        <option value="学习委员">学习委员</option>
-        <option value="生活委员">生活委员</option>
-        <option value="班主任">班主任</option>
-      </select>
-      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;">
-        <input type="checkbox" id="anonymousCheck"> 匿名发布
-      </label>
-      <button class="btn" id="submitOpinionBtn">发布</button>
-    </div>
+  <div class="welcome">
+    <h1 id="welcomeTitle">👋 欢迎回来</h1>
+    <p>选择一个板块开始使用</p>
   </div>
 
-  <div class="post-box" style="cursor:pointer; text-align:center; transition: transform 0.2s, box-shadow 0.2s;"
-       onclick="window.location.href='schedule.html'"
-       onmouseover="this.style.transform='scale(1.01)';this.style.boxShadow='0 12px 28px rgba(0,0,0,0.08)';"
-       onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.04)';">
-    <div style="display:flex; align-items:center; justify-content:center; gap:16px;">
-      <span style="font-size:40px;">📅</span>
-      <div>
-        <h3 style="margin:0; color:#1e3a5f;">【限时板块】课表统计</h3>
-        <p style="margin:4px 0 0; color:#7a8fa0; font-size:14px;">点击进入课表收集与查看</p>
+  <div class="hub-grid">
+    <a class="hub-card" href="opinions.html">
+      <div class="icon opinions">📋</div>
+      <div class="info">
+        <h2>意见箱</h2>
+        <p>意见反馈 · 班委协同处理 · 进度追踪 · 满意度评分</p>
       </div>
-    </div>
-  </div>
+      <span class="arrow">→</span>
+    </a>
 
-  <div class="sort-bar">
-    <button class="sort-btn active" data-sort="heat">🔥 按热度</button>
-    <button class="sort-btn" data-sort="time">⏱️ 按时间</button>
-  </div>
+    <a class="hub-card" href="treehole.html">
+      <div class="icon treehole">🌲</div>
+      <div class="info">
+        <h2>树洞</h2>
+        <p>匿名分享 · 便利贴留言墙 · 自由回复 · 表情互动</p>
+      </div>
+      <span class="badge-new">NEW</span>
+      <span class="arrow">→</span>
+    </a>
 
-  <div id="opinionsList"></div>
-</div>
-
-<!-- 详情弹窗 -->
-<div class="modal" id="detailModal">
-  <div class="modal-content">
-    <span class="close-icon" onclick="closeModal()">&times;</span>
-    <h3 id="modalTitle" style="color:#1e3a5f; padding-right:30px;"></h3>
-    <div id="modalMeta" style="margin:12px 0; color:#5d7997; font-size:14px;"></div>
-    <div id="repliesContainer" style="max-height:300px; overflow-y:auto; margin-bottom:16px;"></div>
-    <div id="replyInputArea" style="display:flex; gap:8px; margin-bottom:12px;">
-      <input type="text" id="replyInput" placeholder="输入回复/追问..." style="flex:1; padding:12px 16px; border-radius:24px; border:1.5px solid #dde5ed; outline:none;">
-      <button class="btn" id="sendReplyBtn">发送</button>
-    </div>
-    <div id="adminActions" style="margin-top:16px; display:none;">
-      <hr style="border-color:#eef2f7; margin-bottom:16px;">
-      <div id="actionStart" style="display:none;">
-        <button class="btn" id="startProcessBtn">🚀 开始处理</button>
+    <a class="hub-card" href="schedule.html">
+      <div class="icon timed">📅</div>
+      <div class="info">
+        <h2>限时功能</h2>
+        <p>课表统计 · 全年级课表查看 · 空闲时段查询</p>
       </div>
-      <div id="actionInProgress" style="display:none;">
-        <div style="display:flex; gap:8px; margin-bottom:12px;">
-          <input type="text" id="finalReplyInput" placeholder="最终解决方案（必填）" style="flex:1; padding:12px 16px; border-radius:24px; border:1.5px solid #dde5ed; outline:none;">
-          <button class="btn" id="closeWithReplyBtn">✅ 完结并回复</button>
-        </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <select id="assignSelect" style="padding:10px 14px; border-radius:24px; border:1.5px solid #dde5ed;">
-            <option value="班长">班长</option>
-            <option value="团支书">团支书</option>
-            <option value="学习委员">学习委员</option>
-            <option value="生活委员">生活委员</option>
-            <option value="班主任">班主任</option>
-          </select>
-          <button class="btn-outline btn" id="assignBtn">🔄 重新分配</button>
-        </div>
-      </div>
-      <div id="actionClosed" style="display:none;">
-        <button class="btn-outline btn" id="reopenBtn">🔓 重新打开问题</button>
-      </div>
-    </div>
-    <div id="ratingArea" style="margin-top:16px; padding-top:12px; border-top:1px solid #eef2f7; display:none;">
-      <span style="color:#1e3a5f; font-weight:500;">评分：</span>
-      <div class="star-rating" id="starRating">
-        <span class="star" data-val="1">★</span><span class="star" data-val="2">★</span><span class="star" data-val="3">★</span><span class="star" data-val="4">★</span><span class="star" data-val="5">★</span>
-        <span class="rating-text" id="ratingText">未评分</span>
-      </div>
-      <button class="btn" id="submitRatingBtn" style="margin-top:8px;">提交评分</button>
-    </div>
+      <span class="arrow">→</span>
+    </a>
   </div>
 </div>
 
 <!-- 修改密码弹窗 -->
 <div class="modal" id="pwdModal">
-  <div class="modal-content" style="max-width:420px;">
+  <div class="modal-content">
     <span class="close-icon" onclick="closePwdModal()">&times;</span>
     <h3 style="color:#1e3a5f; margin-bottom:16px;">修改密码</h3>
     <input type="password" id="newPwd" placeholder="新密码（至少6位）" class="input-field">
     <input type="password" id="newPwdConfirm" placeholder="确认密码" class="input-field">
     <button class="btn" id="submitPwdChange" style="width:100%;">确认修改</button>
-  </div>
-</div>
-
-<!-- 评分大弹窗 -->
-<div class="rating-popup" id="ratingPopup">
-  <div class="rating-popup-content">
-    <div style="font-size:48px;margin-bottom:4px;">🎉</div>
-    <h2 style="color:#1e3a5f;margin:0 0 4px;">你的问题已有最终回复</h2>
-    <p style="color:#7a8fa0;font-size:14px;margin:0 0 12px;" id="ratingPopupTitle"></p>
-    <div class="final-reply-box" id="ratingPopupReply"></div>
-    <p style="color:#1e3a5f;font-weight:600;margin-top:16px;">这个解决方案你满意吗？</p>
-    <div class="star-rating-popup" id="starRatingPopup">
-      <span class="star-popup" data-val="1">★</span><span class="star-popup" data-val="2">★</span><span class="star-popup" data-val="3">★</span><span class="star-popup" data-val="4">★</span><span class="star-popup" data-val="5">★</span>
-    </div>
-    <div style="font-size:18px;font-weight:700;color:#f5b342;min-height:28px;" id="ratingPopupText"></div>
-    <button class="btn-submit" id="submitRatingPopupBtn">提交评分</button>
-    <br>
-    <button class="btn-skip" id="skipRatingBtn">稍后再说</button>
   </div>
 </div>
 
@@ -277,12 +142,7 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let currentUser = null;
-  let currentSort = 'heat';
-  let opinionsData = [];
-  let currentOpinionId = null;
-  let selectedStars = 0;
 
-  // Toast
   function toast(msg, type) {
     type = type || 'success';
     const el = document.createElement('div');
@@ -293,428 +153,28 @@
     setTimeout(function() { if (el.parentNode) el.remove(); }, 3500);
   }
 
-  function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
-  function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
-
-  // 通知存储
+  // 通知
   var STORAGE_NOTIF = 'classroom_notifications';
   function getNotifs() { return JSON.parse(localStorage.getItem(STORAGE_NOTIF) || '[]'); }
   function saveNotifs(arr) { localStorage.setItem(STORAGE_NOTIF, JSON.stringify(arr)); }
-  function addNotification(userId, type, opinionId, opinionTitle) {
-    if (!userId) return;
-    var notifs = getNotifs();
-    notifs.push({
-      id: crypto.randomUUID(),
-      user_id: userId,
-      type: type,
-      opinion_id: opinionId,
-      opinion_title: opinionTitle,
-      read: false,
-      created_at: new Date().toISOString()
-    });
-    saveNotifs(notifs);
-    updateNotifBadge();
-  }
 
-  // 初始化
   async function init() {
     var userStr = sessionStorage.getItem('currentUser');
     if (!userStr) { window.location.href = 'index.html'; return; }
     currentUser = JSON.parse(userStr);
     document.getElementById('userDisplay').innerText =
       currentUser.real_name + ' (' + currentUser.student_id + ') ' + (currentUser.role === 'admin' ? '管理员' : '同学');
+    document.getElementById('welcomeTitle').innerText = '👋 ' + currentUser.real_name + '，欢迎回来';
     updateNotifBadge();
-    await loadOpinions();
-    await updateDashboard();
   }
 
-  // 数据看板
-  async function updateDashboard() {
-    var res = await supabaseClient.from('opinions').select('*');
-    if (res.error) return;
-    var ops = res.data;
-    var total = ops.length;
-    var closed = ops.filter(function(o) { return o.status === 'closed'; }).length;
-    var resolveRate = total ? Math.round((closed / total) * 100) + '%' : '0%';
-
-    var res2 = await supabaseClient.from('ratings').select('score');
-    var scores = res2.data ? res2.data.map(function(r) { return r.score; }) : [];
-    var avgSat = scores.length ? (scores.reduce(function(a,b){return a+b;},0) / scores.length).toFixed(1) : '0.0';
-
-    // 计算平均解决时间
-    var closedOps = ops.filter(function(o) { return o.closed_at && o.status === 'closed'; });
-    var avgTime = '--';
-    if (closedOps.length > 0) {
-      var totalMs = 0;
-      closedOps.forEach(function(o) {
-        totalMs += new Date(o.closed_at) - new Date(o.created_at);
-      });
-      var avgHrs = (totalMs / closedOps.length) / (1000 * 60 * 60);
-      avgTime = avgHrs < 1 ? Math.round(avgHrs * 60) + '分钟' : avgHrs.toFixed(1) + '小时';
-    }
-
-    document.getElementById('dashboard').innerHTML =
-      '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">📌 提问数</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + resolveRate + '</div><div class="stat-label">✅ 解决率</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + avgSat + '</div><div class="stat-label">⭐ 满意率</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + avgTime + '</div><div class="stat-label">⏱️ 平均用时</div></div>';
-  }
-
-  // 加载意见列表
-  async function loadOpinions() {
-    showLoading();
-    var query = supabaseClient.from('opinions').select('*, likes(count), replies(count)');
-    if (currentSort === 'time') {
-      query = query.order('created_at', { ascending: false });
-    } else {
-      query = query.order('created_at', { ascending: false });
-    }
-    var res = await query;
-    if (res.error) { hideLoading(); toast('加载失败：' + res.error.message, 'error'); return; }
-
-    // 单独查询所有评分，确保嵌入式查询不失效
-    var ratingsRes = await supabaseClient.from('ratings').select('opinion_id, score');
-    var ratingsMap = {};
-    (ratingsRes.data || []).forEach(function(r) {
-      if (!ratingsMap[r.opinion_id]) ratingsMap[r.opinion_id] = [];
-      ratingsMap[r.opinion_id].push(r.score);
-    });
-
-    hideLoading();
-    opinionsData = (res.data || []).map(function(op) {
-      var scores = ratingsMap[op.id] || [];
-      return {
-        ...op,
-        likeCount: op.likes?.[0]?.count || 0,
-        replyCount: op.replies?.[0]?.count || 0,
-        avgRating: scores.length ? (scores.reduce(function(s, r) { return s + r; }, 0) / scores.length).toFixed(1) : null
-      };
-    });
-    if (currentSort === 'heat') {
-      opinionsData.sort(function(a,b) { return b.likeCount - a.likeCount || new Date(b.created_at) - new Date(a.created_at); });
-    }
-    renderOpinions();
-  }
-
-  function getProgress(op) {
-    if (op.status === 'open') return 0;
-    if (op.status === 'in_progress') return 1;
-    if (op.status === 'closed') return op.avgRating ? 3 : 2;
-    return 0;
-  }
-
-  function renderOpinions() {
-    var container = document.getElementById('opinionsList');
-    if (opinionsData.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:48px 20px;color:#7a8fa0;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p>暂无意见，快来发布第一条吧！</p></div>';
-      return;
-    }
-    container.innerHTML = opinionsData.map(function(op) {
-      var progress = getProgress(op);
-      var steps = ['问题提出', '解决中', '已完结', '已评分'];
-      var statusLabels = { open: '📌 待处理', in_progress: '⏳ 解决中', closed: '✅ 已完结' };
-      return '<div class="opinion-card">' +
-        '<div class="card-header">' +
-          '<strong>' + escapeHtml(op.title) + '</strong>' +
-          '<span class="target-tag">@' + (op.assigned_to || op.target_role) + '</span>' +
-        '</div>' +
-        '<p style="margin:12px 0;color:#334e68;">' + escapeHtml(op.content) + '</p>' +
-        '<div style="display:flex;gap:20px;font-size:14px;color:#6b85a0;flex-wrap:wrap;">' +
-          '<span>👤 ' + (op.is_anonymous ? '匿名' : op.author_name) + '</span>' +
-          '<span>📅 ' + new Date(op.created_at).toLocaleString() + '</span>' +
-          '<span>⭐ ' + (op.avgRating || '暂无') + '</span>' +
-          '<span>💬 ' + op.replyCount + '</span>' +
-        '</div>' +
-        '<div class="stepper">' + steps.map(function(s, i) {
-          var cls = i < progress ? 'done' : i === progress ? 'current' : '';
-          var icon = i < progress ? '✓' : (i + 1);
-          var html = '<div class="step-node"><div class="step-dot ' + cls + '">' + icon + '</div><span class="step-caption ' + cls + '">' + s + '</span></div>';
-          if (i < steps.length - 1) html += '<div class="step-line ' + (i < progress ? 'done' : '') + '"></div>';
-          return html;
-        }).join('') + '</div>' +
-        '<div class="actions">' +
-          '<span class="like-btn" data-id="' + op.id + '">❤️ ' + op.likeCount + '</span>' +
-          '<button class="btn-outline btn" onclick="openDetail(\'' + op.id + '\')">查看详情</button>' +
-          '<span style="font-size:14px;color:#5d7997;">' + (statusLabels[op.status] || op.status) + '</span>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-
-    container.querySelectorAll('.like-btn').forEach(function(btn) {
-      btn.addEventListener('click', async function() {
-        var opId = btn.dataset.id;
-        var res = await supabaseClient.from('likes').upsert(
-          { opinion_id: opId, user_id: currentUser.id },
-          { onConflict: 'opinion_id, user_id' }
-        );
-        if (res.error) {
-          if (res.error.code === '23505') {
-            // Already liked — unlike by deleting
-            await supabaseClient.from('likes').delete().eq('opinion_id', opId).eq('user_id', currentUser.id);
-          } else {
-            toast('操作失败', 'error');
-            return;
-          }
-        }
-        loadOpinions();
-      });
-    });
-  }
-
-  // 发布新意见
-  document.getElementById('submitOpinionBtn').addEventListener('click', async function() {
-    var title = document.getElementById('titleInput').value.trim();
-    var content = document.getElementById('contentInput').value.trim();
-    var target = document.getElementById('targetSelect').value;
-    var anonymous = document.getElementById('anonymousCheck').checked;
-    if (!title || !content) { toast('请填写标题和内容', 'warn'); return; }
-    showLoading();
-    var id = crypto.randomUUID();
-    var res = await supabaseClient.from('opinions').insert({
-      id: id, title: title, content: content, target_role: target, assigned_to: target,
-      is_anonymous: anonymous, author_id: currentUser.id, author_name: currentUser.real_name,
-      status: 'open'
-    });
-    hideLoading();
-    if (res.error) { toast(res.error.message, 'error'); }
-    else {
-      document.getElementById('titleInput').value = '';
-      document.getElementById('contentInput').value = '';
-      toast('发布成功！');
-      loadOpinions();
-      updateDashboard();
-    }
-  });
-
-  // 排序
-  document.querySelectorAll('.sort-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.sort-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      currentSort = btn.dataset.sort;
-      loadOpinions();
-    });
-  });
-
-  // 详情
-  window.openDetail = async function(opinionId) {
-    currentOpinionId = opinionId;
-    var op = opinionsData.find(function(o) { return o.id === opinionId; });
-    if (!op) return;
-    // 作者打开已完结且未评分的问题 → 弹出大评分弹窗
-    if (currentUser.id === op.author_id && op.status === 'closed' && !op.avgRating) {
-      showRatingPopup(op);
-      return;
-    }
-    document.getElementById('modalTitle').innerText = op.title;
-    document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + op.status;
-    showLoading();
-    var res = await supabaseClient.from('replies').select('*').eq('opinion_id', opinionId).order('created_at', { ascending: true });
-    hideLoading();
-    document.getElementById('repliesContainer').innerHTML = (res.data || []).map(function(r) {
-      return '<div class="reply-item"><strong>' + r.user_name + '</strong>：' + escapeHtml(r.content) +
-        ' <span style="font-size:12px;color:#888;">' + new Date(r.created_at).toLocaleString() + '</span></div>';
-    }).join('') || '<div style="text-align:center;color:#9e9e9e;padding:20px;">暂无回复</div>';
-    document.getElementById('replyInput').value = '';
-
-    var isAdmin = currentUser.role === 'admin';
-    document.getElementById('adminActions').style.display = isAdmin ? 'block' : 'none';
-    document.getElementById('actionStart').style.display = 'none';
-    document.getElementById('actionInProgress').style.display = 'none';
-    document.getElementById('actionClosed').style.display = 'none';
-    if (isAdmin) {
-      if (op.status === 'open') document.getElementById('actionStart').style.display = 'block';
-      else if (op.status === 'in_progress') document.getElementById('actionInProgress').style.display = 'block';
-      else if (op.status === 'closed') document.getElementById('actionClosed').style.display = 'block';
-    }
-    var isAuthor = currentUser.id === op.author_id;
-    var canRate = isAuthor && op.status === 'closed';
-    document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
-    if (canRate) {
-      selectedStars = 0;
-      document.querySelectorAll('#starRating .star').forEach(function(s) { s.classList.remove('active'); });
-      document.getElementById('ratingText').textContent = '未评分';
-    }
-    document.getElementById('detailModal').classList.add('active');
-  };
-
-  window.closeModal = function() { document.getElementById('detailModal').classList.remove('active'); };
-  window.closePwdModal = function() { document.getElementById('pwdModal').classList.remove('active'); };
-
-  // 点击模态框外部关闭
-  document.getElementById('detailModal').addEventListener('click', function(e) {
-    if (e.target === e.currentTarget) closeModal();
-  });
-  document.getElementById('pwdModal').addEventListener('click', function(e) {
-    if (e.target === e.currentTarget) closePwdModal();
-  });
-
-  document.getElementById('sendReplyBtn').addEventListener('click', async function() {
-    var content = document.getElementById('replyInput').value.trim();
-    if (!content) { toast('请输入回复内容', 'warn'); return; }
-    var id = crypto.randomUUID();
-    await supabaseClient.from('replies').insert({ id: id, opinion_id: currentOpinionId, user_id: currentUser.id, user_name: currentUser.real_name, content: content });
-    var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
-    if (op && op.author_id !== currentUser.id) addNotification(op.author_id, 'reply', currentOpinionId, op.title);
-    openDetail(currentOpinionId);
-    loadOpinions();
-  });
-
-  document.getElementById('startProcessBtn').addEventListener('click', async function() {
-    await supabaseClient.from('opinions').update({ status: 'in_progress' }).eq('id', currentOpinionId);
-    loadOpinions(); closeModal(); updateDashboard();
-    toast('已标记为处理中');
-  });
-
-  document.getElementById('closeWithReplyBtn').addEventListener('click', async function() {
-    var finalReply = document.getElementById('finalReplyInput').value.trim();
-    if (!finalReply) { toast('请输入最终解决方案', 'warn'); return; }
-    var id = crypto.randomUUID();
-    await supabaseClient.from('replies').insert({ id: id, opinion_id: currentOpinionId, user_id: currentUser.id, user_name: currentUser.real_name, content: '【最终方案】' + finalReply });
-    await supabaseClient.from('opinions').update({ status: 'closed', closed_at: new Date().toISOString() }).eq('id', currentOpinionId);
-    var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
-    if (op) addNotification(op.author_id, 'closed', currentOpinionId, op.title);
-    loadOpinions(); closeModal(); updateDashboard();
-    toast('问题已完结');
-  });
-
-  document.getElementById('assignBtn').addEventListener('click', async function() {
-    var assignTo = document.getElementById('assignSelect').value;
-    await supabaseClient.from('opinions').update({ assigned_to: assignTo, assigned_at: new Date().toISOString() }).eq('id', currentOpinionId);
-    var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
-    if (op) addNotification(op.author_id, 'reassign', currentOpinionId, op.title);
-    loadOpinions(); closeModal(); updateDashboard();
-    toast('已重新分配给 ' + assignTo);
-  });
-
-  document.getElementById('reopenBtn').addEventListener('click', async function() {
-    await supabaseClient.from('opinions').update({ status: 'in_progress' }).eq('id', currentOpinionId);
-    loadOpinions(); closeModal(); updateDashboard();
-    toast('问题已重新打开');
-  });
-
-  // 星级评分
-  document.querySelectorAll('#starRating .star').forEach(function(star) {
-    star.addEventListener('click', function() {
-      selectedStars = parseInt(star.dataset.val);
-      document.querySelectorAll('#starRating .star').forEach(function(s) {
-        s.classList.toggle('active', parseInt(s.dataset.val) <= selectedStars);
-      });
-      document.getElementById('ratingText').textContent = selectedStars + '.0';
-    });
-  });
-  document.getElementById('submitRatingBtn').addEventListener('click', async function() {
-    if (!selectedStars) { toast('请点击星星评分', 'warn'); return; }
-    var res = await supabaseClient.from('ratings').upsert(
-      { opinion_id: currentOpinionId, user_id: currentUser.id, score: selectedStars },
-      { onConflict: 'opinion_id, user_id' }
-    );
-    if (res.error) { toast('评分失败：' + res.error.message, 'error'); return; }
-    toast('评分成功！');
-    // 立即更新本地数据，确保步骤条刷新
-    var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
-    if (op) { op.avgRating = selectedStars + '.0'; }
-    renderOpinions();
-    closeModal(); loadOpinions(); updateDashboard();
-  });
-
-  // ---- 评分大弹窗 ----
-  var popupStars = 0;
-  var popupOpinionId = null;
-
-  async function showRatingPopup(op) {
-    popupOpinionId = op.id;
-    popupStars = 0;
-    document.getElementById('ratingPopupTitle').innerText = op.title;
-    document.getElementById('ratingPopupText').textContent = '';
-    document.querySelectorAll('#starRatingPopup .star-popup').forEach(function(s) { s.classList.remove('active'); });
-
-    // 查找最终回复
-    showLoading();
-    var res = await supabaseClient.from('replies').select('*').eq('opinion_id', op.id).order('created_at', { ascending: true });
-    hideLoading();
-    var finalReply = (res.data || []).filter(function(r) { return r.content && r.content.indexOf('【最终方案】') === 0; }).pop();
-    document.getElementById('ratingPopupReply').innerText = finalReply ? finalReply.content.replace('【最终方案】', '') : '（暂无最终回复详情）';
-
-    document.getElementById('ratingPopup').classList.add('active');
-  }
-
-  document.querySelectorAll('#starRatingPopup .star-popup').forEach(function(star) {
-    star.addEventListener('click', function() {
-      popupStars = parseInt(star.dataset.val);
-      document.querySelectorAll('#starRatingPopup .star-popup').forEach(function(s) {
-        s.classList.toggle('active', parseInt(s.dataset.val) <= popupStars);
-      });
-      var labels = ['', '非常不满意', '不太满意', '一般', '比较满意', '非常满意'];
-      document.getElementById('ratingPopupText').textContent = labels[popupStars];
-    });
-  });
-
-  document.getElementById('submitRatingPopupBtn').addEventListener('click', async function() {
-    if (!popupStars) { toast('请点击星星评分', 'warn'); return; }
-    var res = await supabaseClient.from('ratings').upsert(
-      { opinion_id: popupOpinionId, user_id: currentUser.id, score: popupStars },
-      { onConflict: 'opinion_id, user_id' }
-    );
-    if (res.error) { toast('评分失败：' + res.error.message, 'error'); return; }
-    document.getElementById('ratingPopup').classList.remove('active');
-    toast('感谢评分！');
-    // 立即更新本地数据，确保步骤条刷新
-    var op = opinionsData.find(function(o) { return o.id === popupOpinionId; });
-    if (op) { op.avgRating = popupStars + '.0'; }
-    renderOpinions();
-    loadOpinions(); updateDashboard();
-  });
-
-  document.getElementById('skipRatingBtn').addEventListener('click', function() {
-    document.getElementById('ratingPopup').classList.remove('active');
-    // 跳过评分时仍然打开普通详情
-    var op = opinionsData.find(function(o) { return o.id === popupOpinionId; });
-    if (op) {
-      currentOpinionId = popupOpinionId;
-      document.getElementById('modalTitle').innerText = op.title;
-      document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + op.status;
-      openDetailFallback(popupOpinionId);
-    }
-  });
-
-  document.getElementById('ratingPopup').addEventListener('click', function(e) {
-    if (e.target === e.currentTarget) document.getElementById('ratingPopup').classList.remove('active');
-  });
-
-  // skip 后回退到普通详情查看
-  async function openDetailFallback(opinionId) {
-    showLoading();
-    var res = await supabaseClient.from('replies').select('*').eq('opinion_id', opinionId).order('created_at', { ascending: true });
-    hideLoading();
-    document.getElementById('repliesContainer').innerHTML = (res.data || []).map(function(r) {
-      return '<div class="reply-item"><strong>' + r.user_name + '</strong>：' + escapeHtml(r.content) +
-        ' <span style="font-size:12px;color:#888;">' + new Date(r.created_at).toLocaleString() + '</span></div>';
-    }).join('') || '<div style="text-align:center;color:#9e9e9e;padding:20px;">暂无回复</div>';
-    document.getElementById('replyInput').value = '';
-    var op2 = opinionsData.find(function(o) { return o.id === opinionId; });
-    var isAdmin = currentUser.role === 'admin';
-    document.getElementById('adminActions').style.display = isAdmin ? 'block' : 'none';
-    document.getElementById('actionStart').style.display = 'none';
-    document.getElementById('actionInProgress').style.display = 'none';
-    document.getElementById('actionClosed').style.display = 'none';
-    if (isAdmin) {
-      if (op2.status === 'open') document.getElementById('actionStart').style.display = 'block';
-      else if (op2.status === 'in_progress') document.getElementById('actionInProgress').style.display = 'block';
-      else if (op2.status === 'closed') document.getElementById('actionClosed').style.display = 'block';
-    }
-    var canRate = currentUser.id === op2.author_id && op2.status === 'closed' && !op2.avgRating;
-    document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
-    document.getElementById('detailModal').classList.add('active');
-  }
-
-  // 通知
   function updateNotifBadge() {
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
     var badge = document.getElementById('unreadCount');
     badge.style.display = notifs.length ? 'flex' : 'none';
     badge.textContent = notifs.length;
   }
+
   document.getElementById('notificationBell').addEventListener('click', function(e) {
     e.stopPropagation();
     var dropdown = document.getElementById('notificationDropdown');
@@ -724,7 +184,7 @@
     dropdown.innerHTML = notifs.length ? notifs.map(function(n) {
       var icon = n.type === 'reply' ? '💬' : n.type === 'closed' ? '✅' : n.type === 'reassign' ? '🔄' : '🔔';
       var label = n.type === 'reply' ? '有新回复' : n.type === 'closed' ? '已完结' : '已重分配';
-      return '<div class="notification-item ' + (n.read ? '' : 'unread') + '" data-id="' + n.id + '" data-opinion="' + n.opinion_id + '">' +
+      return '<div class="notification-item ' + (n.read ? '' : 'unread') + '" data-id="' + n.id + '">' +
         icon + ' ' + n.opinion_title + ' - ' + label +
       '</div>';
     }).join('') : '<div style="padding:16px;text-align:center;color:#9e9e9e;">暂无通知</div>';
@@ -736,7 +196,7 @@
         if (idx !== -1) notifs[idx].read = true;
         saveNotifs(notifs);
         updateNotifBadge();
-        openDetail(item.dataset.opinion);
+        window.location.href = 'opinions.html';
         dropdown.style.display = 'none';
       });
     });
@@ -748,6 +208,10 @@
   // 修改密码
   document.getElementById('changePwdBtn').addEventListener('click', function() {
     document.getElementById('pwdModal').classList.add('active');
+  });
+  window.closePwdModal = function() { document.getElementById('pwdModal').classList.remove('active'); };
+  document.getElementById('pwdModal').addEventListener('click', function(e) {
+    if (e.target === e.currentTarget) closePwdModal();
   });
   document.getElementById('submitPwdChange').addEventListener('click', async function() {
     var newPwd = document.getElementById('newPwd').value;
@@ -770,12 +234,6 @@
     sessionStorage.clear();
     window.location.href = 'index.html';
   });
-
-  function escapeHtml(text) {
-    var div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
 
   init();
 </script>
