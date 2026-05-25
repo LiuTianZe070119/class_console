@@ -125,7 +125,7 @@ app.get('/api/committee', (req, res) => {
 
 // 获取意见列表 (支持排序: heat 或 time)
 app.get('/api/opinions', (req, res) => {
-  const sort = req.query.sort === 'time' ? 'o.created_at DESC' : 'o.heat DESC, o.created_at DESC';
+  const sortByTime = req.query.sort === 'time';
   const sql = `
     SELECT o.*, u.real_name as author_display_name,
            (SELECT COUNT(*) FROM likes WHERE opinion_id = o.id) as like_count,
@@ -133,7 +133,7 @@ app.get('/api/opinions', (req, res) => {
            (SELECT COUNT(*) FROM ratings WHERE opinion_id = o.id) as rating_count
     FROM opinions o
     LEFT JOIN users u ON o.author_id = u.id
-    ORDER BY ${sort}
+    ORDER BY ${sortByTime ? 'o.created_at DESC' : 'o.heat DESC, o.created_at DESC'}
   `;
   db.all(sql, [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });

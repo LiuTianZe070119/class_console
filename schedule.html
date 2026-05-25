@@ -6,55 +6,116 @@
   <title>班级课表统计</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
-    body { background: #f5f9ff; min-height: 100vh; padding: 20px; }
-    .navbar { background: white; padding: 14px 24px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .logo { font-size: 22px; font-weight: 650; color: #1e3a5f; }
-    .btn { background: #1e3a5f; color: white; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-weight: 500; }
-    .btn-outline { background: transparent; border: 1.5px solid white; color: #1e3a5f; }
-    .card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; text-align: center; }
-    th, td { border: 1px solid #e0e7ef; padding: 6px 4px; }
-    th { background: #f5f9ff; font-weight: 600; font-size: 14px; }
-    .schedule-cell { width: 65px; height: 40px; cursor: pointer; transition: background 0.2s; font-size: 13px; }
+    body { background: #f0f4fa; min-height: 100vh; padding: 20px; }
+    .navbar { background: white; padding: 14px 24px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .logo { font-size: 22px; font-weight: 650; color: #1e3a5f; white-space: nowrap; }
+    .btn { background: #1e3a5f; color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.2s; }
+    .btn:hover { background: #2a4d7a; transform: translateY(-1px); }
+    .btn-outline { background: transparent; border: 1.5px solid #1e3a5f; color: #1e3a5f; }
+    .btn-outline:hover { background: #eef3fa; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .card { background: white; border-radius: 24px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .card-header h3 { color: #1e3a5f; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; text-align: center; min-width: 600px; }
+    th, td { border: 1px solid #e4eaf2; padding: 8px 4px; }
+    th { background: #f5f9ff; font-weight: 600; font-size: 13px; color: #1e3a5f; position: sticky; top: 0; }
+    td { font-size: 12px; }
+    .schedule-cell { width: 70px; height: 42px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 500; border-radius: 0; }
     .schedule-cell.has-class { background: #e03a3a; color: white; }
     .schedule-cell.free { background: white; color: #334e68; }
-    .stats-cell { cursor: pointer; font-weight: 600; }
-    .stats-cell:hover { opacity: 0.8; }
-    .notice { font-size: 13px; color: #59748f; margin-top: 10px; }
+    .schedule-cell.free:hover { background: #e8f0fe; }
+    .schedule-cell.has-class:hover { background: #c62828; }
+    .stats-cell { cursor: pointer; font-weight: 600; transition: all 0.2s; }
+    .stats-cell:hover { opacity: 0.85; transform: scale(1.02); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .notice { font-size: 13px; color: #59748f; margin-top: 12px; padding: 10px 16px; background: #f5f9ff; border-radius: 12px; }
+    .stats-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #59748f; }
+    .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+    .has-unsaved { color: #e03a3a; font-size: 13px; font-weight: 500; }
+
+    /* 模态框 */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; width: 90%; max-width: 560px; max-height: 80vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-header h3 { color: #1e3a5f; }
+    .close-icon { font-size: 26px; cursor: pointer; color: #7a8fa0; line-height: 1; transition: color 0.2s; }
+    .close-icon:hover { color: #1e3a5f; }
+    .student-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 480px) { .student-list { grid-template-columns: 1fr; } }
+    .student-group h4 { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #e4eaf2; font-size: 14px; }
+    .student-group.free h4 { color: #2e7d32; border-color: #a5d6a7; }
+    .student-group.busy h4 { color: #c62828; border-color: #ef9a9a; }
+    .student-tag { display: inline-block; padding: 3px 10px; margin: 2px 4px 2px 0; border-radius: 14px; font-size: 12px; }
+    .free .student-tag { background: #e8f5e9; color: #2e7d32; }
+    .busy .student-tag { background: #ffebee; color: #c62828; }
+    .empty-hint { color: #9e9e9e; font-style: italic; font-size: 13px; }
+
+    /* Toast */
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+    .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
+    .toast.success { background: #2e7d32; }
+    .toast.error { background: #c62828; }
+    .toast.warn { background: #e65100; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* Loading spinner */
+    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #cfdde9; border-top-color: #1e3a5f; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.6); z-index: 999; align-items: center; justify-content: center; }
+    .loading-overlay.active { display: flex; }
   </style>
 </head>
 <body>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner" style="width:44px;height:44px;border-width:4px;"></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
 <div class="navbar">
   <div class="logo">📅 班级课表统计</div>
-  <button class="btn-outline" onclick="goBack()">← 返回办事通</button>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <span class="has-unsaved" id="unsavedHint" style="display:none;">● 有未保存的修改</span>
+    <button class="btn-outline btn" onclick="goBack()">← 返回办事通</button>
+  </div>
 </div>
 
-<!-- 课表主界面（直接显示） -->
 <div id="scheduleCard" class="card">
-  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+  <div class="card-header">
     <h3 id="title">我的课表</h3>
-    <div style="display:flex; gap:8px;">
-      <button class="btn" id="saveBtn">保存</button>
-      <button class="btn-outline" id="statsBtn">统计视图</button>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn" id="saveBtn">💾 保存</button>
+      <button class="btn-outline btn" id="statsBtn">📊 统计视图</button>
     </div>
   </div>
-  <div style="overflow-x:auto; margin-top:16px;">
-    <table id="scheduleTable">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
+  <div class="table-wrap">
+    <table id="scheduleTable"><thead></thead><tbody></tbody></table>
   </div>
   <div class="notice" id="statsNotice"></div>
+  <div class="stats-legend" id="statsLegend" style="display:none;">
+    <div class="legend-item"><span class="legend-dot" style="background:#e03a3a;"></span> ≥75% 有课</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#f5b342;"></span> 部分有课</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#ffffff;border:1px solid #ccc;"></span> 全员空闲</div>
+  </div>
+</div>
+
+<!-- 空闲学生详情弹窗 -->
+<div class="modal" id="freeModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="freeModalTitle"></h3>
+      <span class="close-icon" onclick="closeFreeModal()">&times;</span>
+    </div>
+    <div class="student-list" id="freeModalBody"></div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
-  // ----- 配置 -----
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ----- 全局变量 -----
   let currentUser = null;
   let scheduleUserId = null;
   let isAdminView = false;
@@ -64,64 +125,90 @@
   let totalStudents = 0;
   const DAYS = ['一','二','三','四','五','六','日'];
 
-  // ----- 初始化（直接进入） -----
+  // Toast
+  function toast(msg, type = 'success') {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    el.addEventListener('click', () => el.remove());
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(() => { if (el.parentNode) el.remove(); }, 3500);
+  }
+
+  function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
+  function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+
+  function updateUnsavedHint() {
+    const changed = !isAdminView && JSON.stringify(scheduleData) !== JSON.stringify(originalSchedule);
+    document.getElementById('unsavedHint').style.display = changed ? 'inline' : 'none';
+  }
+
   async function init() {
     const userStr = sessionStorage.getItem('currentUser');
     if (!userStr) {
-      alert('请先登录班级办事通');
-      window.location.href = 'index.html';
+      toast('请先登录班级办事通', 'warn');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
       return;
     }
     currentUser = JSON.parse(userStr);
 
     if (currentUser.role === 'admin') {
-      // 管理员直接进入统计视图
       isAdminView = true;
       document.getElementById('statsBtn').innerText = '📋 我的课表';
+      document.getElementById('statsLegend').style.display = 'flex';
       await loadAdminStats();
     } else {
-      // 学生直接编辑自己的课表
       scheduleUserId = currentUser.id;
-      document.getElementById('statsBtn').innerText = '📊 统计视图';
+      document.getElementById('statsBtn').style.display = 'none';
       document.getElementById('title').innerText = `${currentUser.real_name} 的课表`;
+      document.getElementById('statsLegend').style.display = 'none';
       await loadMySchedule();
     }
     document.getElementById('scheduleCard').style.display = 'block';
   }
 
-  // ----- 加载我的课表 -----
   async function loadMySchedule() {
-    document.getElementById('statsNotice').innerText = '点击格子切换：红色=有课，白色=无课';
+    showLoading();
+    document.getElementById('statsNotice').innerText = '💡 点击格子切换：红色 = 有课，白色 = 无课';
     isAdminView = false;
+    document.getElementById('saveBtn').style.display = 'inline-block';
+    document.getElementById('statsLegend').style.display = 'none';
+
     const { data, error } = await supabaseClient
       .from('student_schedule')
       .select('*')
       .eq('user_id', scheduleUserId);
-    if (error) { console.error(error); return; }
+    hideLoading();
+    if (error) { toast('加载课表失败：' + error.message, 'error'); return; }
     scheduleData = {};
     (data || []).forEach(s => {
       scheduleData[`${s.day_of_week}_${s.slot_id}`] = s.has_class;
     });
     originalSchedule = { ...scheduleData };
+    updateUnsavedHint();
     renderTable();
   }
 
-  // ----- 管理员统计 -----
   async function loadAdminStats() {
+    showLoading();
     document.getElementById('statsBtn').innerText = '📋 我的课表';
-    document.getElementById('statsNotice').innerText = '显示格式：上课人数 / 总人数（填写课表的人数），点击格子查看空闲同学';
+    document.getElementById('statsNotice').innerText = '📊 显示格式：上课人数 / 总人数，点击格子查看空闲与有课的同学';
     isAdminView = true;
+    document.getElementById('saveBtn').style.display = 'none';
+    document.getElementById('statsLegend').style.display = 'flex';
+    document.getElementById('unsavedHint').style.display = 'none';
 
     const { data: schedules, error: schError } = await supabaseClient
       .from('student_schedule')
       .select('user_id, day_of_week, slot_id, has_class');
-    if (schError) { console.error(schError); return; }
+    if (schError) { hideLoading(); toast('加载统计数据失败', 'error'); return; }
     allSchedules = schedules || [];
 
     const { data: allProfiles, error: profError } = await supabaseClient
       .from('profiles')
       .select('id, student_id');
-    if (profError) { console.error(profError); return; }
+    hideLoading();
+    if (profError) { toast('加载学生列表失败', 'error'); return; }
 
     const validProfiles = (allProfiles || []).filter(p => p.student_id && p.student_id.trim() !== '');
     totalStudents = validProfiles.length;
@@ -130,7 +217,6 @@
     renderTable();
   }
 
-  // ----- 渲染表格 -----
   async function renderTable() {
     const { data: timeSlots } = await supabaseClient
       .from('class_time_slots')
@@ -148,16 +234,17 @@
 
     for (let s = 1; s <= 13; s++) {
       const timeInfo = timeSlots?.find(ts => ts.slot_id === s)?.time_range || '';
-      let rowHtml = `<td style="font-size:13px;">${s}<br><span style="color:#7a8fa0;font-size:11px;">${timeInfo}</span></td>`;
+      let rowHtml = `<td style="font-size:12px;">${s}<br><span style="color:#8899aa;font-size:10px;">${timeInfo}</span></td>`;
       for (let d = 1; d <= 7; d++) {
         const key = `${d}_${s}`;
         if (isAdminView) {
           const busyCount = allSchedules.filter(item => item.day_of_week === d && item.slot_id === s && item.has_class).length;
           const ratio = totalStudents > 0 ? busyCount / totalStudents : 0;
           let bgColor = '#ffffff';
-          if (ratio >= 0.75) bgColor = '#e03a3a';
-          else if (ratio > 0) bgColor = '#f5b342';
-          rowHtml += `<td class="schedule-cell stats-cell" style="background:${bgColor};" data-day="${d}" data-slot="${s}">${busyCount}/${totalStudents}</td>`;
+          let textColor = '#334e68';
+          if (ratio >= 0.75) { bgColor = '#e03a3a'; textColor = '#fff'; }
+          else if (ratio > 0) { bgColor = '#f5b342'; textColor = '#333'; }
+          rowHtml += `<td class="stats-cell" style="background:${bgColor};color:${textColor};padding:8px 4px;border-radius:4px;" data-day="${d}" data-slot="${s}">${busyCount}/${totalStudents}</td>`;
         } else {
           const hasClass = scheduleData[key] || false;
           rowHtml += `<td class="schedule-cell ${hasClass ? 'has-class' : 'free'}" data-day="${d}" data-slot="${s}">${hasClass ? '有课' : ''}</td>`;
@@ -166,7 +253,6 @@
       tbody.innerHTML += `<tr>${rowHtml}</tr>`;
     }
 
-    // 绑定事件
     if (!isAdminView) {
       tbody.querySelectorAll('.schedule-cell').forEach(cell => {
         cell.addEventListener('click', () => {
@@ -183,6 +269,7 @@
             cell.classList.add('free');
             cell.textContent = '';
           }
+          updateUnsavedHint();
         });
       });
     } else {
@@ -196,14 +283,15 @@
     }
   }
 
-  // ----- 查看空闲学生 -----
   async function showFreeStudents(day, slot) {
+    showLoading();
     const busyUserIds = allSchedules
       .filter(item => item.day_of_week === day && item.slot_id === slot && item.has_class)
       .map(item => item.user_id);
     const { data: allProfiles } = await supabaseClient
       .from('profiles')
       .select('id, student_id, real_name');
+    hideLoading();
     if (!allProfiles) return;
 
     const validProfiles = allProfiles.filter(p => p.student_id && p.student_id.trim() !== '');
@@ -216,44 +304,65 @@
       .eq('slot_id', slot)
       .single();
 
-    let message = `周${DAYS[day-1]} 第${slot}节 (${timeSlot?.time_range})\n\n`;
-    message += `✅ 空闲 (${free.length}人)：\n${free.map(p => `${p.student_id} ${p.real_name}`).join('\n')}\n\n`;
-    message += `❌ 有课 (${busy.length}人)：\n${busy.map(p => `${p.student_id} ${p.real_name}`).join('\n')}`;
-    alert(message);
+    document.getElementById('freeModalTitle').innerText =
+      `周${DAYS[day-1]} 第${slot}节 (${timeSlot?.time_range || ''})`;
+    document.getElementById('freeModalBody').innerHTML = `
+      <div class="student-group free">
+        <h4>✅ 空闲 (${free.length}人)</h4>
+        ${free.length ? free.map(p => `<span class="student-tag">${p.student_id} ${p.real_name}</span>`).join('') : '<span class="empty-hint">无</span>'}
+      </div>
+      <div class="student-group busy">
+        <h4>❌ 有课 (${busy.length}人)</h4>
+        ${busy.length ? busy.map(p => `<span class="student-tag">${p.student_id} ${p.real_name}</span>`).join('') : '<span class="empty-hint">无</span>'}
+      </div>
+    `;
+    document.getElementById('freeModal').classList.add('active');
   }
 
-  // ----- 保存课表 -----
+  window.closeFreeModal = () => document.getElementById('freeModal').classList.remove('active');
+  document.getElementById('freeModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeFreeModal();
+  });
+
   document.getElementById('saveBtn').addEventListener('click', async () => {
     if (isAdminView || !scheduleUserId) return;
-    const rows = Object.entries(scheduleData).map(([key, value]) => {
-      const [day, slot] = key.split('_').map(Number);
-      return { user_id: scheduleUserId, day_of_week: day, slot_id: slot, has_class: value };
-    });
-    const { error } = await supabaseClient
-      .from('student_schedule')
-      .upsert(rows, { onConflict: 'user_id, day_of_week, slot_id' });
-    if (error) alert('保存失败：' + error.message);
+    showLoading();
+    // 先删除该用户所有旧课表记录，再插入有课的格子
+    const delRes = await supabaseClient.from('student_schedule').delete().eq('user_id', scheduleUserId);
+    if (delRes.error) { hideLoading(); toast('保存失败：' + delRes.error.message, 'error'); return; }
+    const rows = Object.entries(scheduleData)
+      .filter(([, hasClass]) => hasClass)
+      .map(([key]) => {
+        const [day, slot] = key.split('_').map(Number);
+        return { user_id: scheduleUserId, day_of_week: day, slot_id: slot, has_class: true };
+      });
+    let error = null;
+    if (rows.length > 0) {
+      const res = await supabaseClient.from('student_schedule').insert(rows);
+      error = res.error;
+    }
+    hideLoading();
+    if (error) { toast('保存失败：' + error.message, 'error'); }
     else {
       originalSchedule = { ...scheduleData };
-      alert('课表已保存！');
+      updateUnsavedHint();
+      toast('课表已保存！');
     }
   });
 
-  // ----- 切换视图（仅管理员） -----
   document.getElementById('statsBtn').addEventListener('click', async () => {
     if (currentUser.role !== 'admin') return;
     if (isAdminView) {
       scheduleUserId = currentUser.id;
       document.getElementById('title').innerText = `${currentUser.real_name} 的课表`;
-      await loadMySchedule();
       document.getElementById('statsBtn').innerText = '📊 统计视图';
+      await loadMySchedule();
     } else {
       await loadAdminStats();
       document.getElementById('statsBtn').innerText = '📋 我的课表';
     }
   });
 
-  // ----- 返回主页面 -----
   function goBack() {
     if (!isAdminView && JSON.stringify(scheduleData) !== JSON.stringify(originalSchedule)) {
       if (!confirm('你还有未保存的修改，确定退出吗？')) return;
