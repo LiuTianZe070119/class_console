@@ -182,10 +182,14 @@
       return new Date(b.created_at) - new Date(a.created_at);
     });
     dropdown.innerHTML = notifs.length ? notifs.map(function(n) {
-      var icon = n.type === 'reply' ? '💬' : n.type === 'closed' ? '✅' : n.type === 'reassign' ? '🔄' : '🔔';
-      var label = n.type === 'reply' ? '有新回复' : n.type === 'closed' ? '已完结' : '已重分配';
-      return '<div class="notification-item ' + (n.read ? '' : 'unread') + '" data-id="' + n.id + '">' +
-        icon + ' ' + n.opinion_title + ' - ' + label +
+      var icon = '🔔', label = '', detail = '';
+      if (n.type === 'reply') { icon = '💬'; label = '有新回复'; detail = n.opinion_title; }
+      else if (n.type === 'closed') { icon = '✅'; label = '已完结'; detail = n.opinion_title; }
+      else if (n.type === 'reassign') { icon = '🔄'; label = '已重分配'; detail = n.opinion_title; }
+      else if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
+      var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '';
+      return '<div class="notification-item ' + (n.read ? '' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '">' +
+        icon + ' ' + escapeHtml(detail) + ' - ' + label + reasonHtml +
       '</div>';
     }).join('') : '<div style="padding:16px;text-align:center;color:#9e9e9e;">暂无通知</div>';
     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
@@ -196,7 +200,11 @@
         if (idx !== -1) notifs[idx].read = true;
         saveNotifs(notifs);
         updateNotifBadge();
-        window.location.href = 'opinions.html';
+        if (item.dataset.type === 'treehole_delete') {
+          window.location.href = 'treehole.html';
+        } else {
+          window.location.href = 'opinions.html';
+        }
         dropdown.style.display = 'none';
       });
     });
@@ -234,6 +242,12 @@
     sessionStorage.clear();
     window.location.href = 'index.html';
   });
+
+  function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
 
   init();
 </script>
