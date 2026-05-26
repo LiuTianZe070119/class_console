@@ -64,11 +64,16 @@
 
     .notification-bell { position: relative; cursor: pointer; font-size: 24px; padding: 4px 8px; border-radius: 12px; transition: background 0.2s; }
     .notification-bell:hover { background: #f0ebe0; }
-    .notification-badge { position: absolute; top: -2px; right: 0px; background: #c62828; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+    .notification-dot { position: absolute; top: 0px; right: -2px; width: 10px; height: 10px; background: #c62828; border-radius: 50%; animation: blink 1s infinite; }
     .notification-dropdown { position: fixed; top: 60px; right: 20px; background: white; width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 36px rgba(0,0,0,0.15); border-radius: 20px; padding: 12px; display: none; z-index: 200; }
     .notification-item { padding: 10px 14px; border-bottom: 1px solid #f0ebe0; font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; }
     .notification-item:hover { background: #f5f0e8; }
     .notification-item.unread { background: #f0ebe0; font-weight: 500; }
+    .notification-item.read { color: #8b7355; }
+    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid #f0ebe0; margin-top: 8px; }
+    .notif-footer button { background: none; border: none; color: #4a3728; cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
+    .notif-footer button:hover { background: #f0ebe0; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
     .delete-reason-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; }
     .delete-reason-modal.active { display: flex; }
@@ -134,7 +139,7 @@
 <div class="navbar">
   <div class="logo">🌲 树洞</div>
   <div class="user-info">
-    <div class="notification-bell" id="notificationBell">🔔<span class="notification-badge" id="unreadCount" style="display:none;">0</span></div>
+    <div class="notification-bell" id="notificationBell">🔔<span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <span class="badge" id="userDisplay"></span>
     <button class="btn-outline btn" onclick="window.location.href='main.html'">← 返回控制台</button>
   </div>
@@ -213,7 +218,7 @@
   var STORAGE_NOTIF = 'classroom_notifications';
   function getNotifs() { return JSON.parse(localStorage.getItem(STORAGE_NOTIF) || '[]'); }
   function saveNotifs(arr) { localStorage.setItem(STORAGE_NOTIF, JSON.stringify(arr)); }
-  function addNotification(userId, type, content, reason) {
+  function addNotification(userId, type, content, reason, postId) {
     if (!userId || userId === currentUser.id) return;
     var notifs = getNotifs();
     notifs.push({
@@ -222,17 +227,16 @@
       type: type,
       content: content,
       reason: reason || '',
+	      post_id: postId || '',
       read: false,
       created_at: new Date().toISOString()
     });
     saveNotifs(notifs);
-    updateNotifBadge();
+    updateNotifDot();
   }
-  function updateNotifBadge() {
+  function updateNotifDot() {
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
-    var badge = document.getElementById('unreadCount');
-    badge.style.display = notifs.length ? 'flex' : 'none';
-    badge.textContent = notifs.length;
+    document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
   }
 
   function toast(msg, type) {
@@ -274,6 +278,8 @@
     currentUser = JSON.parse(userStr);
     document.getElementById('userDisplay').innerText =
       currentUser.real_name + ' (' + currentUser.student_id + ')';
+
+    updateNotifDot();
 
     // 字数统计
     document.getElementById('postContent').addEventListener('input', function() {
@@ -454,11 +460,10 @@
       : replies.map(function(r, i) {
           var canDeleteReply = currentUser.id === r.user_id || currentUser.role === 'admin';
           return '<div class="reply-bubble ' + (i % 2 === 0 ? 'odd' : 'even') + '">' +
-            '<div class="reply-author">' + getAnonName(r.user_id) +
-              (canDeleteReply ? '<button class="delete-reply-btn" data-reply-id="' + r.id + '" title="删除回复">×</button>' : '') +
-            '</div>' +
             '<div class="reply-text">' + escapeHtml(r.content) + '</div>' +
-            '<div class="reply-time">' + formatTime(r.created_at) + '</div>' +
+            '<div class="reply-time">' + formatTime(r.created_at) +
+              (canDeleteReply ? ' <button class="delete-reply-btn" data-reply-id="' + r.id + '" title="删除回复">×</button>' : '') +
+            '</div>' +
           '</div>';
         }).join('');
 
@@ -548,6 +553,10 @@
       content: content
     });
     if (res.error) { toast('回复失败：' + res.error.message, 'error'); return; }
+	    var post = postsData.find(function(p) { return p.id === currentPostId; });
+	    if (post && post.author_id !== currentUser.id) {
+	      addNotification(post.author_id, 'treehole_reply', post.content, '', post.id);
+	    }
     openDetail(currentPostId);
     loadPosts();
   });
@@ -576,32 +585,81 @@
   }
 
   // ---- 通知铃铛 ----
-  document.getElementById('notificationBell').addEventListener('click', function(e) {
-    e.stopPropagation();
+  function renderNotifDropdown(showAll) {
     var dropdown = document.getElementById('notificationDropdown');
-    var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
+    var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
       return new Date(b.created_at) - new Date(a.created_at);
     });
-    dropdown.innerHTML = notifs.length ? notifs.map(function(n) {
-      var icon = '🔔';
-      var label = '';
-      if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被管理员删除'; }
-      return '<div class="notification-item ' + (n.read ? '' : 'unread') + '" data-id="' + n.id + '">' +
-        icon + ' ' + label + (n.content ? '<br><span style="font-size:12px;color:#888;">内容：' + escapeHtml(n.content.substring(0, 40) + (n.content.length > 40 ? '...' : '')) + '</span>' : '') +
-        (n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '') +
-      '</div>';
-    }).join('') : '<div style="padding:16px;text-align:center;color:#9e9e9e;">暂无通知</div>';
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    var unreadNotifs = allNotifs.filter(function(n) { return !n.read; });
+    var readNotifs = allNotifs.filter(function(n) { return n.read; });
+    var displayNotifs = showAll ? allNotifs : unreadNotifs;
+
+    var html = '';
+    if (displayNotifs.length === 0) {
+      html = '<div style="padding:16px;text-align:center;color:#9e9e9e;">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
+    } else {
+	      html = displayNotifs.map(function(n) {
+	        var icon = '🔔';
+	        var label = '';
+	        if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被管理员删除'; }
+	        else if (n.type === 'treehole_reply') { icon = '💬'; label = '便利贴有新回复'; }
+	        var timeHtml = '<br><span style="font-size:11px;color:#aaa;">' + formatTime(n.created_at) + '</span>';
+	        return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-post-id="' + (n.post_id || '') + '">' +
+	          icon + ' ' + label + (n.content ? '<br><span style="font-size:12px;color:#888;">内容：' + escapeHtml(n.content.substring(0, 40) + (n.content.length > 40 ? '...' : '')) + '</span>' : '') +
+	          (n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '') +
+	          timeHtml +
+	        '</div>';
+	      }).join('');
+    }
+
+    if (displayNotifs.length > 0) {
+      html += '<div style="text-align:center;font-size:11px;color:#aaa;padding:6px 0 2px;">💡 点击消息即可标为已读</div>';
+    }
+    if (!showAll && readNotifs.length > 0) {
+      html += '<div class="notif-footer"><button id="showAllNotifsBtn">📋 查看全部消息 →</button></div>';
+    } else if (showAll) {
+      html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
+    }
+
+    dropdown.innerHTML = html;
+
     dropdown.querySelectorAll('.notification-item').forEach(function(item) {
       item.addEventListener('click', function() {
         var notifs = getNotifs();
         var idx = notifs.findIndex(function(n) { return n.id === item.dataset.id; });
-        if (idx !== -1) notifs[idx].read = true;
-        saveNotifs(notifs);
-        updateNotifBadge();
+        if (idx !== -1) { notifs[idx].read = true; saveNotifs(notifs); }
+        updateNotifDot();
         dropdown.style.display = 'none';
+        var postId = item.dataset.postId;
+        if (postId) { openDetail(postId); }
       });
     });
+
+    var showAllBtn = document.getElementById('showAllNotifsBtn');
+    if (showAllBtn) {
+      showAllBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        renderNotifDropdown(true);
+      });
+    }
+    var showUnreadBtn = document.getElementById('showUnreadBtn');
+    if (showUnreadBtn) {
+      showUnreadBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        renderNotifDropdown(false);
+      });
+    }
+  }
+
+  document.getElementById('notificationBell').addEventListener('click', function(e) {
+    e.stopPropagation();
+    var dropdown = document.getElementById('notificationDropdown');
+    if (dropdown.style.display === 'block') {
+      dropdown.style.display = 'none';
+    } else {
+      renderNotifDropdown(false);
+      dropdown.style.display = 'block';
+    }
   });
   document.addEventListener('click', function() {
     document.getElementById('notificationDropdown').style.display = 'none';

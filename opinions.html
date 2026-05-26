@@ -61,11 +61,16 @@
 
     .notification-bell { position: relative; cursor: pointer; font-size: 24px; margin-right: 8px; padding: 4px; border-radius: 12px; transition: background 0.2s; }
     .notification-bell:hover { background: #f0f3f8; }
-    .notification-badge { position: absolute; top: -4px; right: -6px; background: #e03a3a; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+    .notification-dot { position: absolute; top: 0px; right: -2px; width: 10px; height: 10px; background: #e03a3a; border-radius: 50%; animation: blink 1s infinite; }
     .notification-dropdown { position: absolute; top: 55px; right: 20px; background: white; width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 36px rgba(0,0,0,0.15); border-radius: 20px; padding: 12px; display: none; z-index: 100; }
     .notification-item { padding: 10px 14px; border-bottom: 1px solid #f0f3f8; font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; }
     .notification-item:hover { background: #f5f9ff; }
     .notification-item.unread { background: #eef3ff; font-weight: 500; }
+    .notification-item.read { color: #8899aa; }
+    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid #f0f3f8; margin-top: 8px; }
+    .notif-footer button { background: none; border: none; color: #1e3a5f; cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
+    .notif-footer button:hover { background: #eef3fa; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
     .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
@@ -123,7 +128,7 @@
 <div class="navbar">
   <div class="logo">📋 意见箱</div>
   <div class="user-info">
-    <div class="notification-bell" id="notificationBell">🔔<span class="notification-badge" id="unreadCount" style="display:none;">0</span></div>
+    <div class="notification-bell" id="notificationBell">🔔<span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <span class="badge" id="userDisplay"></span>
     <button class="btn-outline btn" onclick="window.location.href='main.html'">← 返回控制台</button>
   </div>
@@ -266,7 +271,7 @@
       created_at: new Date().toISOString()
     });
     saveNotifs(notifs);
-    updateNotifBadge();
+    updateNotifDot();
   }
 
   async function init() {
@@ -275,7 +280,7 @@
     currentUser = JSON.parse(userStr);
     document.getElementById('userDisplay').innerText =
       currentUser.real_name + ' (' + currentUser.student_id + ') ' + (currentUser.role === 'admin' ? '管理员' : '同学');
-    updateNotifBadge();
+    updateNotifDot();
     await loadOpinions();
     await updateDashboard();
   }
@@ -492,6 +497,8 @@
 
   document.getElementById('startProcessBtn').addEventListener('click', async function() {
     await supabaseClient.from('opinions').update({ status: 'in_progress' }).eq('id', currentOpinionId);
+    var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
+    if (op) addNotification(op.author_id, 'in_progress', currentOpinionId, op.title);
     loadOpinions(); closeModal(); updateDashboard();
     toast('已标记为处理中');
   });
@@ -633,38 +640,57 @@
   }
 
   // 通知
-  function updateNotifBadge() {
+  function updateNotifDot() {
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
-    var badge = document.getElementById('unreadCount');
-    badge.style.display = notifs.length ? 'flex' : 'none';
-    badge.textContent = notifs.length;
+    document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
   }
-  document.getElementById('notificationBell').addEventListener('click', function(e) {
-    e.stopPropagation();
+  function renderNotifDropdown(showAll) {
     var dropdown = document.getElementById('notificationDropdown');
-    var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
+    var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
       return new Date(b.created_at) - new Date(a.created_at);
     });
-    dropdown.innerHTML = notifs.length ? notifs.map(function(n) {
-      var icon = '🔔', label = '', detail = '', opinionId = n.opinion_id || '';
-      if (n.type === 'reply') { icon = '💬'; label = '有新回复'; detail = n.opinion_title; }
-      else if (n.type === 'closed') { icon = '✅'; label = '已完结'; detail = n.opinion_title; }
-      else if (n.type === 'reassign') { icon = '🔄'; label = '已重分配'; detail = n.opinion_title; }
-      else if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
-      var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '';
-      return '<div class="notification-item ' + (n.read ? '' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '" data-opinion="' + opinionId + '">' +
-        icon + ' ' + escapeHtml(detail) + ' - ' + label + reasonHtml +
-      '</div>';
-    }).join('') : '<div style="padding:16px;text-align:center;color:#9e9e9e;">暂无通知</div>';
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    var unreadNotifs = allNotifs.filter(function(n) { return !n.read; });
+    var readNotifs = allNotifs.filter(function(n) { return n.read; });
+    var displayNotifs = showAll ? allNotifs : unreadNotifs;
+
+    var html = '';
+    if (displayNotifs.length === 0) {
+      html = '<div style="padding:16px;text-align:center;color:#9e9e9e;">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
+    } else {
+      html = displayNotifs.map(function(n) {
+        var icon = '🔔', label = '', detail = '', opinionId = n.opinion_id || '', postId = n.post_id || '';
+        if (n.type === 'reply') { icon = '💬'; label = '有新回复'; detail = n.opinion_title; }
+        else if (n.type === 'closed') { icon = '✅'; label = '已完结'; detail = n.opinion_title; }
+        else if (n.type === 'reassign') { icon = '🔄'; label = '已重分配'; detail = n.opinion_title; }
+        else if (n.type === 'in_progress') { icon = '⏳'; label = '问题开始处理'; detail = n.opinion_title; }
+        else if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
+        else if (n.type === 'treehole_reply') { icon = '💬'; label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
+        var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '';
+        var timeHtml = '<br><span style="font-size:11px;color:#aaa;">' + new Date(n.created_at).toLocaleString() + '</span>';
+        return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '" data-opinion="' + opinionId + '" data-post-id="' + postId + '">' +
+          icon + ' ' + escapeHtml(detail) + ' - ' + label + reasonHtml + timeHtml +
+        '</div>';
+      }).join('');
+    }
+
+    if (displayNotifs.length > 0) {
+      html += '<div style="text-align:center;font-size:11px;color:#aaa;padding:6px 0 2px;">💡 点击消息即可标为已读</div>';
+    }
+    if (!showAll && readNotifs.length > 0) {
+      html += '<div class="notif-footer"><button id="showAllNotifsBtn">📋 查看全部消息 →</button></div>';
+    } else if (showAll) {
+      html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
+    }
+
+    dropdown.innerHTML = html;
+
     dropdown.querySelectorAll('.notification-item').forEach(function(item) {
       item.addEventListener('click', function() {
         var notifs = getNotifs();
         var idx = notifs.findIndex(function(n) { return n.id === item.dataset.id; });
-        if (idx !== -1) notifs[idx].read = true;
-        saveNotifs(notifs);
-        updateNotifBadge();
-        if (item.dataset.type === 'treehole_delete') {
+        if (idx !== -1) { notifs[idx].read = true; saveNotifs(notifs); }
+        updateNotifDot();
+        if (item.dataset.type === 'treehole_delete' || item.dataset.type === 'treehole_reply') {
           window.location.href = 'treehole.html';
         } else if (item.dataset.opinion) {
           openDetail(item.dataset.opinion);
@@ -672,6 +698,32 @@
         dropdown.style.display = 'none';
       });
     });
+
+    var showAllBtn = document.getElementById('showAllNotifsBtn');
+    if (showAllBtn) {
+      showAllBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        renderNotifDropdown(true);
+      });
+    }
+    var showUnreadBtn = document.getElementById('showUnreadBtn');
+    if (showUnreadBtn) {
+      showUnreadBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        renderNotifDropdown(false);
+      });
+    }
+  }
+
+  document.getElementById('notificationBell').addEventListener('click', function(e) {
+    e.stopPropagation();
+    var dropdown = document.getElementById('notificationDropdown');
+    if (dropdown.style.display === 'block') {
+      dropdown.style.display = 'none';
+    } else {
+      renderNotifDropdown(false);
+      dropdown.style.display = 'block';
+    }
   });
   document.addEventListener('click', function() {
     document.getElementById('notificationDropdown').style.display = 'none';
