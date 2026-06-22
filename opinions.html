@@ -5,108 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班级办事通 · 意见箱</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
-    body { background: #f0f4fa; min-height: 100vh; }
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
 
-    .navbar { background: white; padding: 12px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px; }
-    .logo { font-size: 22px; font-weight: 650; color: #1e3a5f; white-space: nowrap; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+    body { background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 40%, #F2E0D0 100%); min-height: 100vh; }
+
+    h1, h2, h3, .btn, .btn-outline, .badge, .sort-btn, .logo { font-family: 'Noto Serif SC', serif; }
+
+    .navbar { background: rgba(255,255,255,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 24px; box-shadow: 0 4px 24px rgba(61,35,20,0.05); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.4); }
+    .logo { font-size: 22px; font-weight: 600; color: #3D2314; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .logo svg { color: #C67B5C; }
     .user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .badge { background: #eef3fa; padding: 6px 16px; border-radius: 30px; font-size: 14px; color: #1e3a5f; font-weight: 500; }
+    .badge { background: rgba(198,123,92,0.10); padding: 6px 16px; border-radius: 30px; font-size: 14px; color: #8B7355; font-weight: 500; }
 
-    .btn { background: #1e3a5f; color: white; border: none; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.2s; white-space: nowrap; }
-    .btn:hover { background: #2a4d7a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30,58,95,0.25); }
+    .btn { background: linear-gradient(135deg, #C67B5C, #B5651D); color: white; border: none; padding: 10px 22px; border-radius: 24px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.25s; white-space: nowrap; box-shadow: 0 4px 14px rgba(181,101,29,0.18); display: inline-flex; align-items: center; gap: 5px; }
+    .btn:hover { background: linear-gradient(135deg, #D4946A, #C67B5C); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(181,101,29,0.28); }
     .btn:active { transform: translateY(0); }
-    .btn-outline { background: transparent; border: 1.5px solid #1e3a5f; color: #1e3a5f; }
-    .btn-outline:hover { background: #eef3fa; transform: translateY(-1px); }
+    .btn-outline { background: transparent; border: 1.5px solid #C67B5C; color: #C67B5C; box-shadow: none; }
+    .btn-outline:hover { background: rgba(198,123,92,0.06); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .logo span, .btn span, .sort-btn span { display: inline-flex; align-items: center; }
 
     .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
 
     .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 20px; padding: 22px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); text-align: center; transition: transform 0.2s; }
+    .stat-card { background: rgba(255,255,255,0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 22px; box-shadow: 0 4px 24px rgba(61,35,20,0.05); text-align: center; transition: transform 0.2s; border: 1px solid rgba(255,255,255,0.4); }
     .stat-card:hover { transform: translateY(-2px); }
-    .stat-value { font-size: 2em; font-weight: 700; color: #1e3a5f; }
-    .stat-label { font-size: 14px; color: #5d7997; margin-top: 4px; }
+    .stat-value { font-size: 2em; font-weight: 700; color: #C67B5C; }
+    .stat-label { font-size: 14px; color: #8B7355; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-    .post-box { background: white; border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
-    .input-field, textarea, select { width: 100%; padding: 12px 16px; border: 1.5px solid #dde5ed; border-radius: 16px; margin-bottom: 14px; font-size: 15px; outline: none; transition: border-color 0.2s; background: #fafbfc; }
-    .input-field:focus, textarea:focus, select:focus { border-color: #2e5a9c; box-shadow: 0 0 0 3px rgba(46,90,156,0.1); background: white; }
+    .post-box { background: rgba(255,255,255,0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 24px rgba(61,35,20,0.05); border: 1px solid rgba(255,255,255,0.4); }
+    .input-field, textarea, select { width: 100%; padding: 12px 16px; border: 1.5px solid #E0D0C0; border-radius: 16px; margin-bottom: 14px; font-size: 15px; outline: none; transition: all 0.2s; background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #3D2314; }
+    .input-field:focus, textarea:focus, select:focus { border-color: #C67B5C; box-shadow: 0 0 0 3px rgba(198,123,92,0.1); background: rgba(255,255,255,0.75); }
+    .input-field::placeholder, textarea::placeholder { color: #B8A090; }
 
     .sort-bar { display: flex; gap: 12px; margin-bottom: 20px; }
-    .sort-btn { background: white; border: 1.5px solid #cfdde9; padding: 8px 24px; border-radius: 30px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-    .sort-btn:hover { border-color: #1e3a5f; }
-    .sort-btn.active { background: #1e3a5f; color: white; border-color: #1e3a5f; }
+    .sort-btn { background: rgba(255,255,255,0.5); border: 1.5px solid #E0D0C0; padding: 8px 24px; border-radius: 24px; cursor: pointer; font-weight: 500; transition: all 0.2s; color: #8B7355; display: inline-flex; align-items: center; gap: 5px; }
+    .sort-btn:hover { border-color: #C67B5C; color: #3D2314; }
+    .sort-btn.active { background: linear-gradient(135deg, #C67B5C, #B5651D); color: white; border-color: #C67B5C; }
 
-    .opinion-card { background: white; border-radius: 20px; padding: 22px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid #eef2f7; transition: box-shadow 0.2s; }
-    .opinion-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .opinion-card { background: rgba(255,255,255,0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 20px; padding: 22px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(61,35,20,0.04); border: 1px solid rgba(255,255,255,0.4); transition: box-shadow 0.2s; }
+    .opinion-card:hover { box-shadow: 0 8px 24px rgba(61,35,20,0.08); }
     .card-header { display: flex; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-    .target-tag { background: #e1eaf1; padding: 4px 14px; border-radius: 30px; font-size: 13px; color: #1e3a5f; font-weight: 500; }
+    .target-tag { background: rgba(198,123,92,0.08); padding: 4px 14px; border-radius: 30px; font-size: 13px; color: #C67B5C; font-weight: 500; }
     .actions { display: flex; gap: 16px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
-    .like-btn { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #5d7997; padding: 4px 12px; border-radius: 20px; transition: all 0.2s; user-select: none; }
-    .like-btn:hover { color: #e03a3a; background: #fff0f0; }
-    .like-btn.liked { color: #e03a3a; }
+    .like-btn { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #8B7355; padding: 4px 12px; border-radius: 20px; transition: all 0.2s; user-select: none; }
+    .like-btn:hover { color: #C7564A; background: rgba(199,86,74,0.06); }
+    .like-btn.liked { color: #C7564A; }
 
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(61,35,20,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .modal-content { background: white; width: 92%; max-width: 620px; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-    .reply-item { background: #f5f9ff; padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; }
-    .close-icon { float: right; font-size: 26px; cursor: pointer; color: #7a8fa0; line-height: 1; transition: color 0.2s; }
-    .close-icon:hover { color: #1e3a5f; }
+    .modal-content { background: rgba(255,255,255,0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 92%; max-width: 620px; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px rgba(61,35,20,0.15); border: 1px solid rgba(255,255,255,0.5); }
+    .reply-item { background: rgba(198,123,92,0.04); padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; color: #3D2314; }
+    .close-icon { float: right; cursor: pointer; color: #8B7355; line-height: 1; transition: color 0.2s; }
+    .close-icon:hover { color: #3D2314; }
+    .close-icon svg { width: 24px; height: 24px; }
 
     .star-rating { display: flex; gap: 6px; align-items: center; margin: 8px 0; }
-    .star { font-size: 30px; cursor: pointer; color: #dde; transition: color 0.15s, transform 0.15s; }
-    .star:hover { transform: scale(1.15); }
-    .star.active { color: #f5b342; }
-    .rating-text { font-weight: 600; margin-left: 8px; }
+    .star-svg { width: 30px; height: 30px; cursor: pointer; color: #DDD4C8; transition: color 0.15s, transform 0.15s; }
+    .star-svg:hover { transform: scale(1.15); }
+    .star-svg.active { color: #E8913A; fill: #E8913A; }
 
-    .notification-bell { position: relative; cursor: pointer; font-size: 24px; margin-right: 8px; padding: 4px; border-radius: 12px; transition: background 0.2s; }
-    .notification-bell:hover { background: #f0f3f8; }
-    .notification-dot { position: absolute; top: 0px; right: -2px; width: 10px; height: 10px; background: #e03a3a; border-radius: 50%; animation: blink 1s infinite; }
-    .notification-dropdown { position: absolute; top: 55px; right: 20px; background: white; width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 36px rgba(0,0,0,0.15); border-radius: 20px; padding: 12px; display: none; z-index: 100; }
-    .notification-item { padding: 10px 14px; border-bottom: 1px solid #f0f3f8; font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; }
-    .notification-item:hover { background: #f5f9ff; }
-    .notification-item.unread { background: #eef3ff; font-weight: 500; }
-    .notification-item.read { color: #8899aa; }
-    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid #f0f3f8; margin-top: 8px; }
-    .notif-footer button { background: none; border: none; color: #1e3a5f; cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
-    .notif-footer button:hover { background: #eef3fa; }
+    .notification-bell { position: relative; cursor: pointer; margin-right: 8px; padding: 4px; border-radius: 12px; transition: background 0.2s; }
+    .notification-bell svg { width: 26px; height: 26px; color: #8B7355; }
+    .notification-bell:hover { background: rgba(198,123,92,0.08); }
+    .notification-dot { position: absolute; top: 0px; right: -2px; width: 10px; height: 10px; background: #C7564A; border-radius: 50%; animation: blink 1s infinite; }
+    .notification-dropdown { position: absolute; top: 55px; right: 20px; background: rgba(255,255,255,0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 40px rgba(61,35,20,0.12); border-radius: 20px; padding: 12px; display: none; z-index: 100; border: 1px solid rgba(255,255,255,0.5); }
+    .notification-item { padding: 10px 14px; border-bottom: 1px solid rgba(139,115,85,0.08); font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; color: #3D2314; }
+    .notification-item:hover { background: rgba(198,123,92,0.05); }
+    .notification-item.unread { background: rgba(198,123,92,0.06); font-weight: 500; }
+    .notification-item.read { color: #8B7355; }
+    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid rgba(139,115,85,0.08); margin-top: 8px; }
+    .notif-footer button { background: none; border: none; color: #C67B5C; cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
+    .notif-footer button:hover { background: rgba(198,123,92,0.06); }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
-    .toast.success { background: #2e7d32; }
-    .toast.error { background: #c62828; }
-    .toast.warn { background: #e65100; }
+    .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .toast.success { background: rgba(93,155,111,0.92); }
+    .toast.error { background: rgba(199,86,74,0.92); }
+    .toast.warn { background: rgba(232,145,58,0.92); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #cfdde9; border-top-color: #1e3a5f; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #E8D8C8; border-top-color: #C67B5C; border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.5); z-index: 999; align-items: center; justify-content: center; }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(253,246,240,0.6); z-index: 999; align-items: center; justify-content: center; }
     .loading-overlay.active { display: flex; }
 
-    .rating-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+    .rating-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(61,35,20,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 2000; }
     .rating-popup.active { display: flex; }
-    .rating-popup-content { background: white; width: 92%; max-width: 500px; border-radius: 28px; padding: 32px 28px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: popIn 0.3s ease; }
+    .rating-popup-content { background: rgba(255,255,255,0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 92%; max-width: 500px; border-radius: 28px; padding: 32px 28px; text-align: center; box-shadow: 0 24px 60px rgba(61,35,20,0.2); animation: popIn 0.3s ease; border: 1px solid rgba(255,255,255,0.5); }
     @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .rating-popup-content .final-reply-box { background: #f0f6ff; border-left: 4px solid #2e5a9c; padding: 16px 20px; border-radius: 14px; margin: 16px 0; text-align: left; color: #334e68; font-size: 15px; line-height: 1.6; max-height: 180px; overflow-y: auto; }
+    .rating-popup-content .final-reply-box { background: rgba(198,123,92,0.06); border-left: 4px solid #C67B5C; padding: 16px 20px; border-radius: 14px; margin: 16px 0; text-align: left; color: #3D2314; font-size: 15px; line-height: 1.6; max-height: 180px; overflow-y: auto; }
     .rating-popup-content .star-rating-popup { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
-    .rating-popup-content .star-popup { font-size: 44px; cursor: pointer; color: #dde; transition: color 0.15s, transform 0.15s; }
+    .rating-popup-content .star-popup { width: 44px; height: 44px; cursor: pointer; color: #DDD4C8; transition: color 0.15s, transform 0.15s; }
     .rating-popup-content .star-popup:hover { transform: scale(1.2); }
-    .rating-popup-content .star-popup.active { color: #f5b342; }
-    .rating-popup-content .btn-submit { background: #1e3a5f; color: white; border: none; padding: 14px 48px; border-radius: 30px; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
-    .rating-popup-content .btn-submit:hover { background: #2a4d7a; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,58,95,0.3); }
-    .rating-popup-content .btn-skip { background: none; border: none; color: #8899aa; cursor: pointer; margin-top: 12px; font-size: 14px; text-decoration: underline; }
+    .rating-popup-content .star-popup.active { color: #E8913A; fill: #E8913A; }
+    .rating-popup-content .btn-submit { background: linear-gradient(135deg, #C67B5C, #B5651D); color: white; border: none; padding: 14px 48px; border-radius: 24px; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: all 0.2s; box-shadow: 0 4px 16px rgba(181,101,29,0.2); }
+    .rating-popup-content .btn-submit:hover { background: linear-gradient(135deg, #D4946A, #C67B5C); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(181,101,29,0.3); }
+    .rating-popup-content .btn-skip { background: none; border: none; color: #8B7355; cursor: pointer; margin-top: 12px; font-size: 14px; text-decoration: underline; }
 
     .stepper { display: flex; align-items: center; justify-content: center; margin: 18px 0 6px; padding: 0 8px; }
     .step-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 auto; }
-    .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: #e8edf3; color: #8899aa; transition: all 0.35s; position: relative; }
-    .step-dot.done { background: #2e7d32; color: white; }
-    .step-dot.current { background: #1e3a5f; color: white; box-shadow: 0 0 0 6px rgba(30,58,95,0.12); }
-    .step-line { flex: 1; height: 3px; background: #e8edf3; margin: 0 2px 20px; border-radius: 2px; transition: background 0.35s; min-width: 16px; }
-    .step-line.done { background: #2e7d32; }
-    .step-caption { font-size: 11px; color: #8899aa; margin-top: 5px; white-space: nowrap; transition: color 0.3s; font-weight: 500; }
-    .step-caption.done { color: #2e7d32; }
-    .step-caption.current { color: #1e3a5f; font-weight: 650; }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: #EDE0D4; color: #8B7355; transition: all 0.35s; position: relative; }
+    .step-dot.done { background: #5D9B6F; color: white; }
+    .step-dot.current { background: #C67B5C; color: white; box-shadow: 0 0 0 6px rgba(198,123,92,0.12); }
+    .step-line { flex: 1; height: 3px; background: #EDE0D4; margin: 0 2px 20px; border-radius: 2px; transition: background 0.35s; min-width: 16px; }
+    .step-line.done { background: #5D9B6F; }
+    .step-caption { font-size: 11px; color: #8B7355; margin-top: 5px; white-space: nowrap; transition: color 0.3s; font-weight: 500; }
+    .step-caption.done { color: #5D9B6F; }
+    .step-caption.current { color: #C67B5C; font-weight: 650; }
 
     @media (max-width: 640px) {
       .navbar { padding: 10px 16px; }
@@ -126,11 +134,11 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="navbar">
-  <div class="logo">📋 意见箱</div>
+  <div class="logo"><span id="logoIcon"></span> 意见箱</div>
   <div class="user-info">
-    <div class="notification-bell" id="notificationBell">🔔<span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
+    <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <span class="badge" id="userDisplay"></span>
-    <button class="btn-outline btn" onclick="window.location.href='main.html'">← 返回办事通</button>
+    <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backIcon"></span> 返回办事通</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -139,7 +147,7 @@
   <div class="dashboard" id="dashboard"></div>
 
   <div class="post-box">
-    <h3 style="margin-bottom:16px; color:#1e3a5f;">📝 提出意见或问题</h3>
+    <h3 style="margin-bottom:16px; color:#3D2314; display:flex; align-items:center; gap:8px;"><span id="editIconH3"></span> 提出意见或问题</h3>
     <input type="text" id="titleInput" class="input-field" placeholder="意见标题（必填）">
     <textarea id="contentInput" rows="3" placeholder="详细描述你的意见或问题..."></textarea>
     <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
@@ -150,7 +158,7 @@
         <option value="生活委员">生活委员</option>
         <option value="班主任">班主任</option>
       </select>
-      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;">
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; color:#3D2314;">
         <input type="checkbox" id="anonymousCheck"> 匿名发布
       </label>
       <button class="btn" id="submitOpinionBtn">发布</button>
@@ -158,8 +166,8 @@
   </div>
 
   <div class="sort-bar">
-    <button class="sort-btn active" data-sort="heat">🔥 按热度</button>
-    <button class="sort-btn" data-sort="time">⏱️ 按时间</button>
+    <button class="sort-btn active" data-sort="heat"><span id="flameIcon1"></span> 按热度</button>
+    <button class="sort-btn" data-sort="time"><span id="clockIcon1"></span> 按时间</button>
   </div>
 
   <div id="opinionsList"></div>
@@ -168,45 +176,39 @@
 <!-- 详情弹窗 -->
 <div class="modal" id="detailModal">
   <div class="modal-content">
-    <span class="close-icon" onclick="closeModal()">&times;</span>
-    <h3 id="modalTitle" style="color:#1e3a5f; padding-right:30px;"></h3>
-    <div id="modalMeta" style="margin:12px 0; color:#5d7997; font-size:14px;"></div>
+    <span class="close-icon" onclick="closeModal()"><span id="closeModalIcon"></span></span>
+    <h3 id="modalTitle" style="color:#3D2314; padding-right:30px;"></h3>
+    <div id="modalMeta" style="margin:12px 0; color:#8B7355; font-size:14px;"></div>
     <div id="repliesContainer" style="max-height:300px; overflow-y:auto; margin-bottom:16px;"></div>
     <div id="replyInputArea" style="display:flex; gap:8px; margin-bottom:12px;">
-      <input type="text" id="replyInput" placeholder="输入回复/追问..." style="flex:1; padding:12px 16px; border-radius:24px; border:1.5px solid #dde5ed; outline:none;">
+      <input type="text" id="replyInput" placeholder="输入回复/追问..." style="flex:1; padding:12px 16px; border-radius:24px; border:1.5px solid #E0D0C0; background:rgba(255,255,255,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); outline:none; color:#3D2314;">
       <button class="btn" id="sendReplyBtn">发送</button>
     </div>
     <div id="adminActions" style="margin-top:16px; display:none;">
-      <hr style="border-color:#eef2f7; margin-bottom:16px;">
+      <hr style="border-color:rgba(139,115,85,0.1); margin-bottom:16px;">
       <div id="actionStart" style="display:none;">
-        <button class="btn" id="startProcessBtn">🚀 开始处理</button>
+        <button class="btn" id="startProcessBtn"><span id="rocketIcon"></span> 开始处理</button>
       </div>
       <div id="actionInProgress" style="display:none;">
         <div style="display:flex; gap:8px; margin-bottom:12px;">
-          <input type="text" id="finalReplyInput" placeholder="最终解决方案（必填）" style="flex:1; padding:12px 16px; border-radius:24px; border:1.5px solid #dde5ed; outline:none;">
-          <button class="btn" id="closeWithReplyBtn">✅ 完结并回复</button>
+          <input type="text" id="finalReplyInput" placeholder="最终解决方案（必填）" style="flex:1; padding:12px 16px; border-radius:24px; border:1.5px solid #E0D0C0; background:rgba(255,255,255,0.5); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); outline:none; color:#3D2314;">
+          <button class="btn" id="closeWithReplyBtn"><span id="checkIcon2"></span> 完结并回复</button>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
-          <select id="assignSelect" style="padding:10px 14px; border-radius:24px; border:1.5px solid #dde5ed;">
-            <option value="班长">班长</option>
-            <option value="团支书">团支书</option>
-            <option value="学习委员">学习委员</option>
-            <option value="生活委员">生活委员</option>
-            <option value="班主任">班主任</option>
+          <select id="assignSelect" style="padding:10px 14px; border-radius:24px; border:1.5px solid #E0D0C0;">
+            <option value="班长">班长</option><option value="团支书">团支书</option><option value="学习委员">学习委员</option><option value="生活委员">生活委员</option><option value="班主任">班主任</option>
           </select>
-          <button class="btn-outline btn" id="assignBtn">🔄 重新分配</button>
+          <button class="btn-outline btn" id="assignBtn"><span id="refreshIcon"></span> 重新分配</button>
         </div>
       </div>
       <div id="actionClosed" style="display:none;">
-        <button class="btn-outline btn" id="reopenBtn">🔓 重新打开问题</button>
+        <button class="btn-outline btn" id="reopenBtn"><span id="unlockIcon"></span> 重新打开问题</button>
       </div>
     </div>
-    <div id="ratingArea" style="margin-top:16px; padding-top:12px; border-top:1px solid #eef2f7; display:none;">
-      <span style="color:#1e3a5f; font-weight:500;">评分：</span>
-      <div class="star-rating" id="starRating">
-        <span class="star" data-val="1">★</span><span class="star" data-val="2">★</span><span class="star" data-val="3">★</span><span class="star" data-val="4">★</span><span class="star" data-val="5">★</span>
-        <span class="rating-text" id="ratingText">未评分</span>
-      </div>
+    <div id="ratingArea" style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(139,115,85,0.1); display:none;">
+      <span style="color:#3D2314; font-weight:500;">评分：</span>
+      <div class="star-rating" id="starRating"></div>
+      <span class="rating-text" id="ratingText" style="font-weight:600; margin-left:8px;">未评分</span>
       <button class="btn" id="submitRatingBtn" style="margin-top:8px;">提交评分</button>
     </div>
   </div>
@@ -215,15 +217,13 @@
 <!-- 评分大弹窗 -->
 <div class="rating-popup" id="ratingPopup">
   <div class="rating-popup-content">
-    <div style="font-size:48px;margin-bottom:4px;">🎉</div>
-    <h2 style="color:#1e3a5f;margin:0 0 4px;">你的问题已有最终回复</h2>
-    <p style="color:#7a8fa0;font-size:14px;margin:0 0 12px;" id="ratingPopupTitle"></p>
+    <div style="font-size:48px;margin-bottom:4px;"><span id="partyIcon"></span></div>
+    <h2 style="color:#3D2314;margin:0 0 4px;">你的问题已有最终回复</h2>
+    <p style="color:#8B7355;font-size:14px;margin:0 0 12px;" id="ratingPopupTitle"></p>
     <div class="final-reply-box" id="ratingPopupReply"></div>
-    <p style="color:#1e3a5f;font-weight:600;margin-top:16px;">这个解决方案你满意吗？</p>
-    <div class="star-rating-popup" id="starRatingPopup">
-      <span class="star-popup" data-val="1">★</span><span class="star-popup" data-val="2">★</span><span class="star-popup" data-val="3">★</span><span class="star-popup" data-val="4">★</span><span class="star-popup" data-val="5">★</span>
-    </div>
-    <div style="font-size:18px;font-weight:700;color:#f5b342;min-height:28px;" id="ratingPopupText"></div>
+    <p style="color:#3D2314;font-weight:600;margin-top:16px;">这个解决方案你满意吗？</p>
+    <div class="star-rating-popup" id="starRatingPopup"></div>
+    <div style="font-size:18px;font-weight:700;color:#E8913A;min-height:28px;" id="ratingPopupText"></div>
     <button class="btn-submit" id="submitRatingPopupBtn">提交评分</button>
     <br>
     <button class="btn-skip" id="skipRatingBtn">稍后再说</button>
@@ -232,6 +232,72 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
+  // -- SVG Icon System --
+  function getIcon(name) {
+    var icons = {
+      clipboard: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+      bell: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+      edit: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 3 22l1.5-4.5Z"/></svg>',
+      'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+      flame: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-4 5-6 8-6 12a6 6 0 0 0 12 0c0-4-2-7-6-12z"/><path d="M12 20c-2 0-3-1.5-3-3 0-1.5 1-2.5 3-5 2 2.5 3 3.5 3 5 0 1.5-1 3-3 3z"/></svg>',
+      clock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+      rocket: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z"/><path d="M9 12H4l.5-2.5 3-1.5"/><path d="M15 12h5l-.5 2.5-3 1.5"/></svg>',
+      'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      'refresh-cw': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+      unlock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>',
+      star: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+      pin: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v7"/><circle cx="12" cy="19" r="3"/><path d="M8 17c-3.08.62-6 2-6 4h20c0-2-2.92-3.38-6-4"/></svg>',
+      trash: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4c0-1 .6-2 2-2h4c1.4 0 2 1 2 2v2"/><path d="M19 6l-.87 12.14A2 2 0 0 1 16.14 20H7.86a2 2 0 0 1-2-1.86L5 6"/><path d="M10 10v6"/><path d="M14 10v6"/></svg>',
+      user: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+      heart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+      lightbulb: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.59-.5 1.12-1.05 1.56-1.66A5 5 0 1 0 6.5 8.77c.4.65.9 1.24 1.48 1.73L9 11v5l3 3 3-3v-5Z"/><path d="M9 21h6"/><path d="M12 2v1"/></svg>',
+      x: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+      'message-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>',
+      'star-filled': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+    };
+    return (icons[name] || '').replace(/width="24"/g,'width="'+ (arguments[1]||24) +'"').replace(/height="24"/g,'height="'+ (arguments[1]||24) +'"');
+  }
+
+  function initIcons() {
+    document.getElementById('logoIcon').innerHTML = getIcon('clipboard', 26);
+    document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
+    document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
+    document.getElementById('closeModalIcon').innerHTML = getIcon('x', 24);
+    document.getElementById('editIconH3').innerHTML = getIcon('edit', 22);
+    document.getElementById('flameIcon1').innerHTML = getIcon('flame', 16);
+    document.getElementById('clockIcon1').innerHTML = getIcon('clock', 16);
+    document.getElementById('rocketIcon').innerHTML = getIcon('rocket', 16);
+    document.getElementById('checkIcon2').innerHTML = getIcon('check-circle', 16);
+    document.getElementById('refreshIcon').innerHTML = getIcon('refresh-cw', 16);
+    document.getElementById('unlockIcon').innerHTML = getIcon('unlock', 16);
+    document.getElementById('partyIcon').innerHTML = getIcon('star', 48);
+    // 构建星星评分区
+    buildStarRating('starRating', 5);
+    buildStarPopupRating();
+  }
+
+  function buildStarRating(containerId, count) {
+    var container = document.getElementById(containerId);
+    for (var i = 1; i <= count; i++) {
+      var svg = document.createElement('span');
+      svg.innerHTML = getIcon('star', 30);
+      svg.className = 'star-svg';
+      svg.dataset.val = i;
+      container.appendChild(svg);
+    }
+  }
+
+  function buildStarPopupRating() {
+    var container = document.getElementById('starRatingPopup');
+    for (var i = 1; i <= 5; i++) {
+      var svg = document.createElement('span');
+      svg.innerHTML = getIcon('star', 44);
+      svg.className = 'star-popup';
+      svg.dataset.val = i;
+      container.appendChild(svg);
+    }
+  }
+
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -307,10 +373,10 @@
     }
 
     document.getElementById('dashboard').innerHTML =
-      '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">📌 提问数</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + resolveRate + '</div><div class="stat-label">✅ 解决率</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + avgSat + '</div><div class="stat-label">⭐ 满意率</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + avgTime + '</div><div class="stat-label">⏱️ 平均用时</div></div>';
+      '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">' + getIcon('message-circle', 16) + ' 提问数</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + resolveRate + '</div><div class="stat-label">' + getIcon('check-circle', 16) + ' 解决率</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + avgSat + '</div><div class="stat-label">' + getIcon('star', 16) + ' 满意率</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + avgTime + '</div><div class="stat-label">' + getIcon('clock', 16) + ' 平均用时</div></div>';
   }
 
   async function loadOpinions() {
@@ -353,35 +419,40 @@
   function renderOpinions() {
     var container = document.getElementById('opinionsList');
     if (opinionsData.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:48px 20px;color:#7a8fa0;"><div style="font-size:48px;margin-bottom:12px;">📭</div><p>暂无意见，快来发布第一条吧！</p></div>';
+      container.innerHTML = '<div style="text-align:center;padding:48px 20px;color:#8B7355;"><div style="margin-bottom:12px;">' + getIcon('clipboard', 48) + '</div><p>暂无意见，快来发布第一条吧！</p></div>';
       return;
     }
     container.innerHTML = opinionsData.map(function(op) {
       var progress = getProgress(op);
       var steps = ['问题提出', '解决中', '已完结', '已评分'];
+      var statusLabels = {
+        open: getIcon('pin', 14) + ' 待处理',
+        in_progress: getIcon('clock', 14) + ' 解决中',
+        closed: getIcon('check-circle', 14) + ' 已完结'
+      };
       return '<div class="opinion-card">' +
         '<div class="card-header">' +
           '<strong>' + escapeHtml(op.title) + '</strong>' +
           '<span class="target-tag">@' + (op.assigned_to || op.target_role) + '</span>' +
         '</div>' +
-        '<p style="margin:12px 0;color:#334e68;">' + escapeHtml(op.content) + '</p>' +
-        '<div style="display:flex;gap:20px;font-size:14px;color:#6b85a0;flex-wrap:wrap;">' +
-          '<span>👤 ' + (op.is_anonymous ? '匿名' : op.author_name) + '</span>' +
-          '<span>📅 ' + new Date(op.created_at).toLocaleString() + '</span>' +
-          '<span>⭐ ' + (op.avgRating || '暂无') + '</span>' +
-          '<span>💬 ' + op.replyCount + '</span>' +
+        '<p style="margin:12px 0;color:#3D2314;">' + escapeHtml(op.content) + '</p>' +
+        '<div style="display:flex;gap:20px;font-size:14px;color:#8B7355;flex-wrap:wrap;">' +
+          '<span>' + getIcon('user', 14) + ' ' + (op.is_anonymous ? '匿名' : op.author_name) + '</span>' +
+          '<span>' + getIcon('calendar', 14) + ' ' + new Date(op.created_at).toLocaleString() + '</span>' +
+          '<span>' + getIcon('star', 14) + ' ' + (op.avgRating || '暂无') + '</span>' +
+          '<span>' + getIcon('message-circle', 14) + ' ' + op.replyCount + '</span>' +
         '</div>' +
         '<div class="stepper">' + steps.map(function(s, i) {
           var cls = i < progress ? 'done' : i === progress ? 'current' : '';
-          var icon = i < progress ? '✓' : (i + 1);
+          var icon = i < progress || (i === progress && i === 3) ? getIcon('check-circle', 14).replace(/width="24"/,'width="14"').replace(/height="24"/,'height="14"') : (i + 1);
           var html = '<div class="step-node"><div class="step-dot ' + cls + '">' + icon + '</div><span class="step-caption ' + cls + '">' + s + '</span></div>';
           if (i < steps.length - 1) html += '<div class="step-line ' + (i < progress ? 'done' : '') + '"></div>';
           return html;
         }).join('') + '</div>' +
         '<div class="actions">' +
-          '<span class="like-btn" data-id="' + op.id + '">❤️ ' + op.likeCount + '</span>' +
+          '<span class="like-btn" data-id="' + op.id + '">' + getIcon('heart', 16) + ' ' + op.likeCount + '</span>' +
           '<button class="btn-outline btn" onclick="openDetail(\'' + op.id + '\')">查看详情</button>' +
-          '<span style="font-size:14px;color:#5d7997;">' + ({ open: '📌 待处理', in_progress: '⏳ 解决中', closed: '✅ 已完结' }[op.status] || op.status) + '</span>' +
+          '<span style="font-size:14px;color:#8B7355;">' + (statusLabels[op.status] || op.status) + '</span>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -454,8 +525,8 @@
     hideLoading();
     document.getElementById('repliesContainer').innerHTML = (res.data || []).map(function(r) {
       return '<div class="reply-item"><strong>' + r.user_name + '</strong>：' + escapeHtml(r.content) +
-        ' <span style="font-size:12px;color:#888;">' + new Date(r.created_at).toLocaleString() + '</span></div>';
-    }).join('') || '<div style="text-align:center;color:#9e9e9e;padding:20px;">暂无回复</div>';
+        ' <span style="font-size:12px;color:#8B7355;">' + new Date(r.created_at).toLocaleString() + '</span></div>';
+    }).join('') || '<div style="text-align:center;color:#A09080;padding:20px;">暂无回复</div>';
     document.getElementById('replyInput').value = '';
 
     var isAdmin = currentUser.role === 'admin';
@@ -473,7 +544,7 @@
     document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
     if (canRate) {
       selectedStars = 0;
-      document.querySelectorAll('#starRating .star').forEach(function(s) { s.classList.remove('active'); });
+      document.querySelectorAll('#starRating .star-svg').forEach(function(s) { s.classList.remove('active'); });
       document.getElementById('ratingText').textContent = '未评分';
     }
     document.getElementById('detailModal').classList.add('active');
@@ -530,15 +601,17 @@
     toast('问题已重新打开');
   });
 
-  document.querySelectorAll('#starRating .star').forEach(function(star) {
-    star.addEventListener('click', function() {
-      selectedStars = parseInt(star.dataset.val);
-      document.querySelectorAll('#starRating .star').forEach(function(s) {
-        s.classList.toggle('active', parseInt(s.dataset.val) <= selectedStars);
-      });
-      document.getElementById('ratingText').textContent = selectedStars + '.0';
+  // 评分星星事件 (动态绑定在渲染后通过 event delegation)
+  document.getElementById('starRating').addEventListener('click', function(e) {
+    var star = e.target.closest('.star-svg');
+    if (!star) return;
+    selectedStars = parseInt(star.dataset.val);
+    document.querySelectorAll('#starRating .star-svg').forEach(function(s) {
+      s.classList.toggle('active', parseInt(s.dataset.val) <= selectedStars);
     });
+    document.getElementById('ratingText').textContent = selectedStars + '.0';
   });
+
   document.getElementById('submitRatingBtn').addEventListener('click', async function() {
     if (!selectedStars) { toast('请点击星星评分', 'warn'); return; }
     var res = await supabaseClient.from('ratings').upsert(
@@ -573,15 +646,15 @@
     document.getElementById('ratingPopup').classList.add('active');
   }
 
-  document.querySelectorAll('#starRatingPopup .star-popup').forEach(function(star) {
-    star.addEventListener('click', function() {
-      popupStars = parseInt(star.dataset.val);
-      document.querySelectorAll('#starRatingPopup .star-popup').forEach(function(s) {
-        s.classList.toggle('active', parseInt(s.dataset.val) <= popupStars);
-      });
-      var labels = ['', '非常不满意', '不太满意', '一般', '比较满意', '非常满意'];
-      document.getElementById('ratingPopupText').textContent = labels[popupStars];
+  document.getElementById('starRatingPopup').addEventListener('click', function(e) {
+    var star = e.target.closest('.star-popup');
+    if (!star) return;
+    popupStars = parseInt(star.dataset.val);
+    document.querySelectorAll('#starRatingPopup .star-popup').forEach(function(s) {
+      s.classList.toggle('active', parseInt(s.dataset.val) <= popupStars);
     });
+    var labels = ['', '非常不满意', '不太满意', '一般', '比较满意', '非常满意'];
+    document.getElementById('ratingPopupText').textContent = labels[popupStars];
   });
 
   document.getElementById('submitRatingPopupBtn').addEventListener('click', async function() {
@@ -620,8 +693,8 @@
     hideLoading();
     document.getElementById('repliesContainer').innerHTML = (res.data || []).map(function(r) {
       return '<div class="reply-item"><strong>' + r.user_name + '</strong>：' + escapeHtml(r.content) +
-        ' <span style="font-size:12px;color:#888;">' + new Date(r.created_at).toLocaleString() + '</span></div>';
-    }).join('') || '<div style="text-align:center;color:#9e9e9e;padding:20px;">暂无回复</div>';
+        ' <span style="font-size:12px;color:#8B7355;">' + new Date(r.created_at).toLocaleString() + '</span></div>';
+    }).join('') || '<div style="text-align:center;color:#A09080;padding:20px;">暂无回复</div>';
     document.getElementById('replyInput').value = '';
     var op2 = opinionsData.find(function(o) { return o.id === opinionId; });
     var isAdmin = currentUser.role === 'admin';
@@ -655,18 +728,18 @@
 
     var html = '';
     if (displayNotifs.length === 0) {
-      html = '<div style="padding:16px;text-align:center;color:#9e9e9e;">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
+      html = '<div style="padding:16px;text-align:center;color:#8B7355;">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
     } else {
       html = displayNotifs.map(function(n) {
-        var icon = '🔔', label = '', detail = '', opinionId = n.opinion_id || '', postId = n.post_id || '';
-        if (n.type === 'reply') { icon = '💬'; label = '有新回复'; detail = n.opinion_title; }
-        else if (n.type === 'closed') { icon = '✅'; label = '已完结'; detail = n.opinion_title; }
-        else if (n.type === 'reassign') { icon = '🔄'; label = '已重分配'; detail = n.opinion_title; }
-        else if (n.type === 'in_progress') { icon = '⏳'; label = '问题开始处理'; detail = n.opinion_title; }
-        else if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
-        else if (n.type === 'treehole_reply') { icon = '💬'; label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
-        var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '';
-        var timeHtml = '<br><span style="font-size:11px;color:#aaa;">' + new Date(n.created_at).toLocaleString() + '</span>';
+        var icon = getIcon('bell', 16), label = '', detail = '', opinionId = n.opinion_id || '', postId = n.post_id || '';
+        if (n.type === 'reply') { icon = getIcon('message-circle', 16); label = '有新回复'; detail = n.opinion_title; }
+        else if (n.type === 'closed') { icon = getIcon('check-circle', 16); label = '已完结'; detail = n.opinion_title; }
+        else if (n.type === 'reassign') { icon = getIcon('refresh-cw', 16); label = '已重分配'; detail = n.opinion_title; }
+        else if (n.type === 'in_progress') { icon = getIcon('clock', 16); label = '问题开始处理'; detail = n.opinion_title; }
+        else if (n.type === 'treehole_delete') { icon = getIcon('trash', 16); label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
+        else if (n.type === 'treehole_reply') { icon = getIcon('message-circle', 16); label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
+        var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#C7564A;">原因：' + escapeHtml(n.reason) + '</span>' : '';
+        var timeHtml = '<br><span style="font-size:11px;color:#A09080;">' + new Date(n.created_at).toLocaleString() + '</span>';
         return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '" data-opinion="' + opinionId + '" data-post-id="' + postId + '">' +
           icon + ' ' + escapeHtml(detail) + ' - ' + label + reasonHtml + timeHtml +
         '</div>';
@@ -674,10 +747,10 @@
     }
 
     if (displayNotifs.length > 0) {
-      html += '<div style="text-align:center;font-size:11px;color:#aaa;padding:6px 0 2px;">💡 点击消息即可标为已读</div>';
+      html += '<div style="text-align:center;font-size:11px;color:#A09080;padding:6px 0 2px;">' + getIcon('lightbulb', 12) + ' 点击消息即可标为已读</div>';
     }
     if (!showAll && readNotifs.length > 0) {
-      html += '<div class="notif-footer"><button id="showAllNotifsBtn">📋 查看全部消息 →</button></div>';
+      html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看全部消息 →</button></div>';
     } else if (showAll) {
       html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
     }
@@ -735,6 +808,7 @@
     return div.innerHTML;
   }
 
+  initIcons();
   init();
 </script>
 </body>

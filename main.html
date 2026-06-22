@@ -5,89 +5,212 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班级办事通 · 控制台</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
-    body { background: linear-gradient(160deg, #e8eef5, #dce4f0); min-height: 100vh; }
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
 
-    .navbar { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); padding: 14px 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px; }
-    .logo { font-size: 22px; font-weight: 650; color: #1e3a5f; white-space: nowrap; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+    body { background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 30%, #F2E0D0 60%, #F8EDE3 100%); background-size: 300% 300%; min-height: 100vh; overflow-x: hidden; animation: bgShift 18s ease-in-out infinite; }
+    @keyframes bgShift { 0% { background-position: 0% 50%; } 25% { background-position: 50% 100%; } 50% { background-position: 100% 50%; } 75% { background-position: 50% 0%; } 100% { background-position: 0% 50%; } }
+
+    h1, h2, h3, .btn, .btn-outline, .badge, .tab, .logo { font-family: 'Noto Serif SC', serif; }
+
+    /* 背景装饰 */
+    .bg-decorations { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bg-icon {
+      position: absolute;
+      opacity: 0.05;
+    }
+    .bg-icon.type-a { animation: floatDrift var(--dur, 25s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+    .bg-icon.type-b { animation: floatSlow var(--dur, 30s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+    .bg-icon.type-c { animation: breatheScale var(--dur, 8s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+    @keyframes floatDrift {
+      0%   { transform: translateY(0) rotate(0deg); }
+      25%  { transform: translateY(-35px) rotate(4deg); }
+      50%  { transform: translateY(-15px) rotate(8deg); }
+      75%  { transform: translateY(-40px) rotate(2deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+    @keyframes floatSlow {
+      0%   { transform: translate(0, 0) rotate(0deg); }
+      33%  { transform: translate(18px, -28px) rotate(3deg); }
+      66%  { transform: translate(-12px, -42px) rotate(-2deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    @keyframes breatheScale {
+      0%, 100% { transform: scale(1); opacity: 0.04; }
+      50% { transform: scale(1.2); opacity: 0.08; }
+    }
+    /* 光点粒子 */
+    .sparkle {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: #C67B5C;
+      border-radius: 50%;
+      animation: sparkleFloat var(--dur, 10s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes sparkleFloat {
+      0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+      20%  { opacity: 0.6; }
+      50%  { transform: translate(var(--dx, 20px), var(--dy, -30px)) scale(1.5); opacity: 0.7; }
+      80%  { opacity: 0.2; }
+      100% { transform: translate(calc(var(--dx, 20px) * 2), calc(var(--dy, -30px) * 2)) scale(0.5); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bg-icon, .sparkle, body { animation: none !important; }
+    }
+
+    .navbar { background: rgba(255,255,255,0.18); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); padding: 14px 28px; box-shadow: 0 4px 24px rgba(61,35,20,0.05); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); }
+    .logo { font-size: 22px; font-weight: 600; color: #3D2314; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .logo svg { color: #C67B5C; }
     .user-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .badge { background: #eef3fa; padding: 6px 16px; border-radius: 30px; font-size: 14px; color: #1e3a5f; font-weight: 500; }
-    .btn { background: #1e3a5f; color: white; border: none; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.2s; white-space: nowrap; }
-    .btn:hover { background: #2a4d7a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30,58,95,0.25); }
-    .btn-outline { background: transparent; border: 1.5px solid #1e3a5f; color: #1e3a5f; }
-    .btn-outline:hover { background: #eef3fa; }
+    .badge { background: rgba(198,123,92,0.10); padding: 6px 16px; border-radius: 30px; font-size: 14px; color: #8B7355; font-weight: 500; }
+    .btn { background: linear-gradient(135deg, #C67B5C, #B5651D); color: white; border: none; padding: 10px 22px; border-radius: 24px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.25s; white-space: nowrap; box-shadow: 0 4px 14px rgba(181,101,29,0.18); display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { background: linear-gradient(135deg, #D4946A, #C67B5C); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(181,101,29,0.28); }
+    .btn-outline { background: transparent; border: 1.5px solid #C67B5C; color: #C67B5C; box-shadow: none; }
+    .btn-outline:hover { background: rgba(198,123,92,0.06); }
+    .logo span, .btn span { display: inline-flex; align-items: center; }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+    .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; position: relative; z-index: 1; }
 
     .welcome { text-align: center; margin-bottom: 36px; }
-    .welcome h1 { font-size: 28px; color: #1e3a5f; margin-bottom: 8px; }
-    .welcome p { color: #6b85a0; font-size: 15px; }
+    .welcome h1 { font-size: 28px; color: #3D2314; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; animation: welcomeBreathe 3.5s ease-in-out infinite; }
+    @keyframes welcomeBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+    .welcome h1 svg { color: #C67B5C; animation: heartBeat 1.8s ease-in-out infinite; }
+    @keyframes heartBeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } 45% { transform: scale(1.1); } 60% { transform: scale(1); } }
+    .welcome p { color: #8B7355; font-size: 15px; }
 
     .hub-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
 
-    .hub-card { background: white; border-radius: 24px; padding: 28px 24px; box-shadow: 0 8px 28px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 20px; text-decoration: none; color: inherit; border: 1px solid #eef2f7; position: relative; overflow: hidden; }
-    .hub-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); border-color: #cfdde9; }
-    .hub-card:active { transform: translateY(-1px); }
-    .hub-card .icon { font-size: 52px; flex-shrink: 0; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 20px; }
-    .hub-card .icon.opinions { background: #e3f0ff; }
-    .hub-card .icon.treehole { background: #f0ebe0; }
-    .hub-card .icon.timed { background: #fce4ec; }
+    .hub-card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-radius: 24px;
+      padding: 28px 24px;
+      box-shadow: 0 4px 24px rgba(61,35,20,0.05);
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, opacity 0.5s ease, background 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid rgba(255,255,255,0.5);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .hub-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+      pointer-events: none;
+      border-radius: 24px 24px 0 0;
+    }
+    .hub-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      animation: cardBreathe 4.5s ease-in-out 0.5s infinite;
+    }
+    @keyframes cardBreathe {
+      0%, 100% { box-shadow: 0 4px 24px rgba(61,35,20,0.05); }
+      50% { box-shadow: 0 8px 34px rgba(198,123,92,0.12); }
+    }
+    .hub-card.visible:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(198,123,92,0.12); border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.28); }
+    .hub-card.visible:active { transform: translateY(-1px); }
     .hub-card .info { flex: 1; min-width: 0; }
-    .hub-card .info h2 { font-size: 20px; color: #1e3a5f; margin-bottom: 6px; }
-    .hub-card .info p { font-size: 14px; color: #6b85a0; line-height: 1.5; }
-    .hub-card .arrow { font-size: 28px; color: #b0bec5; flex-shrink: 0; transition: transform 0.2s; }
-    .hub-card:hover .arrow { transform: translateX(4px); color: #1e3a5f; }
-    .hub-card .badge-new { position: absolute; top: 16px; right: 16px; background: #e03a3a; color: white; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+    .hub-card .info h2 { font-size: 20px; color: #3D2314; margin-bottom: 6px; }
+    .hub-card .info p { font-size: 14px; color: #8B7355; line-height: 1.5; }
+    .hub-card .arrow { flex-shrink: 0; transition: transform 0.2s; color: #C0A890; }
+    .hub-card .arrow svg { width: 28px; height: 28px; }
+    .hub-card:hover .arrow { transform: translateX(4px); color: #C67B5C; }
+    .hub-card .badge-new { position: absolute; top: 16px; right: 16px; background: #C7564A; color: white; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
 
-    /* 通知铃铛 */
-    .notification-bell { position: relative; cursor: pointer; font-size: 24px; padding: 4px; border-radius: 12px; transition: background 0.2s; }
-    .notification-bell:hover { background: #f0f3f8; }
-    .notification-dot { position: absolute; top: 0px; right: -2px; width: 10px; height: 10px; background: #e03a3a; border-radius: 50%; animation: blink 1s infinite; }
-    .notification-dropdown { position: absolute; top: 55px; right: 20px; background: white; width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 36px rgba(0,0,0,0.15); border-radius: 20px; padding: 12px; display: none; z-index: 100; }
-    .notification-item { padding: 10px 14px; border-bottom: 1px solid #f0f3f8; font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; }
-    .notification-item:hover { background: #f5f9ff; }
-    .notification-item.unread { background: #eef3ff; font-weight: 500; }
-    .notification-item.read { color: #8899aa; }
-    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid #f0f3f8; margin-top: 8px; }
-    .notif-footer button { background: none; border: none; color: #1e3a5f; cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
-    .notif-footer button:hover { background: #eef3fa; }
+    /* 名言区域 */
+    .quote-section { margin-top: 32px; }
+    .quote-card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 24px 28px;
+      border: 1px solid rgba(255,255,255,0.4);
+      text-align: center;
+      animation: quoteFade 5s ease-in-out infinite;
+    }
+    .quote-text { font-size: 16px; color: #5D3A1F; font-weight: 500; line-height: 1.8; font-style: italic; letter-spacing: 0.5px; }
+    .quote-author { font-size: 13px; color: #B09080; margin-top: 10px; }
+    @keyframes quoteFade {
+      0%, 100% { box-shadow: 0 2px 16px rgba(61,35,20,0.03); }
+      50% { box-shadow: 0 4px 24px rgba(198,123,92,0.06); }
+    }
+
+    /* 通知 */
+    .notification-bell { position: relative; cursor: pointer; padding: 4px; border-radius: 12px; transition: background 0.2s; }
+    .notification-bell svg { width: 26px; height: 26px; color: #8B7355; }
+    .notification-bell:hover { background: rgba(198,123,92,0.08); }
+    .notification-dot { position: absolute; top: 0px; right: -2px; width: 10px; height: 10px; background: #C7564A; border-radius: 50%; animation: blink 1s infinite; }
+    .notification-dropdown {
+      position: absolute; top: 55px; right: 20px;
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      width: 340px; max-height: 420px; overflow-y: auto;
+      box-shadow: 0 16px 40px rgba(61,35,20,0.12);
+      border-radius: 20px; padding: 12px; display: none; z-index: 100;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+    .notification-item { padding: 10px 14px; border-bottom: 1px solid rgba(139,115,85,0.08); font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; color: #3D2314; }
+    .notification-item:hover { background: rgba(198,123,92,0.05); }
+    .notification-item.unread { background: rgba(198,123,92,0.06); font-weight: 500; }
+    .notification-item.read { color: #8B7355; }
+    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid rgba(139,115,85,0.08); margin-top: 8px; }
+    .notif-footer button { background: none; border: none; color: #C67B5C; cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
+    .notif-footer button:hover { background: rgba(198,123,92,0.06); }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
-    .schedule-reminder { position: absolute; top: 16px; right: 54px; background: #ff9800; color: white; font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; animation: blink 1.2s infinite; z-index: 5; }
+    .schedule-reminder { position: absolute; top: 16px; right: 54px; background: #E8913A; color: white; font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; animation: blink 1.2s infinite; z-index: 5; display: flex; align-items: center; gap: 3px; }
+    .schedule-reminder svg { width: 12px; height: 12px; }
 
-    /* 改密弹窗 */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    /* 模态框 */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(61,35,20,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .modal-content { background: white; width: 92%; max-width: 420px; border-radius: 24px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-    .close-icon { float: right; font-size: 26px; cursor: pointer; color: #7a8fa0; line-height: 1; transition: color 0.2s; }
-    .close-icon:hover { color: #1e3a5f; }
-    .input-field { width: 100%; padding: 12px 16px; border: 1.5px solid #dde5ed; border-radius: 16px; margin-bottom: 14px; font-size: 15px; outline: none; transition: border-color 0.2s; background: #fafbfc; }
-    .input-field:focus { border-color: #2e5a9c; box-shadow: 0 0 0 3px rgba(46,90,156,0.1); background: white; }
+    .modal-content { background: rgba(255,255,255,0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 92%; max-width: 420px; border-radius: 24px; padding: 24px; box-shadow: 0 20px 50px rgba(61,35,20,0.15); border: 1px solid rgba(255,255,255,0.5); }
+    .close-icon { float: right; cursor: pointer; color: #8B7355; line-height: 1; transition: color 0.2s; }
+    .close-icon:hover { color: #3D2314; }
+    .close-icon svg { width: 24px; height: 24px; }
+    .input-field { width: 100%; padding: 12px 16px; border: 1.5px solid #E0D0C0; border-radius: 16px; margin-bottom: 14px; font-size: 15px; outline: none; transition: all 0.2s; background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #3D2314; }
+    .input-field:focus { border-color: #C67B5C; box-shadow: 0 0 0 3px rgba(198,123,92,0.1); background: rgba(255,255,255,0.75); }
+    .input-field::placeholder { color: #B8A090; }
 
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
-    .toast.success { background: #2e7d32; }
-    .toast.error { background: #c62828; }
-    .toast.warn { background: #e65100; }
+    .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .toast.success { background: rgba(93,155,111,0.92); }
+    .toast.error { background: rgba(199,86,74,0.92); }
+    .toast.warn { background: rgba(232,145,58,0.92); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
     @media (max-width: 640px) {
       .navbar { padding: 10px 16px; }
       .logo { font-size: 18px; }
       .hub-card { padding: 20px 16px; gap: 14px; }
-      .hub-card .icon { font-size: 40px; width: 60px; height: 60px; border-radius: 16px; }
       .hub-card .info h2 { font-size: 17px; }
     }
   </style>
 </head>
 <body>
+<!-- 背景装饰 -->
+<div class="bg-decorations" id="bgDecorations"></div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="navbar">
-  <div class="logo">📋 班级办事通</div>
+  <div class="logo"><span id="logoIcon"></span>班级办事通</div>
   <div class="user-info">
-    <div class="notification-bell" id="notificationBell">🔔<span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
+    <div class="notification-bell" id="notificationBell">
+      <span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span>
+    </div>
     <span class="badge" id="userDisplay"></span>
-    <button class="btn-outline btn" id="changePwdBtn">🔑 改密</button>
+    <button class="btn-outline btn" id="changePwdBtn"><span id="keyIcon"></span> 改密</button>
     <button class="btn-outline btn" id="logoutBtn">退出</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
@@ -95,47 +218,46 @@
 
 <div class="container">
   <div class="welcome">
-    <h1 id="welcomeTitle">👋 欢迎回来</h1>
+    <h1 id="welcomeTitle"><span id="welcomeIcon"></span></h1>
     <p>选择一个板块开始使用</p>
   </div>
 
   <div class="hub-grid">
     <a class="hub-card" href="opinions.html">
-      <div class="icon opinions">📋</div>
       <div class="info">
         <h2>意见箱</h2>
         <p>意见反馈 · 班委协同处理 · 进度追踪 · 满意度评分</p>
       </div>
-      <span class="arrow">→</span>
+      <span class="arrow"><span id="arrow1Icon"></span></span>
     </a>
 
     <a class="hub-card" href="treehole.html">
-      <div class="icon treehole">🌲</div>
       <div class="info">
         <h2>树洞</h2>
         <p>匿名分享 · 便利贴留言墙 · 自由回复 · 表情互动</p>
       </div>
       <span class="badge-new">NEW</span>
-      <span class="arrow">→</span>
+      <span class="arrow"><span id="arrow2Icon"></span></span>
     </a>
 
     <a class="hub-card" href="schedule.html">
-      <div class="icon timed">📅</div>
       <div class="info">
         <h2>限时功能</h2>
         <p>课表统计 · 全年级课表查看 · 空闲时段查询</p>
       </div>
-      <span class="schedule-reminder" id="scheduleReminder" style="display:none;">⚠ 你还未完成课表统计</span>
-      <span class="arrow">→</span>
+      <span class="schedule-reminder" id="scheduleReminder" style="display:none;"><span id="alertIcon"></span> 你还未完成课表统计</span>
+      <span class="arrow"><span id="arrow3Icon"></span></span>
     </a>
   </div>
+
+  <div class="quote-section" id="quoteSection"></div>
 </div>
 
 <!-- 修改密码弹窗 -->
 <div class="modal" id="pwdModal">
   <div class="modal-content">
-    <span class="close-icon" onclick="closePwdModal()">&times;</span>
-    <h3 style="color:#1e3a5f; margin-bottom:16px;">修改密码</h3>
+    <span class="close-icon" onclick="closePwdModal()" id="closeModalIcon"></span>
+    <h3 style="color:#3D2314; margin-bottom:16px;">修改密码</h3>
     <input type="password" id="newPwd" placeholder="新密码（至少6位）" class="input-field">
     <input type="password" id="newPwdConfirm" placeholder="确认密码" class="input-field">
     <button class="btn" id="submitPwdChange" style="width:100%;">确认修改</button>
@@ -144,6 +266,89 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
+  // -- SVG Icon System --
+  function getIcon(name) {
+    var icons = {
+      clipboard: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+      bell: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+      'tree-pine': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8h3v2l-4 5h10l-4-5v-2h3L12 2z"/><path d="M12 16v6"/></svg>',
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
+      edit: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 3 22l1.5-4.5Z"/></svg>',
+      'bar-chart': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      'message-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>',
+      key: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3"/></svg>',
+      flame: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-4 5-6 8-6 12a6 6 0 0 0 12 0c0-4-2-7-6-12z"/><path d="M12 20c-2 0-3-1.5-3-3 0-1.5 1-2.5 3-5 2 2.5 3 3.5 3 5 0 1.5-1 3-3 3z"/></svg>',
+      clock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+      rocket: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z"/><path d="M9 12H4l.5-2.5 3-1.5"/><path d="M15 12h5l-.5 2.5-3 1.5"/></svg>',
+      'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      'refresh-cw': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+      unlock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>',
+      star: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+      pin: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v7"/><circle cx="12" cy="19" r="3"/><path d="M8 17c-3.08.62-6 2-6 4h20c0-2-2.92-3.38-6-4"/></svg>',
+      trash: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4c0-1 .6-2 2-2h4c1.4 0 2 1 2 2v2"/><path d="M19 6l-.87 12.14A2 2 0 0 1 16.14 20H7.86a2 2 0 0 1-2-1.86L5 6"/><path d="M10 10v6"/><path d="M14 10v6"/></svg>',
+      user: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+      heart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+      lightbulb: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.59-.5 1.12-1.05 1.56-1.66A5 5 0 1 0 6.5 8.77c.4.65.9 1.24 1.48 1.73L9 11v5l3 3 3-3v-5Z"/><path d="M9 21h6"/><path d="M12 2v1"/></svg>',
+      'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+      x: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+      book: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15Z"/></svg>',
+      'chevron-right': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
+      'alert-triangle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+    };
+    return (icons[name] || '').replace(/width="24"/g,'width="'+ (arguments[1]||24) +'"').replace(/height="24"/g,'height="'+ (arguments[1]||24) +'"');
+  }
+
+  // 初始化所有图标
+  function initIcons() {
+    document.getElementById('logoIcon').innerHTML = getIcon('clipboard', 26);
+    document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
+    document.getElementById('keyIcon').innerHTML = getIcon('key', 16);
+    document.getElementById('closeModalIcon').innerHTML = getIcon('x', 24);
+    document.getElementById('arrow1Icon').innerHTML = getIcon('chevron-right', 28);
+    document.getElementById('arrow2Icon').innerHTML = getIcon('chevron-right', 28);
+    document.getElementById('arrow3Icon').innerHTML = getIcon('chevron-right', 28);
+    document.getElementById('alertIcon').innerHTML = getIcon('alert-triangle', 12);
+  }
+
+  // 初始化背景装饰
+  function initBgDecorations() {
+    var icons = ['book','calendar','star','heart','message-circle','edit','tree-pine','pin','lightbulb'];
+    var types = ['type-a','type-b','type-c'];
+    var container = document.getElementById('bgDecorations');
+    var html = '';
+    icons.forEach(function(name, i) {
+      var size = 40 + Math.floor(Math.random() * 50);
+      var top = 5 + Math.floor(Math.random() * 85);
+      var left = 3 + Math.floor(Math.random() * 90);
+      var dur = (name === 'star' || name === 'heart') ? (6 + Math.floor(Math.random() * 6)) : (20 + Math.floor(Math.random() * 20));
+      var delay = Math.floor(Math.random() * 15);
+      var type = types[i % types.length];
+      html += '<div class="bg-icon ' + type + '" style="top:' + top + '%;left:' + left + '%;--dur:' + dur + 's;--delay:' + delay + 's;">'
+        + getIcon(name, size) + '</div>';
+    });
+    // 添加光点粒子
+    for (var j = 0; j < 12; j++) {
+      var sx = 5 + Math.floor(Math.random() * 90);
+      var sy = 10 + Math.floor(Math.random() * 85);
+      var sdur = 8 + Math.floor(Math.random() * 12);
+      var sdelay = Math.floor(Math.random() * 10);
+      var dx = (Math.random() - 0.5) * 60;
+      var dy = -(20 + Math.random() * 50);
+      html += '<div class="sparkle" style="left:' + sx + '%;top:' + sy + '%;--dur:' + sdur + 's;--delay:' + sdelay + 's;--dx:' + dx.toFixed(0) + 'px;--dy:' + dy.toFixed(0) + 'px;"></div>';
+    }
+    container.innerHTML = html;
+  }
+
+  // 卡片入场交错动画
+  function initCardEntrance() {
+    var cards = document.querySelectorAll('.hub-card');
+    cards.forEach(function(card, i) {
+      setTimeout(function() {
+        card.classList.add('visible');
+      }, 120 + i * 160);
+    });
+  }
+
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -171,7 +376,9 @@
     currentUser = JSON.parse(userStr);
     document.getElementById('userDisplay').innerText =
       currentUser.real_name + ' (' + currentUser.student_id + ') ' + (currentUser.role === 'admin' ? '管理员' : '同学');
-    document.getElementById('welcomeTitle').innerText = '👋 ' + currentUser.real_name + '，欢迎回来';
+    var welcomeHtml = getIcon('heart', 28) + ' ';
+    document.getElementById('welcomeIcon').innerHTML = welcomeHtml;
+    document.getElementById('welcomeTitle').innerHTML = welcomeHtml + currentUser.real_name + '，欢迎回来';
     updateNotifDot();
     checkScheduleStatus();
   }
@@ -188,7 +395,7 @@
       .eq('user_id', currentUser.id)
       .limit(1);
     if (!res.error && (!res.data || res.data.length === 0)) {
-      document.getElementById('scheduleReminder').style.display = 'inline';
+      document.getElementById('scheduleReminder').style.display = 'inline-flex';
     }
   }
 
@@ -203,37 +410,35 @@
 
     var html = '';
     if (displayNotifs.length === 0) {
-      html = '<div style="padding:16px;text-align:center;color:#9e9e9e;">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
+      html = '<div style="padding:16px;text-align:center;color:#8B7355;">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
     } else {
       html = displayNotifs.map(function(n) {
-        var icon = '🔔', label = '', detail = '', opinionId = n.opinion_id || '', postId = n.post_id || '';
-        if (n.type === 'reply') { icon = '💬'; label = '有新回复'; detail = n.opinion_title; }
-        else if (n.type === 'closed') { icon = '✅'; label = '已完结'; detail = n.opinion_title; }
-        else if (n.type === 'reassign') { icon = '🔄'; label = '已重分配'; detail = n.opinion_title; }
-        else if (n.type === 'in_progress') { icon = '⏳'; label = '问题开始处理'; detail = n.opinion_title; }
-        else if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
-        else if (n.type === 'treehole_reply') { icon = '💬'; label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
-        var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '';
-        var timeHtml = '<br><span style="font-size:11px;color:#aaa;">' + new Date(n.created_at).toLocaleString() + '</span>';
+        var icon = getIcon('bell', 16), label = '', detail = '', opinionId = n.opinion_id || '', postId = n.post_id || '';
+        if (n.type === 'reply') { icon = getIcon('message-circle', 16); label = '有新回复'; detail = n.opinion_title; }
+        else if (n.type === 'closed') { icon = getIcon('check-circle', 16); label = '已完结'; detail = n.opinion_title; }
+        else if (n.type === 'reassign') { icon = getIcon('refresh-cw', 16); label = '已重分配'; detail = n.opinion_title; }
+        else if (n.type === 'in_progress') { icon = getIcon('clock', 16); label = '问题开始处理'; detail = n.opinion_title; }
+        else if (n.type === 'treehole_delete') { icon = getIcon('trash', 16); label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
+        else if (n.type === 'treehole_reply') { icon = getIcon('message-circle', 16); label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
+        var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#C7564A;">原因：' + escapeHtml(n.reason) + '</span>' : '';
+        var timeHtml = '<br><span style="font-size:11px;color:#A09080;">' + new Date(n.created_at).toLocaleString() + '</span>';
         return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '" data-opinion="' + opinionId + '" data-post-id="' + postId + '">' +
           icon + ' ' + escapeHtml(detail) + ' - ' + label + reasonHtml + timeHtml +
         '</div>';
       }).join('');
     }
 
-    // 底部按钮
     if (displayNotifs.length > 0) {
-      html += '<div style="text-align:center;font-size:11px;color:#aaa;padding:6px 0 2px;">💡 点击消息即可标为已读</div>';
+      html += '<div style="text-align:center;font-size:11px;color:#A09080;padding:6px 0 2px;">' + getIcon('lightbulb', 12) + ' 点击消息即可标为已读</div>';
     }
     if (!showAll && readNotifs.length > 0) {
-      html += '<div class="notif-footer"><button id="showAllNotifsBtn">📋 查看全部消息 →</button></div>';
+      html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看全部消息 →</button></div>';
     } else if (showAll) {
       html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
     }
 
     dropdown.innerHTML = html;
 
-    // 绑定通知项点击
     dropdown.querySelectorAll('.notification-item').forEach(function(item) {
       item.addEventListener('click', function() {
         var notifs = getNotifs();
@@ -249,7 +454,6 @@
       });
     });
 
-    // 绑定底部按钮
     var showAllBtn = document.getElementById('showAllNotifsBtn');
     if (showAllBtn) {
       showAllBtn.addEventListener('click', function(e) {
@@ -316,6 +520,31 @@
     return div.innerHTML;
   }
 
+  // 名言库
+  var quotes = [
+    { text: '学而不思则罔，思而不学则殆。', author: '——《论语》' },
+    { text: '千里之行，始于足下。', author: '—— 老子' },
+    { text: '博学之，审问之，慎思之，明辨之，笃行之。', author: '——《中庸》' },
+    { text: '业精于勤，荒于嬉；行成于思，毁于随。', author: '—— 韩愈' },
+    { text: '不积跬步，无以至千里；不积小流，无以成江海。', author: '—— 荀子' },
+    { text: '三人行，必有我师焉。', author: '——《论语》' },
+    { text: '读书破万卷，下笔如有神。', author: '—— 杜甫' },
+    { text: '天行健，君子以自强不息。', author: '——《周易》' },
+    { text: '宝剑锋从磨砺出，梅花香自苦寒来。', author: '—— 《警世贤文》' },
+    { text: '志当存高远。', author: '—— 诸葛亮' },
+    { text: '路漫漫其修远兮，吾将上下而求索。', author: '—— 屈原' },
+    { text: '少年易老学难成，一寸光阴不可轻。', author: '—— 朱熹' }
+  ];
+  function initQuote() {
+    var q = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById('quoteSection').innerHTML =
+      '<div class="quote-card"><div class="quote-text">' + q.text + '</div><div class="quote-author">' + q.author + '</div></div>';
+  }
+
+  initIcons();
+  initBgDecorations();
+  initCardEntrance();
+  initQuote();
   init();
 </script>
 </body>

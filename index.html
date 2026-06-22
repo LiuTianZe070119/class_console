@@ -5,38 +5,137 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班级办事通 · 登录</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
-    body { min-height: 100vh; background: linear-gradient(145deg, #e4edf7, #d4e0f0); display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .login-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); width: 420px; max-width: 100%; padding: 36px 32px; border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(0,20,50,0.2); }
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+
+    h1, h2, h3, .tab, .btn { font-family: 'Noto Serif SC', serif; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 40%, #F2E0D0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      width: 420px;
+      max-width: 100%;
+      padding: 40px 34px;
+      border-radius: 32px;
+      border: 1px solid rgba(255,255,255,0.45);
+      box-shadow: 0 8px 40px -8px rgba(61,35,20,0.10), 0 2px 8px rgba(61,35,20,0.05);
+    }
+
     .brand { text-align: center; margin-bottom: 24px; }
-    .brand-icon { font-size: 52px; margin-bottom: 8px; }
-    h1 { color: #1e3a5f; font-size: 26px; }
-    .sub { color: #59748f; margin: 6px 0 16px; font-size: 14px; }
-    .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: #eef3fa; border-radius: 30px; padding: 4px; }
-    .tab { flex: 1; text-align: center; padding: 10px; border-radius: 30px; cursor: pointer; font-weight: 550; color: #1e3a5f; transition: 0.2s; font-size: 15px; }
-    .tab.active { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .tab:hover:not(.active) { background: rgba(255,255,255,0.5); }
+    .brand-icon { margin-bottom: 12px; display: flex; justify-content: center; color: #C67B5C; }
+    .brand-icon svg { width: 52px; height: 52px; }
+    h1 { color: #3D2314; font-size: 28px; font-weight: 600; }
+    .sub { color: #8B7355; margin: 6px 0 16px; font-size: 14px; }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      background: rgba(198,123,92,0.08);
+      border-radius: 28px;
+      padding: 5px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 11px;
+      border-radius: 24px;
+      cursor: pointer;
+      font-weight: 500;
+      color: #8B7355;
+      transition: all 0.25s;
+      font-size: 15px;
+      user-select: none;
+    }
+    .tab.active {
+      background: white;
+      color: #C67B5C;
+      box-shadow: 0 2px 12px rgba(61,35,20,0.07);
+    }
+    .tab:hover:not(.active) { color: #3D2314; background: rgba(255,255,255,0.5); }
+
     .form { display: none; }
     .form.active { display: block; }
+
     .input-group { margin-bottom: 16px; }
-    label { color: #1e3a5f; font-weight: 550; margin-left: 6px; display: block; margin-bottom: 4px; font-size: 14px; }
-    input { width: 100%; padding: 14px 18px; border: 1.5px solid #cfdde9; border-radius: 28px; font-size: 16px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; background: #fafbfc; }
-    input:focus { border-color: #2e5a9c; box-shadow: 0 0 0 4px rgba(46,90,156,0.1); background: white; }
-    .btn { width: 100%; background: #1e3a5f; color: white; border: none; padding: 15px; font-size: 18px; font-weight: 600; border-radius: 36px; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
-    .btn:hover { background: #2a4d7a; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(30,58,95,0.3); }
+    label { color: #3D2314; font-weight: 500; margin-left: 6px; display: block; margin-bottom: 4px; font-size: 14px; }
+
+    input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid #E0D0C0;
+      border-radius: 20px;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.25s;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #3D2314;
+    }
+    input::placeholder { color: #B8A090; }
+    input:focus {
+      border-color: #C67B5C;
+      box-shadow: 0 0 0 4px rgba(198,123,92,0.10);
+      background: rgba(255,255,255,0.8);
+    }
+
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #C67B5C 0%, #B5651D 100%);
+      color: white;
+      border: none;
+      padding: 15px;
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 24px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.25s;
+      box-shadow: 0 4px 16px rgba(181,101,29,0.20);
+    }
+    .btn:hover {
+      background: linear-gradient(135deg, #D4946A 0%, #C67B5C 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(181,101,29,0.30);
+    }
     .btn:active { transform: translateY(0); }
-    .error { color: #c7453c; text-align: center; min-height: 20px; margin: 8px 0; font-size: 14px; }
-    .divider { text-align: center; margin: 16px 0; color: #7a8fa0; font-size: 13px; }
+
+    .error { color: #C7564A; text-align: center; min-height: 20px; margin: 8px 0; font-size: 14px; }
+    .divider { text-align: center; margin: 18px 0 4px; color: #8B7355; font-size: 13px; }
 
     /* Toast */
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
-    .toast.error { background: #c62828; }
-    .toast.warn { background: #e65100; }
+    .toast {
+      padding: 14px 22px;
+      border-radius: 16px;
+      color: white;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s ease;
+      max-width: 380px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .toast.error { background: rgba(199,86,74,0.92); }
+    .toast.warn { background: rgba(232,145,58,0.92); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
     @media (max-width: 480px) {
-      .login-card { padding: 24px 20px; border-radius: 28px; }
+      .login-card { padding: 28px 20px; border-radius: 24px; }
     }
   </style>
 </head>
@@ -45,7 +144,7 @@
 
 <div class="login-card">
   <div class="brand">
-    <div class="brand-icon">📋</div>
+    <div class="brand-icon" id="brandIcon"></div>
     <h1>班级办事通</h1>
     <p class="sub">意见反馈 · 课表统计 · 班级协同</p>
   </div>
@@ -94,6 +193,41 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
+  // -- SVG Icon System --
+  function getIcon(name) {
+    var icons = {
+      clipboard: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+      bell: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+      'tree-pine': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14l3-3.3a1 1 0 0 0-.7-1.7H4.7a1 1 0 0 0-.7 1.7L7 14"/><path d="M12 22v-4"/><path d="M14 19l-2-5-2 5"/><path d="M8 14l-3 4h14l-3-4"/></svg>',
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
+      edit: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 3 22l1.5-4.5Z"/></svg>',
+      'bar-chart': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      'message-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>',
+      key: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3"/></svg>',
+      flame: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.06 1-6 .47.5 1 1.04 1 1.5C12 8 8.5 11 8.5 14.5Z"/><path d="M15.5 14.5A2.5 2.5 0 0 0 18 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.06 1-6 .47.5 1 1.04 1 1.5C19 8 15.5 11 15.5 14.5Z"/></svg>',
+      clock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+      rocket: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z"/><path d="M9 12H4l.5-2.5 3-1.5"/><path d="M15 12h5l-.5 2.5-3 1.5"/></svg>',
+      'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      'refresh-cw': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+      unlock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>',
+      star: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+      pin: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v7"/><circle cx="12" cy="19" r="3"/><path d="M8 17c-3.08.62-6 2-6 4h20c0-2-2.92-3.38-6-4"/></svg>',
+      trash: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4c0-1 .6-2 2-2h4c1.4 0 2 1 2 2v2"/><path d="M19 6l-.87 12.14A2 2 0 0 1 16.14 20H7.86a2 2 0 0 1-2-1.86L5 6"/><path d="M10 10v6"/><path d="M14 10v6"/></svg>',
+      user: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+      heart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+      lightbulb: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.59-.5 1.12-1.05 1.56-1.66A5 5 0 1 0 6.5 8.77c.4.65.9 1.24 1.48 1.73L9 11v5l3 3 3-3v-5Z"/><path d="M9 21h6"/><path d="M12 2v1"/></svg>',
+      'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+      x: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+      book: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15Z"/></svg>',
+      'chevron-right': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
+      'mail-question': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-8.6 7a2 2 0 0 1-2.8 0L2 7"/><path d="M12 12l.01-.01"/><path d="M12 15v.01"/></svg>'
+    };
+    return (icons[name] || '').replace('width="24"','width="'+ (arguments[1]||24) +'"').replace('height="24"','height="'+ (arguments[1]||24) +'"');
+  }
+
+  // 初始化品牌图标
+  document.getElementById('brandIcon').innerHTML = getIcon('clipboard', 52);
+
   var SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

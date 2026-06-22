@@ -5,123 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班级办事通 · 树洞</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
-    body { background: #f5f0e8; min-height: 100vh; }
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
 
-    .navbar { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); padding: 12px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px; }
-    .logo { font-size: 22px; font-weight: 650; color: #4a3728; white-space: nowrap; }
+    :root {
+      --color-primary: #C67B5C;
+      --color-primary-dark: #A0583D;
+      --color-bg: #FDF6F0;
+      --color-bg-end: #F8EDE3;
+      --color-surface: rgba(255,255,255,0.55);
+      --color-surface-hover: rgba(255,255,255,0.75);
+      --color-text: #3D2314;
+      --color-text-muted: #8B7355;
+      --color-border: rgba(255,255,255,0.35);
+      --color-danger: #C7564A;
+      --color-success: #5D9B6F;
+      --color-warning: #E8913A;
+      --blur-card: 16px;
+      --blur-modal: 8px;
+      --radius-card: 24px;
+      --radius-btn: 28px;
+      --radius-sm: 16px;
+      --shadow-card: 0 8px 32px rgba(139, 90, 60, 0.08);
+      --shadow-hover: 0 16px 40px rgba(139, 90, 60, 0.14);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', 'PingFang SC', sans-serif; }
+    body { background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 40%, #F2E0D0 100%); min-height: 100vh; background-attachment: fixed; }
+
+    .navbar { background: rgba(255,255,255,0.65); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 28px; border-bottom: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px; }
+    .logo { font-family: 'Noto Serif SC', serif; font-size: 22px; font-weight: 600; color: var(--color-text); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .logo svg { color: var(--color-primary); }
     .user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .badge { background: #f0ebe0; padding: 6px 16px; border-radius: 30px; font-size: 14px; color: #4a3728; font-weight: 500; }
+    .badge { background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); padding: 6px 16px; border-radius: 30px; font-size: 14px; color: var(--color-text); font-weight: 600; border: 1px solid var(--color-border); }
 
-    .btn { background: #4a3728; color: white; border: none; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.2s; white-space: nowrap; }
-    .btn:hover { background: #6b5340; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(74,55,40,0.3); }
+    .btn { background: var(--color-primary); color: white; border: none; padding: 10px 22px; border-radius: var(--radius-btn); cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s ease; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { background: var(--color-primary-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(160, 88, 61, 0.3); }
     .btn:active { transform: translateY(0); }
-    .btn-outline { background: transparent; border: 1.5px solid #4a3728; color: #4a3728; }
-    .btn-outline:hover { background: #f0ebe0; transform: translateY(-1px); }
+    .btn-outline { background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); border: 1.5px solid rgba(198, 123, 92, 0.4); color: var(--color-primary-dark); }
+    .btn-outline:hover { background: rgba(255,255,255,0.7); border-color: var(--color-primary); transform: translateY(-1px); }
+    .logo span, .btn span { display: inline-flex; align-items: center; }
 
     .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
 
-    /* 发布便利贴 */
-    .post-box { background: white; border-radius: 24px; padding: 24px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
-    .post-box h3 { color: #4a3728; margin-bottom: 16px; }
-    textarea { width: 100%; padding: 14px 18px; border: 1.5px solid #e0d5c5; border-radius: 18px; margin-bottom: 14px; font-size: 15px; outline: none; transition: border-color 0.2s; background: #fefcf8; resize: vertical; min-height: 80px; }
-    textarea:focus { border-color: #8b7355; box-shadow: 0 0 0 3px rgba(139,115,85,0.1); background: white; }
+    .post-box { background: var(--color-surface); backdrop-filter: blur(var(--blur-card)); -webkit-backdrop-filter: blur(var(--blur-card)); border-radius: var(--radius-card); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); transition: all 0.25s ease; }
+    .post-box h3 { color: var(--color-text); margin-bottom: 16px; font-family: 'Noto Serif SC', serif; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+    .post-box h3 svg { color: var(--color-primary); }
+    textarea { width: 100%; padding: 14px 18px; border: 1.5px solid rgba(198, 123, 92, 0.2); border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 15px; outline: none; transition: all 0.2s ease; background: rgba(255,255,255,0.5); resize: vertical; min-height: 80px; color: var(--color-text); }
+    textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(198, 123, 92, 0.1); background: rgba(255,255,255,0.8); }
 
-    /* 便利贴墙 */
     .sticky-wall { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 10px 0; }
-    .sticky-note { width: 220px; min-height: 180px; padding: 20px 18px 14px; border-radius: 4px 20px 8px 24px; box-shadow: 3px 4px 12px rgba(0,0,0,0.1), 1px 1px 0 rgba(0,0,0,0.05); cursor: pointer; transition: all 0.25s; position: relative; display: flex; flex-direction: column; }
-    .sticky-note:hover { transform: scale(1.06) rotate(0deg) !important; box-shadow: 6px 8px 20px rgba(0,0,0,0.18); z-index: 10; }
-    .sticky-note::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 50px; height: 14px; background: rgba(255,255,255,0.7); border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
-    .sticky-note .note-content { flex: 1; font-size: 15px; line-height: 1.6; color: #3d3226; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; word-break: break-word; }
-    .sticky-note .note-footer { margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 12px; color: #8b7355; }
+    .sticky-note { width: 220px; min-height: 180px; padding: 20px 18px 14px; border-radius: 4px 20px 8px 24px; box-shadow: 3px 4px 14px rgba(139, 90, 60, 0.1), 0 1px 3px rgba(139, 90, 60, 0.06); cursor: pointer; transition: all 0.25s ease; position: relative; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.5); }
+    .sticky-note:hover { transform: scale(1.06) rotate(0deg) !important; box-shadow: 6px 8px 24px rgba(139, 90, 60, 0.2); z-index: 10; }
+    .sticky-note::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 50px; height: 14px; background: rgba(255,255,255,0.6); border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .sticky-note .note-content { flex: 1; font-size: 15px; line-height: 1.6; color: #3D2314; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; word-break: break-word; }
+    .sticky-note .note-footer { margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 12px; color: rgba(61, 35, 20, 0.6); }
     .sticky-note .note-reactions { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
-    .sticky-note .reaction-badge { background: rgba(255,255,255,0.6); padding: 2px 7px; border-radius: 12px; font-size: 13px; cursor: pointer; transition: background 0.15s; }
-    .sticky-note .reaction-badge:hover { background: rgba(255,255,255,0.9); }
+    .sticky-note .reaction-badge { background: rgba(255,255,255,0.55); padding: 2px 7px; border-radius: 12px; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+    .sticky-note .reaction-badge:hover { background: rgba(255,255,255,0.85); }
 
-    /* 便利贴颜色 */
-    .note-yellow { background: linear-gradient(170deg, #fff9c4, #fff176); }
-    .note-pink { background: linear-gradient(170deg, #fce4ec, #f8bbd0); }
-    .note-blue { background: linear-gradient(170deg, #e3f2fd, #90caf9); }
-    .note-green { background: linear-gradient(170deg, #e8f5e9, #a5d6a7); }
-    .note-orange { background: linear-gradient(170deg, #fff3e0, #ffcc80); }
-    .note-purple { background: linear-gradient(170deg, #f3e5f5, #ce93d8); }
-    .note-teal { background: linear-gradient(170deg, #e0f2f1, #80cbc4); }
-    .note-peach { background: linear-gradient(170deg, #fdf2f0, #f4bfb5); }
+    .note-yellow { background: linear-gradient(170deg, rgba(255,249,220,0.92), rgba(255,224,130,0.88)); }
+    .note-rose { background: linear-gradient(170deg, rgba(252,228,236,0.92), rgba(244,191,181,0.88)); }
+    .note-sky { background: linear-gradient(170deg, rgba(232,240,254,0.92), rgba(168,200,250,0.88)); }
+    .note-mint { background: linear-gradient(170deg, rgba(232,245,233,0.92), rgba(181,216,176,0.88)); }
+    .note-amber { background: linear-gradient(170deg, rgba(255,243,224,0.92), rgba(255,204,128,0.88)); }
+    .note-lavender { background: linear-gradient(170deg, rgba(243,229,245,0.92), rgba(212,181,216,0.88)); }
+    .note-sage { background: linear-gradient(170deg, rgba(232,240,232,0.92), rgba(181,200,181,0.88)); }
+    .note-peach { background: linear-gradient(170deg, rgba(254,240,232,0.92), rgba(244,191,168,0.88)); }
 
-    /* 模态框 */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(61, 35, 20, 0.25); backdrop-filter: blur(var(--blur-modal)); -webkit-backdrop-filter: blur(var(--blur-modal)); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .modal-content { background: white; width: 92%; max-width: 560px; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-    .close-icon { float: right; font-size: 26px; cursor: pointer; color: #7a8fa0; line-height: 1; transition: color 0.2s; }
-    .close-icon:hover { color: #4a3728; }
+    .modal-content { background: rgba(255,255,255,0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); width: 92%; max-width: 560px; max-height: 85vh; border-radius: var(--radius-card); padding: 24px; overflow-y: auto; box-shadow: 0 20px 60px rgba(61, 35, 20, 0.2); border: 1px solid var(--color-border); }
+    .close-icon { float: right; font-size: 26px; cursor: pointer; color: var(--color-text-muted); line-height: 1; transition: color 0.2s; display: flex; align-items: center; }
+    .close-icon:hover { color: var(--color-text); }
+    .close-icon svg { width: 24px; height: 24px; }
 
-    .wall-delete-btn { position: absolute; top: 6px; right: 8px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.15); color: white; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; z-index: 5; }
+    .wall-delete-btn { position: absolute; top: 6px; right: 8px; width: 24px; height: 24px; border-radius: 50%; border: none; background: rgba(0,0,0,0.12); color: white; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; z-index: 5; }
     .sticky-note:hover .wall-delete-btn { opacity: 1; }
-    .wall-delete-btn:hover { background: rgba(198,40,40,0.7); }
-    .owner-badge { position: absolute; top: -4px; left: 12px; background: rgba(74,55,40,0.75); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; z-index: 5; }
-    .detail-delete-btn { display: inline-block; background: none; border: 1px solid #e0d5c5; color: #c62828; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; margin-top: 12px; transition: all 0.2s; }
-    .detail-delete-btn:hover { background: #fff0f0; border-color: #c62828; }
+    .wall-delete-btn:hover { background: rgba(199, 86, 74, 0.7); }
+    .wall-delete-btn svg { width: 14px; height: 14px; }
+    .owner-badge { position: absolute; top: -4px; left: 12px; background: rgba(198, 123, 92, 0.8); backdrop-filter: blur(4px); color: white; font-size: 10px; padding: 2px 9px; border-radius: 10px; font-weight: 600; z-index: 5; }
+    .detail-delete-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid rgba(199, 86, 74, 0.3); color: var(--color-danger); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; margin-top: 12px; transition: all 0.2s; font-weight: 500; }
+    .detail-delete-btn:hover { background: rgba(199, 86, 74, 0.08); border-color: var(--color-danger); }
+    .detail-delete-btn svg { width: 16px; height: 16px; }
 
-    .notification-bell { position: relative; cursor: pointer; font-size: 24px; padding: 4px 8px; border-radius: 12px; transition: background 0.2s; }
-    .notification-bell:hover { background: #f0ebe0; }
-    .notification-dot { position: absolute; top: 0px; right: -2px; width: 10px; height: 10px; background: #c62828; border-radius: 50%; animation: blink 1s infinite; }
-    .notification-dropdown { position: fixed; top: 60px; right: 20px; background: white; width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 36px rgba(0,0,0,0.15); border-radius: 20px; padding: 12px; display: none; z-index: 200; }
-    .notification-item { padding: 10px 14px; border-bottom: 1px solid #f0ebe0; font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; }
-    .notification-item:hover { background: #f5f0e8; }
-    .notification-item.unread { background: #f0ebe0; font-weight: 500; }
-    .notification-item.read { color: #8b7355; }
-    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid #f0ebe0; margin-top: 8px; }
-    .notif-footer button { background: none; border: none; color: #4a3728; cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
-    .notif-footer button:hover { background: #f0ebe0; }
+    .notification-bell { position: relative; cursor: pointer; padding: 6px 8px; border-radius: 12px; transition: background 0.2s; display: flex; align-items: center; }
+    .notification-bell:hover { background: rgba(255,255,255,0.5); }
+    .notification-bell svg { width: 24px; height: 24px; color: var(--color-text); }
+    .notification-dot { position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: var(--color-danger); border-radius: 50%; animation: blink 1s infinite; border: 2px solid rgba(255,255,255,0.8); }
+    .notification-dropdown { position: fixed; top: 60px; right: 20px; width: 340px; max-height: 420px; overflow-y: auto; background: rgba(255,255,255,0.78); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 16px 48px rgba(61, 35, 20, 0.18); border-radius: var(--radius-card); padding: 12px; display: none; z-index: 200; border: 1px solid var(--color-border); }
+    .notification-item { padding: 10px 14px; border-bottom: 1px solid rgba(139, 115, 85, 0.1); font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; display: flex; align-items: flex-start; gap: 10px; }
+    .notification-item:hover { background: rgba(255,255,255,0.6); }
+    .notification-item.unread { background: rgba(198, 123, 92, 0.08); font-weight: 600; }
+    .notification-item.read { color: var(--color-text-muted); }
+    .notification-item .notif-icon { flex-shrink: 0; margin-top: 1px; }
+    .notification-item .notif-icon svg { width: 18px; height: 18px; }
+    .notification-item .notif-body { flex: 1; min-width: 0; }
+    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid rgba(139, 115, 85, 0.1); margin-top: 8px; }
+    .notif-footer button { background: none; border: none; color: var(--color-primary-dark); cursor: pointer; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+    .notif-footer button:hover { background: rgba(255,255,255,0.5); }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
-    .delete-reason-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+    .delete-reason-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(61, 35, 20, 0.25); backdrop-filter: blur(var(--blur-modal)); -webkit-backdrop-filter: blur(var(--blur-modal)); display: none; align-items: center; justify-content: center; z-index: 2000; }
     .delete-reason-modal.active { display: flex; }
-    .delete-reason-content { background: white; width: 90%; max-width: 420px; border-radius: 24px; padding: 28px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-    .delete-reason-content h3 { color: #4a3728; margin-bottom: 16px; }
-    .delete-reason-content textarea { width: 100%; padding: 14px; border: 1.5px solid #e0d5c5; border-radius: 16px; font-size: 15px; outline: none; resize: vertical; min-height: 80px; background: #fefcf8; }
-    .delete-reason-content textarea:focus { border-color: #8b7355; box-shadow: 0 0 0 3px rgba(139,115,85,0.1); }
+    .delete-reason-content { background: rgba(255,255,255,0.78); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); width: 90%; max-width: 420px; border-radius: var(--radius-card); padding: 28px 24px; box-shadow: 0 20px 60px rgba(61, 35, 20, 0.2); border: 1px solid var(--color-border); }
+    .delete-reason-content h3 { color: var(--color-text); margin-bottom: 16px; font-family: 'Noto Serif SC', serif; display: flex; align-items: center; gap: 8px; }
+    .delete-reason-content h3 svg { color: var(--color-danger); width: 22px; height: 22px; }
+    .delete-reason-content textarea { width: 100%; padding: 14px; border: 1.5px solid rgba(198, 123, 92, 0.2); border-radius: var(--radius-sm); font-size: 15px; outline: none; resize: vertical; min-height: 80px; background: rgba(255,255,255,0.5); color: var(--color-text); }
+    .delete-reason-content textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(198, 123, 92, 0.1); }
     .delete-reason-content .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
 
-    .delete-reply-btn { font-size: 14px; cursor: pointer; opacity: 0; transition: opacity 0.2s; background: none; border: none; color: #c62828; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
+    .delete-reply-btn { font-size: 14px; cursor: pointer; opacity: 0; transition: opacity 0.2s; background: none; border: none; color: var(--color-danger); padding: 2px 6px; border-radius: 6px; margin-left: 6px; display: inline-flex; align-items: center; }
     .reply-bubble:hover .delete-reply-btn { opacity: 0.6; }
-    .delete-reply-btn:hover { opacity: 1 !important; background: rgba(198,40,40,0.1); }
+    .delete-reply-btn:hover { opacity: 1 !important; background: rgba(199, 86, 74, 0.1); }
+    .delete-reply-btn svg { width: 14px; height: 14px; }
 
-    /* 回复气泡 */
     .reply-bubble { padding: 12px 16px; border-radius: 20px; margin-bottom: 10px; position: relative; }
-    .reply-bubble.odd { background: #f5f0e8; margin-right: 40px; border-bottom-left-radius: 6px; }
-    .reply-bubble.even { background: #e8edf5; margin-left: 40px; text-align: right; border-bottom-right-radius: 6px; }
-    .reply-bubble .reply-author { font-weight: 600; font-size: 13px; color: #6b5340; margin-bottom: 4px; }
-    .reply-bubble .reply-text { font-size: 15px; color: #333; line-height: 1.5; }
-    .reply-bubble .reply-time { font-size: 11px; color: #999; margin-top: 4px; }
+    .reply-bubble.odd { background: rgba(255,255,255,0.5); margin-right: 40px; border-bottom-left-radius: 6px; border: 1px solid rgba(255,255,255,0.3); }
+    .reply-bubble.even { background: rgba(198, 123, 92, 0.08); margin-left: 40px; text-align: right; border-bottom-right-radius: 6px; border: 1px solid rgba(198, 123, 92, 0.1); }
+    .reply-bubble .reply-author { font-weight: 600; font-size: 13px; color: var(--color-primary-dark); margin-bottom: 4px; }
+    .reply-bubble .reply-text { font-size: 15px; color: var(--color-text); line-height: 1.5; }
+    .reply-bubble .reply-time { font-size: 11px; color: var(--color-text-muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; justify-content: inherit; }
 
-    .reply-input-row { display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee; }
-    .reply-input-row input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1.5px solid #e0d5c5; outline: none; font-size: 15px; background: #fefcf8; }
-    .reply-input-row input:focus { border-color: #8b7355; }
+    .reply-input-row { display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(139, 115, 85, 0.15); }
+    .reply-input-row input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1.5px solid rgba(198, 123, 92, 0.2); outline: none; font-size: 15px; background: rgba(255,255,255,0.5); color: var(--color-text); transition: all 0.2s ease; }
+    .reply-input-row input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(198, 123, 92, 0.1); background: rgba(255,255,255,0.8); }
 
-    /* 表情回应 */
-    .emoji-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; }
-    .emoji-btn { font-size: 22px; cursor: pointer; padding: 6px 10px; border-radius: 16px; transition: all 0.15s; position: relative; user-select: none; background: transparent; border: none; }
-    .emoji-btn:hover { background: #f0ebe0; transform: scale(1.2); }
-    .emoji-btn.active { background: #e8dcc8; }
-    .emoji-btn .emoji-count { font-size: 11px; position: absolute; top: -4px; right: -2px; background: #4a3728; color: white; border-radius: 10px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+    .emoji-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(139, 115, 85, 0.15); }
+    .emoji-btn { font-size: 22px; cursor: pointer; padding: 6px 10px; border-radius: 16px; transition: all 0.15s ease; position: relative; user-select: none; background: transparent; border: none; }
+    .emoji-btn:hover { background: rgba(255,255,255,0.6); transform: scale(1.2); }
+    .emoji-btn.active { background: rgba(198, 123, 92, 0.12); }
+    .emoji-btn .emoji-count { font-size: 11px; position: absolute; top: -4px; right: -2px; background: var(--color-primary); color: white; border-radius: 10px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 4px; font-weight: 600; }
 
-    /* 空状态 */
-    .empty-state { text-align: center; padding: 60px 20px; color: #8b7355; }
-    .empty-state .empty-icon { font-size: 64px; margin-bottom: 16px; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text-muted); }
+    .empty-state .empty-icon { margin-bottom: 16px; }
+    .empty-state .empty-icon svg { width: 64px; height: 64px; color: rgba(198, 123, 92, 0.25); }
 
-    /* Toast */
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
-    .toast.success { background: #2e7d32; }
-    .toast.error { background: #c62828; }
-    .toast.warn { background: #e65100; }
+    .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 600; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(8px); }
+    .toast.success { background: rgba(93, 155, 111, 0.9); }
+    .toast.error { background: rgba(199, 86, 74, 0.9); }
+    .toast.warn { background: rgba(232, 145, 58, 0.9); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #e0d5c5; border-top-color: #4a3728; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid rgba(198, 123, 92, 0.15); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.5); z-index: 999; align-items: center; justify-content: center; }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(253, 246, 240, 0.5); backdrop-filter: blur(2px); z-index: 999; align-items: center; justify-content: center; }
     .loading-overlay.active { display: flex; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sticky-note { transition: none; }
+      .sticky-note:hover { transform: none !important; }
+      .toast { animation: none; }
+      .notification-dot { animation: none; }
+    }
 
     @media (max-width: 640px) {
       .navbar { padding: 10px 16px; }
@@ -137,24 +173,24 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="navbar">
-  <div class="logo">🌲 树洞</div>
+  <div class="logo"><span id="logoIcon"></span>树洞</div>
   <div class="user-info">
-    <div class="notification-bell" id="notificationBell">🔔<span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
+    <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <span class="badge" id="userDisplay"></span>
-    <button class="btn-outline btn" onclick="window.location.href='main.html'">← 返回办事通</button>
+    <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backArrow"></span>返回办事通</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
 
 <div class="container">
   <div class="post-box">
-    <h3>📝 写一张便利贴</h3>
+    <h3><span id="editIcon"></span>写一张便利贴</h3>
     <textarea id="postContent" placeholder="分享你的想法… 发布后将以匿名形式展示，但内容请保持友善~" maxlength="500"></textarea>
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-      <span style="font-size:13px;color:#8b7355;">🖐️ 所有人看到的内容都是匿名的</span>
+      <span style="font-size:13px;color:var(--color-text-muted);display:inline-flex;align-items:center;gap:4px;"><span id="anonymousTip"></span>所有人看到的内容都是匿名的</span>
       <span style="display:flex; gap:8px; align-items:center;">
-        <span style="font-size:13px;color:#aaa;" id="charCount">0/500</span>
-        <button class="btn" id="submitPostBtn">📌 贴上去</button>
+        <span style="font-size:13px;color:var(--color-text-muted);" id="charCount">0/500</span>
+        <button class="btn" id="submitPostBtn"><span id="pinIcon"></span>贴上去</button>
       </span>
     </div>
   </div>
@@ -162,10 +198,9 @@
   <div class="sticky-wall" id="stickyWall"></div>
 </div>
 
-<!-- 便利贴详情弹窗 -->
 <div class="modal" id="detailModal">
   <div class="modal-content" id="detailModalContent">
-    <span class="close-icon" onclick="closeDetailModal()">&times;</span>
+    <span class="close-icon" onclick="closeDetailModal()"></span>
     <div id="detailNote" style="padding:24px 20px; border-radius:20px; margin-bottom:16px;"></div>
     <div id="detailReplies" style="max-height:280px; overflow-y:auto; margin-bottom:8px;"></div>
     <div class="emoji-bar" id="detailEmojiBar"></div>
@@ -176,26 +211,59 @@
   </div>
 </div>
 
-<!-- 管理员删除原因弹窗 -->
 <div class="delete-reason-modal" id="deleteReasonModal">
   <div class="delete-reason-content">
-    <h3>🗑️ 删除原因</h3>
-    <p style="color:#8b7355;font-size:14px;margin-bottom:12px;">你将删除他人的便利贴，请输入删除原因，发布者将收到通知。</p>
+    <h3><span id="deleteReasonIcon"></span>删除原因</h3>
+    <p style="color:var(--color-text-muted);font-size:14px;margin-bottom:12px;">你将删除他人的便利贴，请输入删除原因，发布者将收到通知。</p>
     <textarea id="deleteReasonInput" placeholder="输入删除原因（必填）…" maxlength="200"></textarea>
     <div class="btn-row">
       <button class="btn-outline btn" id="cancelDeleteBtn">取消</button>
-      <button class="btn" id="confirmDeleteBtn" style="background:#c62828;">确认删除</button>
+      <button class="btn" id="confirmDeleteBtn" style="background:var(--color-danger);">确认删除</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
+  // ========== SVG Icon System ==========
+  function getIcon(name, size) {
+    size = size || 22;
+    var w = size, h = size;
+    var icons = {
+      'tree-pine': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8h3v2l-4 5h10l-4-5v-2h3L12 2z"/><path d="M12 16v6"/></svg>',
+      'bell': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+      'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>',
+      'edit': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+      'eye': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+      'pin': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="3.5" r="1.8"/><path d="M15 5.5v5l3 1.5V13H6v-1.5l3-1.5v-5h6z"/></svg>',
+      'trash': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
+      'message-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+      'inbox': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3H10l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+      'x': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>',
+      'clipboard': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
+      'lightbulb': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7V17h8v-2.3c1.8-1.3 3-3.4 3-5.7a7 7 0 0 0-7-7z"/></svg>',
+      'heart': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
+    };
+    return icons[name] || '';
+  }
+
+  function initIcons() {
+    document.getElementById('logoIcon').innerHTML = getIcon('tree-pine', 26);
+    document.getElementById('bellIcon').innerHTML = getIcon('bell', 24);
+    document.getElementById('backArrow').innerHTML = getIcon('arrow-left', 18);
+    document.getElementById('editIcon').innerHTML = getIcon('edit', 22);
+    document.getElementById('anonymousTip').innerHTML = getIcon('eye', 16);
+    document.getElementById('pinIcon').innerHTML = getIcon('pin', 18);
+    document.getElementById('deleteReasonIcon').innerHTML = getIcon('trash', 22);
+    document.querySelector('#detailModalContent .close-icon').innerHTML = getIcon('x', 24);
+  }
+
+  // ========== App Logic ==========
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const NOTE_COLORS = ['note-yellow', 'note-pink', 'note-blue', 'note-green', 'note-orange', 'note-purple', 'note-teal', 'note-peach'];
+  const NOTE_COLORS = ['note-yellow', 'note-rose', 'note-sky', 'note-mint', 'note-amber', 'note-lavender', 'note-sage', 'note-peach'];
   const REACTION_EMOJIS = ['👍', '💪', '😊', '❤️', '🎉', '🌟', '🔥', '👏'];
   const ANON_NAMES = ['小熊', '小鹿', '小兔', '小猫', '小狗', '小鱼', '小鸟', '小星', '小月', '小云', '小溪', '小树', '小花', '小草', '小雨', '小雪'];
 
@@ -214,7 +282,6 @@
   let detailReactions = {};
   let pendingDelete = { postId: null, authorId: null, content: '', isAdminDelete: false };
 
-  // 通知
   var STORAGE_NOTIF = 'classroom_notifications';
   function getNotifs() { return JSON.parse(localStorage.getItem(STORAGE_NOTIF) || '[]'); }
   function saveNotifs(arr) { localStorage.setItem(STORAGE_NOTIF, JSON.stringify(arr)); }
@@ -227,7 +294,7 @@
       type: type,
       content: content,
       reason: reason || '',
-	      post_id: postId || '',
+      post_id: postId || '',
       read: false,
       created_at: new Date().toISOString()
     });
@@ -252,7 +319,6 @@
   function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
   function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
 
-  // 根据 post id 生成确定性的旋转角度 (-3 ~ 3 度)
   function getRotation(id) {
     var hash = 0;
     for (var i = 0; i < id.length; i++) {
@@ -262,7 +328,6 @@
     return (hash % 70) / 10 - 3.5;
   }
 
-  // 根据 post id 选择颜色
   function getColorClass(id) {
     var hash = 0;
     for (var i = 0; i < id.length; i++) {
@@ -279,9 +344,9 @@
     document.getElementById('userDisplay').innerText =
       currentUser.real_name + ' (' + currentUser.student_id + ')';
 
+    initIcons();
     updateNotifDot();
 
-    // 字数统计
     document.getElementById('postContent').addEventListener('input', function() {
       document.getElementById('charCount').textContent = this.value.length + '/500';
     });
@@ -298,16 +363,13 @@
     if (res.error) { hideLoading(); toast('加载失败：' + res.error.message, 'error'); return; }
     postsData = res.data || [];
 
-    // 加载所有表情统计数据
     var reactionsRes = await supabaseClient.from('treehole_reactions').select('*');
     var reactionsData = reactionsRes.data || [];
 
-    // 加载回复计数
     var repliesRes = await supabaseClient.from('treehole_replies').select('post_id');
 
     hideLoading();
 
-    // 构建表情映射: postId -> { emoji: count }
     var reactionMap = {};
     reactionsData.forEach(function(r) {
       if (!reactionMap[r.post_id]) reactionMap[r.post_id] = {};
@@ -316,7 +378,6 @@
       if (r.user_id === currentUser.id) reactionMap[r.post_id][r.emoji].byMe = true;
     });
 
-    // 构建回复计数
     var replyCountMap = {};
     (repliesRes.data || []).forEach(function(r) {
       replyCountMap[r.post_id] = (replyCountMap[r.post_id] || 0) + 1;
@@ -328,7 +389,7 @@
   function renderWall(reactionMap, replyCountMap) {
     var wall = document.getElementById('stickyWall');
     if (postsData.length === 0) {
-      wall.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p style="font-size:18px;font-weight:500;">墙上还没有便利贴</p><p style="margin-top:8px;color:#a09080;">来贴第一张吧！</p></div>';
+      wall.innerHTML = '<div class="empty-state"><div class="empty-icon">' + getIcon('inbox', 64) + '</div><p style="font-size:18px;font-weight:600;color:var(--color-text);">墙上还没有便利贴</p><p style="margin-top:8px;color:var(--color-text-muted);">来贴第一张吧！</p></div>';
       return;
     }
     wall.innerHTML = postsData.map(function(post) {
@@ -346,19 +407,20 @@
         return '<span class="reaction-badge">' + emoji + ' ' + count + '</span>';
       }).filter(Boolean).join('');
 
+      var replyIcon = replyCount ? '<span style="display:inline-flex;align-items:center;gap:2px;">' + getIcon('message-circle', 14) + replyCount + '</span>' : '';
+
       return '<div class="sticky-note ' + colorClass + '" style="transform:rotate(' + rotation + 'deg);" data-post-id="' + post.id + '">' +
         (isOwner ? '<span class="owner-badge">你的便利贴</span>' : '') +
-        (canDelete ? '<button class="wall-delete-btn" data-delete-id="' + post.id + '" data-author-id="' + post.author_id + '" data-content="' + escapeAttr(post.content) + '">×</button>' : '') +
+        (canDelete ? '<button class="wall-delete-btn" data-delete-id="' + post.id + '" data-author-id="' + post.author_id + '" data-content="' + escapeAttr(post.content) + '">' + getIcon('x', 14) + '</button>' : '') +
         '<div class="note-content">' + escapeHtml(post.content) + '</div>' +
         '<div class="note-reactions">' + (reactionBadges || '') + '</div>' +
         '<div class="note-footer">' +
           '<span>' + formatTime(post.created_at) + '</span>' +
-          '<span>' + (replyCount ? '💬' + replyCount : '') + '</span>' +
+          '<span>' + replyIcon + '</span>' +
         '</div>' +
       '</div>';
     }).join('');
 
-    // 绑定点击事件
     wall.querySelectorAll('.sticky-note').forEach(function(note) {
       note.addEventListener('click', function(e) {
         if (e.target.closest('.wall-delete-btn')) return;
@@ -366,7 +428,6 @@
       });
     });
 
-    // 绑定删除事件
     wall.querySelectorAll('.wall-delete-btn').forEach(function(btn) {
       btn.addEventListener('click', async function(e) {
         e.stopPropagation();
@@ -389,7 +450,6 @@
     return d.toLocaleDateString();
   }
 
-  // 发布便利贴
   document.getElementById('submitPostBtn').addEventListener('click', async function() {
     var content = document.getElementById('postContent').value.trim();
     if (!content) { toast('请写点内容再贴上去~', 'warn'); return; }
@@ -411,7 +471,6 @@
     loadPosts();
   });
 
-  // 回车发布
   document.getElementById('postContent').addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -419,13 +478,11 @@
     }
   });
 
-  // 打开详情弹窗
   async function openDetail(postId) {
     currentPostId = postId;
     var post = postsData.find(function(p) { return p.id === postId; });
     if (!post) return;
 
-    // 渲染便利贴内容
     var colorClass = getColorClass(post.id);
     var rotation = getRotation(post.id);
     var canDelete = currentUser.id === post.author_id || currentUser.role === 'admin';
@@ -436,16 +493,14 @@
         '<div class="note-content" style="-webkit-line-clamp:unset;">' + escapeHtml(post.content) + '</div>' +
         '<div class="note-footer"><span>' + formatTime(post.created_at) + '</span></div>' +
       '</div>' +
-      (canDelete ? '<div style="text-align:right;"><button class="detail-delete-btn" id="deletePostBtn">🗑️ 删除这张便利贴</button></div>' : '');
+      (canDelete ? '<div style="text-align:right;"><button class="detail-delete-btn" id="deletePostBtn">' + getIcon('trash', 16) + ' 删除这张便利贴</button></div>' : '');
 
-    // 绑定删除便利贴事件
     if (canDelete) {
       document.getElementById('deletePostBtn').addEventListener('click', function() {
         startDelete(postId, post.author_id, post.content);
       });
     }
 
-    // 加载回复
     showLoading();
     var repliesRes = await supabaseClient
       .from('treehole_replies')
@@ -456,18 +511,17 @@
 
     var replies = repliesRes.data || [];
     document.getElementById('detailReplies').innerHTML = replies.length === 0
-      ? '<div style="text-align:center;color:#aaa;padding:20px;">还没有回复，来写第一条吧~</div>'
+      ? '<div style="text-align:center;color:var(--color-text-muted);padding:20px;">还没有回复，来写第一条吧~</div>'
       : replies.map(function(r, i) {
           var canDeleteReply = currentUser.id === r.user_id || currentUser.role === 'admin';
           return '<div class="reply-bubble ' + (i % 2 === 0 ? 'odd' : 'even') + '">' +
             '<div class="reply-text">' + escapeHtml(r.content) + '</div>' +
             '<div class="reply-time">' + formatTime(r.created_at) +
-              (canDeleteReply ? ' <button class="delete-reply-btn" data-reply-id="' + r.id + '" title="删除回复">×</button>' : '') +
+              (canDeleteReply ? ' <button class="delete-reply-btn" data-reply-id="' + r.id + '" title="删除回复">' + getIcon('x', 14) + '</button>' : '') +
             '</div>' +
           '</div>';
         }).join('');
 
-    // 绑定删除回复事件
     document.querySelectorAll('.delete-reply-btn').forEach(function(btn) {
       btn.addEventListener('click', async function(e) {
         e.stopPropagation();
@@ -480,7 +534,6 @@
       });
     });
 
-    // 加载当前用户的表情及计数
     var reactionsRes = await supabaseClient
       .from('treehole_reactions')
       .select('*')
@@ -515,7 +568,6 @@
       btn.addEventListener('click', async function() {
         var emoji = btn.dataset.emoji;
         if (detailReactions[emoji].byMe) {
-          // 移除表情
           var delRes = await supabaseClient
             .from('treehole_reactions')
             .delete()
@@ -526,7 +578,6 @@
           detailReactions[emoji].count--;
           detailReactions[emoji].byMe = false;
         } else {
-          // 添加表情
           var insRes = await supabaseClient
             .from('treehole_reactions')
             .insert({ post_id: currentPostId, user_id: currentUser.id, emoji: emoji });
@@ -535,12 +586,11 @@
           detailReactions[emoji].byMe = true;
         }
         renderEmojiBar();
-        loadPosts(); // 刷新墙上的表情计数
+        loadPosts();
       });
     });
   }
 
-  // 发送回复
   document.getElementById('sendDetailReplyBtn').addEventListener('click', async function() {
     var content = document.getElementById('detailReplyInput').value.trim();
     if (!content) { toast('请输入回复内容', 'warn'); return; }
@@ -553,10 +603,10 @@
       content: content
     });
     if (res.error) { toast('回复失败：' + res.error.message, 'error'); return; }
-	    var post = postsData.find(function(p) { return p.id === currentPostId; });
-	    if (post && post.author_id !== currentUser.id) {
-	      addNotification(post.author_id, 'treehole_reply', post.content, '', post.id);
-	    }
+    var post = postsData.find(function(p) { return p.id === currentPostId; });
+    if (post && post.author_id !== currentUser.id) {
+      addNotification(post.author_id, 'treehole_reply', post.content, '', post.id);
+    }
     openDetail(currentPostId);
     loadPosts();
   });
@@ -584,7 +634,6 @@
     return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  // ---- 通知铃铛 ----
   function renderNotifDropdown(showAll) {
     var dropdown = document.getElementById('notificationDropdown');
     var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
@@ -596,29 +645,30 @@
 
     var html = '';
     if (displayNotifs.length === 0) {
-      html = '<div style="padding:16px;text-align:center;color:#9e9e9e;">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
+      html = '<div style="padding:16px;text-align:center;color:var(--color-text-muted);">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
     } else {
-	      html = displayNotifs.map(function(n) {
-	        var icon = '🔔';
-	        var label = '';
-	        if (n.type === 'treehole_delete') { icon = '🗑️'; label = '便利贴被管理员删除'; }
-	        else if (n.type === 'treehole_reply') { icon = '💬'; label = '便利贴有新回复'; }
-	        var timeHtml = '<br><span style="font-size:11px;color:#aaa;">' + formatTime(n.created_at) + '</span>';
-	        return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-post-id="' + (n.post_id || '') + '">' +
-	          icon + ' ' + label + (n.content ? '<br><span style="font-size:12px;color:#888;">内容：' + escapeHtml(n.content.substring(0, 40) + (n.content.length > 40 ? '...' : '')) + '</span>' : '') +
-	          (n.reason ? '<br><span style="font-size:12px;color:#c62828;">原因：' + escapeHtml(n.reason) + '</span>' : '') +
-	          timeHtml +
-	        '</div>';
-	      }).join('');
+      html = displayNotifs.map(function(n) {
+        var icon = getIcon('bell', 18);
+        var label = '';
+        if (n.type === 'treehole_delete') { icon = getIcon('trash', 18); label = '便利贴被管理员删除'; }
+        else if (n.type === 'treehole_reply') { icon = getIcon('message-circle', 18); label = '便利贴有新回复'; }
+        var timeHtml = '<br><span style="font-size:11px;color:var(--color-text-muted);">' + formatTime(n.created_at) + '</span>';
+        return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-post-id="' + (n.post_id || '') + '">' +
+          '<span class="notif-icon">' + icon + '</span>' +
+          '<span class="notif-body">' + label + (n.content ? '<br><span style="font-size:12px;color:var(--color-text-muted);">内容：' + escapeHtml(n.content.substring(0, 40) + (n.content.length > 40 ? '...' : '')) + '</span>' : '') +
+          (n.reason ? '<br><span style="font-size:12px;color:var(--color-danger);">原因：' + escapeHtml(n.reason) + '</span>' : '') +
+          timeHtml + '</span>' +
+        '</div>';
+      }).join('');
     }
 
     if (displayNotifs.length > 0) {
-      html += '<div style="text-align:center;font-size:11px;color:#aaa;padding:6px 0 2px;">💡 点击消息即可标为已读</div>';
+      html += '<div style="text-align:center;font-size:11px;color:var(--color-text-muted);padding:6px 0 2px;">' + getIcon('lightbulb', 14) + ' 点击消息即可标为已读</div>';
     }
     if (!showAll && readNotifs.length > 0) {
-      html += '<div class="notif-footer"><button id="showAllNotifsBtn">📋 查看全部消息 →</button></div>';
+      html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 16) + ' 查看全部消息</button></div>';
     } else if (showAll) {
-      html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
+      html += '<div class="notif-footer"><button id="showUnreadBtn">' + getIcon('arrow-left', 16) + ' 仅看未读</button></div>';
     }
 
     dropdown.innerHTML = html;
@@ -665,7 +715,6 @@
     document.getElementById('notificationDropdown').style.display = 'none';
   });
 
-  // ---- 删除流程 ----
   function startDelete(postId, authorId, content) {
     var isAdminDeletingOther = currentUser.role === 'admin' && currentUser.id !== authorId;
     if (isAdminDeletingOther) {
@@ -673,7 +722,6 @@
       document.getElementById('deleteReasonInput').value = '';
       document.getElementById('deleteReasonModal').classList.add('active');
     } else {
-      // 自己删自己的，不需要原因
       pendingDelete = { postId: postId, authorId: authorId, content: content, isAdminDelete: false };
       executeDelete();
     }
@@ -686,12 +734,10 @@
     if (res.error) { toast('删除失败：' + res.error.message, 'error'); return; }
     toast('便利贴已取下');
     closeDetailModal();
-    // 管理员删别人帖 → 发送通知
     if (pendingDelete.isAdminDelete) {
       var reason = document.getElementById('deleteReasonInput').value.trim() || '未填写原因';
       addNotification(pendingDelete.authorId, 'treehole_delete', pendingDelete.content, reason);
     }
-    // 立即从本地数据和 DOM 移除
     postsData = postsData.filter(function(p) { return p.id !== pendingDelete.postId; });
     var wallNote = document.querySelector('.sticky-note[data-post-id="' + pendingDelete.postId + '"]');
     if (wallNote) { wallNote.style.opacity = '0'; wallNote.style.transform = 'scale(0.8)'; wallNote.style.transition = 'all 0.25s'; }
@@ -699,7 +745,6 @@
     pendingDelete = { postId: null, authorId: null, content: '', isAdminDelete: false };
   }
 
-  // 删除原因弹窗事件
   document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
     document.getElementById('deleteReasonModal').classList.remove('active');
     pendingDelete = { postId: null, authorId: null, content: '', isAdminDelete: false };

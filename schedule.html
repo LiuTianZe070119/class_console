@@ -5,66 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班级课表统计</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'PingFang SC', sans-serif; }
-    body { background: #f0f4fa; min-height: 100vh; padding: 20px; }
-    .navbar { background: white; padding: 14px 24px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-    .logo { font-size: 22px; font-weight: 650; color: #1e3a5f; white-space: nowrap; }
-    .btn { background: #1e3a5f; color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.2s; }
-    .btn:hover { background: #2a4d7a; transform: translateY(-1px); }
-    .btn-outline { background: transparent; border: 1.5px solid #1e3a5f; color: #1e3a5f; }
-    .btn-outline:hover { background: #eef3fa; }
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+    body { background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 40%, #F2E0D0 100%); min-height: 100vh; padding: 20px; }
+
+    h1, h2, h3, .btn, .btn-outline, .logo { font-family: 'Noto Serif SC', serif; }
+
+    .navbar {
+      background: rgba(255,255,255,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      padding: 14px 24px; border-radius: 24px;
+      box-shadow: 0 4px 24px rgba(61,35,20,0.05);
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .logo { font-size: 22px; font-weight: 600; color: #3D2314; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .logo svg { color: #C67B5C; }
+    .btn { background: linear-gradient(135deg, #C67B5C, #B5651D); color: white; border: none; padding: 10px 24px; border-radius: 24px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.25s; box-shadow: 0 4px 14px rgba(181,101,29,0.18); display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { background: linear-gradient(135deg, #D4946A, #C67B5C); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(181,101,29,0.28); }
+    .btn-outline { background: transparent; border: 1.5px solid #C67B5C; color: #C67B5C; box-shadow: none; }
+    .btn-outline:hover { background: rgba(198,123,92,0.06); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .card { background: white; border-radius: 24px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .logo span, .btn span { display: inline-flex; align-items: center; }
+    .card {
+      background: rgba(255,255,255,0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px; padding: 24px;
+      box-shadow: 0 4px 24px rgba(61,35,20,0.05);
+      margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.4);
+    }
     .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
-    .card-header h3 { color: #1e3a5f; }
+    .card-header h3 { color: #3D2314; }
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; text-align: center; min-width: 600px; }
-    th, td { border: 1px solid #e4eaf2; padding: 8px 4px; }
-    th { background: #f5f9ff; font-weight: 600; font-size: 13px; color: #1e3a5f; position: sticky; top: 0; }
+    th, td { border: 1px solid #E8D8C8; padding: 8px 4px; }
+    th { background: rgba(198,123,92,0.06); font-weight: 600; font-size: 13px; color: #3D2314; position: sticky; top: 0; }
     td { font-size: 12px; }
     .schedule-cell { width: 70px; height: 42px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 500; border-radius: 0; }
-    .schedule-cell.has-class { background: #e03a3a; color: white; }
-    .schedule-cell.free { background: white; color: #334e68; }
-    .schedule-cell.free:hover { background: #e8f0fe; }
-    .schedule-cell.has-class:hover { background: #c62828; }
+    .schedule-cell.has-class { background: #C7564A; color: white; }
+    .schedule-cell.free { background: rgba(255,255,255,0.6); color: #3D2314; }
+    .schedule-cell.free:hover { background: rgba(198,123,92,0.08); }
+    .schedule-cell.has-class:hover { background: #A8403A; }
     .stats-cell { cursor: pointer; font-weight: 600; transition: all 0.2s; }
     .stats-cell:hover { opacity: 0.85; transform: scale(1.02); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-    .notice { font-size: 13px; color: #59748f; margin-top: 12px; padding: 10px 16px; background: #f5f9ff; border-radius: 12px; }
+    .notice { font-size: 13px; color: #8B7355; margin-top: 12px; padding: 10px 16px; background: rgba(255,255,255,0.5); border-radius: 12px; display: flex; align-items: center; gap: 6px; }
     .stats-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #59748f; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #8B7355; }
     .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
-    .has-unsaved { color: #e03a3a; font-size: 13px; font-weight: 500; }
+    .has-unsaved { color: #C7564A; font-size: 13px; font-weight: 500; }
 
     /* 模态框 */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(61,35,20,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .modal-content { background: white; width: 90%; max-width: 560px; max-height: 80vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+    .modal-content { background: rgba(255,255,255,0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 90%; max-width: 560px; max-height: 80vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px rgba(61,35,20,0.15); border: 1px solid rgba(255,255,255,0.5); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .modal-header h3 { color: #1e3a5f; }
-    .close-icon { font-size: 26px; cursor: pointer; color: #7a8fa0; line-height: 1; transition: color 0.2s; }
-    .close-icon:hover { color: #1e3a5f; }
+    .modal-header h3 { color: #3D2314; }
+    .close-icon { cursor: pointer; color: #8B7355; line-height: 1; transition: color 0.2s; }
+    .close-icon:hover { color: #3D2314; }
+    .close-icon svg { width: 24px; height: 24px; }
     .student-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     @media (max-width: 480px) { .student-list { grid-template-columns: 1fr; } }
-    .student-group h4 { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #e4eaf2; font-size: 14px; }
-    .student-group.free h4 { color: #2e7d32; border-color: #a5d6a7; }
-    .student-group.busy h4 { color: #c62828; border-color: #ef9a9a; }
+    .student-group h4 { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #E8D8C8; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+    .student-group h4 svg { width: 16px; height: 16px; }
+    .student-group.free h4 { color: #5D9B6F; border-color: #A8D5B0; }
+    .student-group.busy h4 { color: #C7564A; border-color: #E8A8A4; }
     .student-tag { display: inline-block; padding: 3px 10px; margin: 2px 4px 2px 0; border-radius: 14px; font-size: 12px; }
-    .free .student-tag { background: #e8f5e9; color: #2e7d32; }
-    .busy .student-tag { background: #ffebee; color: #c62828; }
-    .empty-hint { color: #9e9e9e; font-style: italic; font-size: 13px; }
+    .free .student-tag { background: rgba(93,155,111,0.10); color: #5D9B6F; }
+    .busy .student-tag { background: rgba(199,86,74,0.08); color: #C7564A; }
+    .empty-hint { color: #A09080; font-style: italic; font-size: 13px; }
 
     /* Toast */
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
-    .toast { padding: 14px 22px; border-radius: 14px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; }
-    .toast.success { background: #2e7d32; }
-    .toast.error { background: #c62828; }
-    .toast.warn { background: #e65100; }
+    .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .toast.success { background: rgba(93,155,111,0.92); }
+    .toast.error { background: rgba(199,86,74,0.92); }
+    .toast.warn { background: rgba(232,145,58,0.92); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
     /* Loading spinner */
-    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #cfdde9; border-top-color: #1e3a5f; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #E8D8C8; border-top-color: #C67B5C; border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.6); z-index: 999; align-items: center; justify-content: center; }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(253,246,240,0.6); z-index: 999; align-items: center; justify-content: center; }
     .loading-overlay.active { display: flex; }
   </style>
 </head>
@@ -73,10 +94,10 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="navbar">
-  <div class="logo">📅 班级课表统计</div>
+  <div class="logo"><span id="logoIcon"></span> 班级课表统计</div>
   <div style="display:flex; gap:8px; align-items:center;">
-    <span class="has-unsaved" id="unsavedHint" style="display:none;">● 有未保存的修改</span>
-    <button class="btn-outline btn" onclick="goBack()">← 返回办事通</button>
+    <span class="has-unsaved" id="unsavedHint" style="display:none;"><span id="dotIcon"></span> 有未保存的修改</span>
+    <button class="btn-outline btn" onclick="goBack()"><span id="backIcon"></span> 返回办事通</button>
   </div>
 </div>
 
@@ -84,8 +105,8 @@
   <div class="card-header">
     <h3 id="title">我的课表</h3>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn" id="saveBtn">💾 保存</button>
-      <button class="btn-outline btn" id="statsBtn">📊 统计视图</button>
+      <button class="btn" id="saveBtn"><span id="saveIcon"></span> 保存</button>
+      <button class="btn-outline btn" id="statsBtn"><span id="statsIcon"></span> 统计视图</button>
     </div>
   </div>
   <div class="table-wrap">
@@ -93,8 +114,8 @@
   </div>
   <div class="notice" id="statsNotice"></div>
   <div class="stats-legend" id="statsLegend" style="display:none;">
-    <div class="legend-item"><span class="legend-dot" style="background:#e03a3a;"></span> ≥75% 有课</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#f5b342;"></span> 部分有课</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#C7564A;"></span> ≥75% 有课</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#E8913A;"></span> 部分有课</div>
     <div class="legend-item"><span class="legend-dot" style="background:#ffffff;border:1px solid #ccc;"></span> 全员空闲</div>
   </div>
 </div>
@@ -104,7 +125,7 @@
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="freeModalTitle"></h3>
-      <span class="close-icon" onclick="closeFreeModal()">&times;</span>
+      <span class="close-icon" onclick="closeFreeModal()"><span id="closeModalIcon"></span></span>
     </div>
     <div class="student-list" id="freeModalBody"></div>
   </div>
@@ -112,6 +133,33 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
+  // -- SVG Icon System --
+  function getIcon(name) {
+    var icons = {
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
+      'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+      save: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
+      'bar-chart': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      clipboard: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+      x: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+      'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      'dot': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>',
+      lightbulb: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.59-.5 1.12-1.05 1.56-1.66A5 5 0 1 0 6.5 8.77c.4.65.9 1.24 1.48 1.73L9 11v5l3 3 3-3v-5Z"/><path d="M9 21h6"/><path d="M12 2v1"/></svg>',
+      heart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'
+    };
+    return (icons[name] || '').replace(/width="24"/g,'width="'+ (arguments[1]||24) +'"').replace(/height="24"/g,'height="'+ (arguments[1]||24) +'"');
+  }
+
+  // 初始化所有图标
+  function initIcons() {
+    document.getElementById('logoIcon').innerHTML = getIcon('calendar', 26);
+    document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
+    document.getElementById('saveIcon').innerHTML = getIcon('save', 16);
+    document.getElementById('statsIcon').innerHTML = getIcon('bar-chart', 16);
+    document.getElementById('closeModalIcon').innerHTML = getIcon('x', 24);
+    document.getElementById('dotIcon').innerHTML = getIcon('dot', 12);
+  }
+
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -154,13 +202,13 @@
 
     if (currentUser.role === 'admin') {
       isAdminView = true;
-      document.getElementById('statsBtn').innerText = '📋 我的课表';
+      document.getElementById('statsBtn').innerHTML = getIcon('clipboard', 16) + ' 我的课表';
       document.getElementById('statsLegend').style.display = 'flex';
       await loadAdminStats();
     } else {
       scheduleUserId = currentUser.id;
       document.getElementById('statsBtn').style.display = 'none';
-      document.getElementById('title').innerText = `${currentUser.real_name} 的课表`;
+      document.getElementById('title').innerText = currentUser.real_name + ' 的课表';
       document.getElementById('statsLegend').style.display = 'none';
       await loadMySchedule();
     }
@@ -169,9 +217,9 @@
 
   async function loadMySchedule() {
     showLoading();
-    document.getElementById('statsNotice').innerText = '💡 点击格子切换：红色 = 有课，白色 = 无课';
+    document.getElementById('statsNotice').innerHTML = getIcon('lightbulb', 14) + ' 点击格子切换：红色 = 有课，白色 = 无课';
     isAdminView = false;
-    document.getElementById('saveBtn').style.display = 'inline-block';
+    document.getElementById('saveBtn').style.display = 'inline-flex';
     document.getElementById('statsLegend').style.display = 'none';
 
     const { data, error } = await supabaseClient
@@ -182,7 +230,7 @@
     if (error) { toast('加载课表失败：' + error.message, 'error'); return; }
     scheduleData = {};
     (data || []).forEach(s => {
-      scheduleData[`${s.day_of_week}_${s.slot_id}`] = s.has_class;
+      scheduleData[s.day_of_week + '_' + s.slot_id] = s.has_class;
     });
     originalSchedule = { ...scheduleData };
     updateUnsavedHint();
@@ -191,8 +239,8 @@
 
   async function loadAdminStats() {
     showLoading();
-    document.getElementById('statsBtn').innerText = '📋 我的课表';
-    document.getElementById('statsNotice').innerText = '📊 显示格式：上课人数 / 总人数，点击格子查看空闲与有课的同学';
+    document.getElementById('statsBtn').innerHTML = getIcon('clipboard', 16) + ' 我的课表';
+    document.getElementById('statsNotice').innerHTML = getIcon('bar-chart', 14) + ' 显示格式：上课人数 / 总人数，点击格子查看空闲与有课的同学';
     isAdminView = true;
     document.getElementById('saveBtn').style.display = 'none';
     document.getElementById('statsLegend').style.display = 'flex';
@@ -213,7 +261,7 @@
     const validProfiles = (allProfiles || []).filter(p => p.student_id && p.student_id.trim() !== '');
     totalStudents = validProfiles.length;
 
-    document.getElementById('title').innerText = '📊 全年级课表统计';
+    document.getElementById('title').innerHTML = getIcon('bar-chart', 22) + ' 全年级课表统计';
     renderTable();
   }
 
@@ -228,29 +276,29 @@
     tbody.innerHTML = '';
 
     let headerHtml = '<tr><th>节次</th>';
-    for (let d = 1; d <= 7; d++) headerHtml += `<th>周${DAYS[d-1]}</th>`;
+    for (let d = 1; d <= 7; d++) headerHtml += '<th>周' + DAYS[d-1] + '</th>';
     headerHtml += '</tr>';
     thead.innerHTML = headerHtml;
 
     for (let s = 1; s <= 13; s++) {
       const timeInfo = timeSlots?.find(ts => ts.slot_id === s)?.time_range || '';
-      let rowHtml = `<td style="font-size:12px;">${s}<br><span style="color:#8899aa;font-size:10px;">${timeInfo}</span></td>`;
+      let rowHtml = '<td style="font-size:12px;">' + s + '<br><span style="color:#A09080;font-size:10px;">' + timeInfo + '</span></td>';
       for (let d = 1; d <= 7; d++) {
-        const key = `${d}_${s}`;
+        const key = d + '_' + s;
         if (isAdminView) {
           const busyCount = allSchedules.filter(item => item.day_of_week === d && item.slot_id === s && item.has_class).length;
           const ratio = totalStudents > 0 ? busyCount / totalStudents : 0;
           let bgColor = '#ffffff';
           let textColor = '#334e68';
-          if (ratio >= 0.75) { bgColor = '#e03a3a'; textColor = '#fff'; }
-          else if (ratio > 0) { bgColor = '#f5b342'; textColor = '#333'; }
-          rowHtml += `<td class="stats-cell" style="background:${bgColor};color:${textColor};padding:8px 4px;border-radius:4px;" data-day="${d}" data-slot="${s}">${busyCount}/${totalStudents}</td>`;
+          if (ratio >= 0.75) { bgColor = '#C7564A'; textColor = '#fff'; }
+          else if (ratio > 0) { bgColor = '#E8913A'; textColor = '#333'; }
+          rowHtml += '<td class="stats-cell" style="background:' + bgColor + ';color:' + textColor + ';padding:8px 4px;border-radius:4px;" data-day="' + d + '" data-slot="' + s + '">' + busyCount + '/' + totalStudents + '</td>';
         } else {
           const hasClass = scheduleData[key] || false;
-          rowHtml += `<td class="schedule-cell ${hasClass ? 'has-class' : 'free'}" data-day="${d}" data-slot="${s}">${hasClass ? '有课' : ''}</td>`;
+          rowHtml += '<td class="schedule-cell ' + (hasClass ? 'has-class' : 'free') + '" data-day="' + d + '" data-slot="' + s + '">' + (hasClass ? '有课' : '') + '</td>';
         }
       }
-      tbody.innerHTML += `<tr>${rowHtml}</tr>`;
+      tbody.innerHTML += '<tr>' + rowHtml + '</tr>';
     }
 
     if (!isAdminView) {
@@ -258,7 +306,7 @@
         cell.addEventListener('click', () => {
           const day = parseInt(cell.dataset.day);
           const slot = parseInt(cell.dataset.slot);
-          const key = `${day}_${slot}`;
+          const key = day + '_' + slot;
           scheduleData[key] = !scheduleData[key];
           if (scheduleData[key]) {
             cell.classList.add('has-class');
@@ -305,17 +353,16 @@
       .single();
 
     document.getElementById('freeModalTitle').innerText =
-      `周${DAYS[day-1]} 第${slot}节 (${timeSlot?.time_range || ''})`;
-    document.getElementById('freeModalBody').innerHTML = `
-      <div class="student-group free">
-        <h4>✅ 空闲 (${free.length}人)</h4>
-        ${free.length ? free.map(p => `<span class="student-tag">${p.student_id} ${p.real_name}</span>`).join('') : '<span class="empty-hint">无</span>'}
-      </div>
-      <div class="student-group busy">
-        <h4>❌ 有课 (${busy.length}人)</h4>
-        ${busy.length ? busy.map(p => `<span class="student-tag">${p.student_id} ${p.real_name}</span>`).join('') : '<span class="empty-hint">无</span>'}
-      </div>
-    `;
+      '周' + DAYS[day-1] + ' 第' + slot + '节 (' + (timeSlot?.time_range || '') + ')';
+    document.getElementById('freeModalBody').innerHTML =
+      '<div class="student-group free">' +
+        '<h4>' + getIcon('check-circle', 16) + ' 空闲 (' + free.length + '人)</h4>' +
+        (free.length ? free.map(p => '<span class="student-tag">' + p.student_id + ' ' + p.real_name + '</span>').join('') : '<span class="empty-hint">无</span>') +
+      '</div>' +
+      '<div class="student-group busy">' +
+        '<h4>' + getIcon('x', 16) + ' 有课 (' + busy.length + '人)</h4>' +
+        (busy.length ? busy.map(p => '<span class="student-tag">' + p.student_id + ' ' + p.real_name + '</span>').join('') : '<span class="empty-hint">无</span>') +
+      '</div>';
     document.getElementById('freeModal').classList.add('active');
   }
 
@@ -327,7 +374,6 @@
   document.getElementById('saveBtn').addEventListener('click', async () => {
     if (isAdminView || !scheduleUserId) return;
     showLoading();
-    // 先删除该用户所有旧课表记录，再插入有课的格子
     const delRes = await supabaseClient.from('student_schedule').delete().eq('user_id', scheduleUserId);
     if (delRes.error) { hideLoading(); toast('保存失败：' + delRes.error.message, 'error'); return; }
     const rows = Object.entries(scheduleData)
@@ -354,12 +400,12 @@
     if (currentUser.role !== 'admin') return;
     if (isAdminView) {
       scheduleUserId = currentUser.id;
-      document.getElementById('title').innerText = `${currentUser.real_name} 的课表`;
-      document.getElementById('statsBtn').innerText = '📊 统计视图';
+      document.getElementById('title').innerText = currentUser.real_name + ' 的课表';
+      document.getElementById('statsBtn').innerHTML = getIcon('bar-chart', 16) + ' 统计视图';
       await loadMySchedule();
     } else {
       await loadAdminStats();
-      document.getElementById('statsBtn').innerText = '📋 我的课表';
+      document.getElementById('statsBtn').innerHTML = getIcon('clipboard', 16) + ' 我的课表';
     }
   });
 
@@ -370,6 +416,7 @@
     window.location.href = 'main.html';
   }
 
+  initIcons();
   init();
 </script>
 </body>
