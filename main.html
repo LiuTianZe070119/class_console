@@ -464,12 +464,13 @@
         else if (n.type === 'closed') { icon = getIcon('check-circle', 16); label = '已完结'; detail = n.opinion_title; }
         else if (n.type === 'reassign') { icon = getIcon('refresh-cw', 16); label = '已重分配'; detail = n.opinion_title; }
         else if (n.type === 'in_progress') { icon = getIcon('clock', 16); label = '问题开始处理'; detail = n.opinion_title; }
+        else if (n.type === 'opinion_delete') { icon = getIcon('trash', 16); label = '已被管理员删除'; detail = n.opinion_title; }
         else if (n.type === 'treehole_delete') { icon = getIcon('trash', 16); label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
         else if (n.type === 'treehole_reply') { icon = getIcon('message-circle', 16); label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
         var reasonHtml = n.reason ? '<br><span style="font-size:12px;color:#C7564A;">原因：' + escapeHtml(n.reason) + '</span>' : '';
         var timeHtml = '<br><span style="font-size:11px;color:#A09080;">' + new Date(n.created_at).toLocaleString() + '</span>';
         return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '" data-opinion="' + opinionId + '" data-post-id="' + postId + '">' +
-          icon + ' ' + escapeHtml(detail) + ' - ' + label + reasonHtml + timeHtml +
+          icon + ' ' + (detail ? escapeHtml(detail) + ' - ' : '') + label + reasonHtml + timeHtml +
         '</div>';
       }).join('');
     }
@@ -477,9 +478,13 @@
     if (displayNotifs.length > 0) {
       html += '<div style="text-align:center;font-size:11px;color:#A09080;padding:6px 0 2px;">' + getIcon('lightbulb', 12) + ' 点击消息即可标为已读</div>';
     }
-    if (!showAll && readNotifs.length > 0) {
-      html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看全部消息 →</button></div>';
-    } else if (showAll) {
+    if (!showAll) {
+      if (unreadNotifs.length === 0) {
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看历史通知 →</button></div>';
+      } else if (readNotifs.length > 0) {
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看全部消息 →</button></div>';
+      }
+    } else {
       html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
     }
 

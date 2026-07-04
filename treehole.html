@@ -686,9 +686,13 @@
     if (displayNotifs.length > 0) {
       html += '<div style="text-align:center;font-size:11px;color:var(--color-text-muted);padding:6px 0 2px;">' + getIcon('lightbulb', 14) + ' 点击消息即可标为已读</div>';
     }
-    if (!showAll && readNotifs.length > 0) {
-      html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 16) + ' 查看全部消息</button></div>';
-    } else if (showAll) {
+    if (!showAll) {
+      if (unreadNotifs.length === 0) {
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 16) + ' 查看历史通知</button></div>';
+      } else if (readNotifs.length > 0) {
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 16) + ' 查看全部消息</button></div>';
+      }
+    } else {
       html += '<div class="notif-footer"><button id="showUnreadBtn">' + getIcon('arrow-left', 16) + ' 仅看未读</button></div>';
     }
 
