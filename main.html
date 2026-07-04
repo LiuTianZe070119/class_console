@@ -135,17 +135,29 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 20px;
-      padding: 24px 28px;
+      padding: 24px 28px 20px;
       border: 1px solid rgba(255,255,255,0.4);
       text-align: center;
       animation: quoteFade 5s ease-in-out infinite;
     }
     .quote-text { font-size: 16px; color: #5D3A1F; font-weight: 500; line-height: 1.8; font-style: italic; letter-spacing: 0.5px; }
     .quote-author { font-size: 13px; color: #B09080; margin-top: 10px; }
+    .quote-actions { margin-top: 14px; display: flex; justify-content: center; gap: 6px; align-items: center; }
+    .quote-ai-label { font-size: 11px; color: #C0A890; display: inline-flex; align-items: center; gap: 3px; }
+    .quote-btn { background: none; border: 1px solid rgba(180,144,128,0.3); color: #8B7B6B; cursor: pointer; font-size: 12px; padding: 5px 14px; border-radius: 14px; transition: all 0.2s; font-family: inherit; white-space: nowrap; }
+    .quote-btn:hover { border-color: rgba(180,144,128,0.55); color: #5D4A3A; background: rgba(180,144,128,0.06); }
+    .quote-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 0; color: #B09080; font-size: 14px; }
     @keyframes quoteFade {
       0%, 100% { box-shadow: 0 2px 16px rgba(61,35,20,0.03); }
       50% { box-shadow: 0 4px 24px rgba(198,123,92,0.06); }
     }
+    /* 名言详情弹窗 */
+    .quote-detail-content { max-width: 600px; max-height: 80vh; overflow-y: auto; text-align: left; }
+    .quote-detail-content h3 { font-size: 20px; color: #3D2314; margin-bottom: 16px; }
+    .quote-detail-content h4 { font-size: 15px; color: #C67B5C; margin: 18px 0 8px; }
+    .quote-detail-content p { font-size: 15px; color: #3D2314; line-height: 1.8; margin-bottom: 10px; }
+    .quote-detail-content .detail-label { font-size: 12px; color: #B09080; text-transform: uppercase; letter-spacing: 0.5px; }
+    .quote-detail-content .loading-spinner { text-align: center; padding: 40px 0; color: #C67B5C; }
 
     /* 通知 */
     .notification-bell { position: relative; cursor: pointer; padding: 4px; border-radius: 12px; transition: background 0.2s; }
@@ -181,6 +193,9 @@
     .input-field { width: 100%; padding: 12px 16px; border: 1.5px solid #E0D0C0; border-radius: 16px; margin-bottom: 14px; font-size: 15px; outline: none; transition: all 0.2s; background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #3D2314; }
     .input-field:focus { border-color: #C67B5C; box-shadow: 0 0 0 3px rgba(198,123,92,0.1); background: rgba(255,255,255,0.75); }
     .input-field::placeholder { color: #B8A090; }
+
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2.5px solid rgba(198,123,92,0.15); border-top-color: #C67B5C; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
     .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
@@ -264,6 +279,14 @@
   </div>
 </div>
 
+<!-- 名言详情弹窗 -->
+<div class="modal" id="quoteDetailModal">
+  <div class="modal-content quote-detail-content">
+    <span class="close-icon" onclick="closeQuoteDetail()"><span id="closeQuoteIcon"></span></span>
+    <div id="quoteDetailBody"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
   // -- SVG Icon System --
@@ -304,6 +327,7 @@
     document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
     document.getElementById('keyIcon').innerHTML = getIcon('key', 16);
     document.getElementById('closeModalIcon').innerHTML = getIcon('x', 24);
+    document.getElementById('closeQuoteIcon').innerHTML = getIcon('x', 24);
     document.getElementById('arrow1Icon').innerHTML = getIcon('chevron-right', 28);
     document.getElementById('arrow2Icon').innerHTML = getIcon('chevron-right', 28);
     document.getElementById('arrow3Icon').innerHTML = getIcon('chevron-right', 28);
@@ -520,26 +544,152 @@
     return div.innerHTML;
   }
 
-  // 名言库
-  var quotes = [
-    { text: '学而不思则罔，思而不学则殆。', author: '——《论语》' },
-    { text: '千里之行，始于足下。', author: '—— 老子' },
-    { text: '博学之，审问之，慎思之，明辨之，笃行之。', author: '——《中庸》' },
-    { text: '业精于勤，荒于嬉；行成于思，毁于随。', author: '—— 韩愈' },
-    { text: '不积跬步，无以至千里；不积小流，无以成江海。', author: '—— 荀子' },
-    { text: '三人行，必有我师焉。', author: '——《论语》' },
-    { text: '读书破万卷，下笔如有神。', author: '—— 杜甫' },
-    { text: '天行健，君子以自强不息。', author: '——《周易》' },
-    { text: '宝剑锋从磨砺出，梅花香自苦寒来。', author: '—— 《警世贤文》' },
-    { text: '志当存高远。', author: '—— 诸葛亮' },
-    { text: '路漫漫其修远兮，吾将上下而求索。', author: '—— 屈原' },
-    { text: '少年易老学难成，一寸光阴不可轻。', author: '—— 朱熹' }
-  ];
-  function initQuote() {
-    var q = quotes[Math.floor(Math.random() * quotes.length)];
+  // ===== 智谱AI 名言语录 =====
+  var ZHIPU_API_KEY = '454590f5a48742b49534678fdd5f7484.tD433AZMcCRMRmyn';
+  var currentQuote = null;
+  var currentQuoteDetail = null;
+  var quoteTopics = ['励志进取','勤奋学习','人生哲理','珍惜时间','品德修养','家国情怀','自然风光','友情送别','坚持毅力','谦虚谨慎'];
+
+  function showQuoteLoading(msg) {
     document.getElementById('quoteSection').innerHTML =
-      '<div class="quote-card"><div class="quote-text">' + q.text + '</div><div class="quote-author">' + q.author + '</div></div>';
+      '<div class="quote-card"><div class="quote-loading"><div class="spinner"></div>' + (msg || 'AI生成中') + '</div></div>';
   }
+
+  async function fetchQuote() {
+    var topic = quoteTopics[Math.floor(Math.random() * quoteTopics.length)];
+    var seed = Date.now() + '_' + Math.floor(Math.random() * 100000);
+    var resp = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_API_KEY },
+      body: JSON.stringify({
+        model: 'glm-4-flash',
+        messages: [{
+          role: 'user',
+          content: '请推荐一句关于' + topic + '的中国经典名言或古诗词。不要推荐过于常见的句子，优先推荐相对小众但有深度的。只返回纯JSON（不要markdown代码块），格式：{"text":"名句内容","author":"作者/出处","type":"classic|poem|motto"}。随机种子：' + seed
+        }],
+        temperature: 0.99,
+        max_tokens: 300
+      })
+    });
+    var data = await resp.json();
+    if (!data.choices) {
+      console.error('Zhipu API error:', JSON.stringify(data));
+      throw new Error('API error: ' + (data.error?.message || JSON.stringify(data)));
+    }
+    try {
+      var content = data.choices[0].message.content;
+      // 尝试多种方式提取 JSON
+      var jsonStr = content.replace(/```json\s*|\s*```/g, '').replace(/```/g, '').trim();
+      return JSON.parse(jsonStr);
+    } catch(e) {
+      console.error('Zhipu parse error, raw:', data.choices[0].message.content);
+      // 尝试直接匹配 text/author
+      var textMatch = data.choices[0].message.content.match(/"text"\s*:\s*"([^"]+)"/);
+      var authorMatch = data.choices[0].message.content.match(/"author"\s*:\s*"([^"]+)"/);
+      var typeMatch = data.choices[0].message.content.match(/"type"\s*:\s*"([^"]+)"/);
+      if (textMatch && authorMatch) {
+        return { text: textMatch[1], author: authorMatch[1], type: (typeMatch ? typeMatch[1] : 'classic') };
+      }
+      return { text: '博学之，审问之，慎思之，明辨之，笃行之。', author: '《中庸》', type: 'classic' };
+    }
+  }
+
+  async function fetchQuoteDetail() {
+    var typeHint = currentQuote.type === 'poem' ? '这是一首古诗，请提供：白话翻译、名句解读、作者简介。' : '这是一句名言，请提供：名句解读、作者简介、现实意义。';
+    var resp = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_API_KEY },
+      body: JSON.stringify({
+        model: 'glm-4-flash',
+        messages: [{
+          role: 'user',
+          content: '关于"' + currentQuote.text + '"（' + currentQuote.author + '），' + typeHint + '返回JSON：{"translation":"白话翻译（仅古诗需要，否则为空）","interpretation":"名句解读","authorBio":"作者简介","significance":"现实意义"}。不要markdown。'
+        }],
+        temperature: 0.7,
+        max_tokens: 1000
+      })
+    });
+    var data = await resp.json();
+    if (!data.choices) {
+      console.error('Zhipu API error:', JSON.stringify(data));
+      throw new Error('API error: ' + (data.error?.message || 'Unknown'));
+    }
+    try {
+      var content = data.choices[0].message.content;
+      content = content.replace(/```json\s*|\s*```/g, '').trim();
+      return JSON.parse(content);
+    } catch(e) {
+      return { interpretation: '暂无法获取解读', authorBio: '', significance: '', translation: '' };
+    }
+  }
+
+  function renderQuote() {
+    var q = currentQuote;
+    var html = '<div class="quote-card">';
+    html += '<div class="quote-text">' + escapeHtml(q.text) + '</div>';
+    html += '<div class="quote-author">—— ' + escapeHtml(q.author) + '</div>';
+    html += '<div class="quote-actions">';
+    html += '<span class="quote-ai-label">AI生成，仅供参考</span>';
+    html += '<button class="quote-btn" id="learnMoreBtn">了解更多</button>';
+    html += '<button class="quote-btn" id="refreshQuoteBtn">换一个</button>';
+    html += '</div></div>';
+    document.getElementById('quoteSection').innerHTML = html;
+    document.getElementById('learnMoreBtn').addEventListener('click', openQuoteDetail);
+    document.getElementById('refreshQuoteBtn').addEventListener('click', refreshQuote);
+  }
+
+  async function initQuote() {
+    if (!currentQuote) {
+      showQuoteLoading('AI生成中');
+      try { currentQuote = await fetchQuote(); } catch(e) { currentQuote = { text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' }; }
+    }
+    renderQuote();
+  }
+
+  async function refreshQuote() {
+    currentQuoteDetail = null;
+    showQuoteLoading('寻觅佳句中');
+    try { currentQuote = await fetchQuote(); } catch(e) { currentQuote = { text:'千里之行，始于足下。', author:'老子', type:'classic' }; }
+    renderQuote();
+  }
+
+  async function openQuoteDetail() {
+    var modal = document.getElementById('quoteDetailModal');
+    var body = document.getElementById('quoteDetailBody');
+    modal.classList.add('active');
+    body.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p style="margin-top:12px;">AI 正在解读…</p></div>';
+
+    if (!currentQuoteDetail) {
+      currentQuoteDetail = await fetchQuoteDetail();
+    }
+
+    var d = currentQuoteDetail;
+    var html = '<h3>' + escapeHtml(currentQuote.text) + '</h3>';
+    html += '<p style="color:#B09080;">—— ' + escapeHtml(currentQuote.author) + '</p>';
+
+    if (d.translation) {
+      html += '<h4>白话翻译</h4><p>' + escapeHtml(d.translation) + '</p>';
+    }
+    if (d.interpretation) {
+      html += '<h4>名句解读</h4><p>' + escapeHtml(d.interpretation) + '</p>';
+    }
+    if (d.authorBio) {
+      html += '<h4>作者简介</h4><p>' + escapeHtml(d.authorBio) + '</p>';
+    }
+    if (d.significance) {
+      html += '<h4>现实意义</h4><p>' + escapeHtml(d.significance) + '</p>';
+    }
+
+    html += '<p style="margin-top:20px;font-size:11px;color:#C0A890;">AI生成，仅供参考</p>';
+    body.innerHTML = html;
+  }
+
+  window.closeQuoteDetail = function() {
+    document.getElementById('quoteDetailModal').classList.remove('active');
+  };
+  document.getElementById('quoteDetailModal').addEventListener('click', function(e) {
+    if (e.target === e.currentTarget) closeQuoteDetail();
+  });
 
   initIcons();
   initBgDecorations();
