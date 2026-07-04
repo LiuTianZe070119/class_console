@@ -20,6 +20,8 @@
     .btn-outline { background: transparent; border: 1.5px solid #C67B5C; color: #C67B5C; box-shadow: none; }
     .btn-outline:hover { background: rgba(198,123,92,0.06); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .notification-bell { cursor: pointer; display: flex; align-items: center; }
+    .notification-bell svg { width: 26px; height: 26px; color: #8B7355; }
     .logo span, .btn span { display: inline-flex; align-items: center; }
     .card {
       background: rgba(255,255,255,0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -95,8 +97,9 @@
 
 <div class="navbar">
   <div class="logo"><span id="logoIcon"></span>课表统计</div>
-  <div style="display:flex; gap:8px; align-items:center;">
+  <div style="display:flex; gap:10px; align-items:center;">
     <span class="has-unsaved" id="unsavedHint" style="display:none;"><span id="dotIcon"></span> 有未保存的修改</span>
+    <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span></div>
     <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backIcon"></span>返回办事通</button>
   </div>
 </div>
@@ -136,6 +139,7 @@
   // -- SVG Icon System --
   function getIcon(name) {
     var icons = {
+      bell: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
       calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
       'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
       save: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
@@ -153,6 +157,7 @@
   // 初始化所有图标
   function initIcons() {
     document.getElementById('logoIcon').innerHTML = getIcon('calendar', 26);
+    document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
     document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
     document.getElementById('saveIcon').innerHTML = getIcon('save', 16);
     document.getElementById('statsIcon').innerHTML = getIcon('bar-chart', 16);

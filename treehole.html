@@ -184,7 +184,6 @@
   <div class="logo"><span id="logoIcon"></span>树洞</div>
   <div class="user-info">
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
-    <span class="badge" id="userDisplay"></span>
     <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backIcon"></span>返回办事通</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
@@ -365,8 +364,6 @@
     var userStr = sessionStorage.getItem('currentUser');
     if (!userStr) { window.location.href = 'index.html'; return; }
     currentUser = JSON.parse(userStr);
-    document.getElementById('userDisplay').innerText =
-      currentUser.real_name + ' (' + currentUser.student_id + ')';
 
     initIcons();
     updateNotifDot();

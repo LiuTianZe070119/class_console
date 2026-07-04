@@ -232,8 +232,7 @@
     <div class="notification-bell" id="notificationBell">
       <span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span>
     </div>
-    <span class="badge" id="userDisplay"></span>
-    <button class="btn-outline btn" id="changePwdBtn"><span id="keyIcon"></span> 改密</button>
+    <button class="btn-outline btn" id="changePwdBtn"><span id="keyIcon"></span>改密</button>
     <button class="btn-outline btn" id="logoutBtn">退出</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
@@ -423,8 +422,6 @@
     var userStr = sessionStorage.getItem('currentUser');
     if (!userStr) { window.location.href = 'index.html'; return; }
     currentUser = JSON.parse(userStr);
-    document.getElementById('userDisplay').innerText =
-      currentUser.real_name + ' (' + currentUser.student_id + ') ' + (currentUser.role === 'admin' ? '管理员' : '同学');
     var welcomeHtml = getIcon('heart', 28) + ' ';
     document.getElementById('welcomeIcon').innerHTML = welcomeHtml;
     document.getElementById('welcomeTitle').innerHTML = welcomeHtml + currentUser.real_name + '，欢迎回来';
