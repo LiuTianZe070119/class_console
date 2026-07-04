@@ -8,18 +8,11 @@
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif SC', 'PingFang SC', serif; }
-    body { background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 40%, #F2E0D0 100%); min-height: 100vh; padding: 20px; }
+    body { background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 40%, #F2E0D0 100%); min-height: 100vh; background-attachment: fixed; }
 
     h1, h2, h3, .btn, .btn-outline, .logo { font-family: 'Noto Serif SC', serif; }
 
-    .navbar {
-      background: rgba(255,255,255,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      padding: 14px 24px; border-radius: 24px;
-      box-shadow: 0 4px 24px rgba(61,35,20,0.05);
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
-      border: 1px solid rgba(255,255,255,0.4);
-    }
+    .navbar { background: rgba(255,255,255,0.18); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); padding: 14px 28px; box-shadow: 0 4px 24px rgba(61,35,20,0.05); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); }
     .logo { font-size: 22px; font-weight: 600; color: #3D2314; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
     .logo svg { color: #C67B5C; }
     .btn { background: linear-gradient(135deg, #C67B5C, #B5651D); color: white; border: none; padding: 10px 24px; border-radius: 24px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.25s; box-shadow: 0 4px 14px rgba(181,101,29,0.18); display: inline-flex; align-items: center; gap: 6px; }
@@ -64,6 +57,13 @@
     .close-icon:hover { color: #3D2314; }
     .close-icon svg { width: 24px; height: 24px; }
     .student-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .site-footer { text-align: center; padding: 24px 20px; margin-top: 48px; color: #B09080; font-size: 13px; position: relative; z-index: 1; }
+    .site-footer .footer-divider { width: 40px; height: 2px; background: rgba(198,123,92,0.2); margin: 0 auto 14px; border-radius: 1px; }
+    .site-footer a { color: #8B7355; text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+    .site-footer a:hover { color: #C67B5C; }
+    .site-footer a svg { width: 14px; height: 14px; }
+    .site-footer .footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+
     @media (max-width: 480px) { .student-list { grid-template-columns: 1fr; } }
     .student-group h4 { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #E8D8C8; font-size: 14px; display: flex; align-items: center; gap: 6px; }
     .student-group h4 svg { width: 16px; height: 16px; }
@@ -94,10 +94,10 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="navbar">
-  <div class="logo"><span id="logoIcon"></span> 班级课表统计</div>
+  <div class="logo"><span id="logoIcon"></span>课表统计</div>
   <div style="display:flex; gap:8px; align-items:center;">
     <span class="has-unsaved" id="unsavedHint" style="display:none;"><span id="dotIcon"></span> 有未保存的修改</span>
-    <button class="btn-outline btn" onclick="goBack()"><span id="backIcon"></span> 返回办事通</button>
+    <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backIcon"></span>返回办事通</button>
   </div>
 </div>
 
@@ -419,5 +419,21 @@
   initIcons();
   init();
 </script>
+<footer class="site-footer">
+  <div class="footer-divider"></div>
+  <div>© 2026 Liu_Tianze. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="https://github.com/LiuTianZe070119/class_console" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      GitHub
+    </a>
+  </div>
+  <div class="footer-links" style="margin-top:2px;font-size:12px;">
+    友情链接：
+    <a href="https://zhlgd.whut.edu.cn" target="_blank" rel="noopener">智慧理工大</a>
+    <span style="color:#D0C0B0;">|</span>
+    <a href="https://resource.haoli.site/" target="_blank" rel="noopener">资源共享平台</a>
+  </div>
+</footer>
 </body>
 </html>

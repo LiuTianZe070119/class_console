@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班级办事通 · 树洞</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
 
     :root {
       --color-primary: #C67B5C;
@@ -29,20 +29,21 @@
       --shadow-hover: 0 16px 40px rgba(139, 90, 60, 0.14);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', 'PingFang SC', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif SC', 'PingFang SC', serif; }
+    h1, h2, h3, .btn, .btn-outline, .logo { font-family: 'Noto Serif SC', serif; }
     body { background: linear-gradient(160deg, #FDF6F0 0%, #F8EDE3 40%, #F2E0D0 100%); min-height: 100vh; background-attachment: fixed; }
 
-    .navbar { background: rgba(255,255,255,0.65); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 28px; border-bottom: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px; }
-    .logo { font-family: 'Noto Serif SC', serif; font-size: 22px; font-weight: 600; color: var(--color-text); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
-    .logo svg { color: var(--color-primary); }
-    .user-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .badge { background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); padding: 6px 16px; border-radius: 30px; font-size: 14px; color: var(--color-text); font-weight: 600; border: 1px solid var(--color-border); }
+    .navbar { background: rgba(255,255,255,0.18); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); padding: 14px 28px; box-shadow: 0 4px 24px rgba(61,35,20,0.05); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); }
+    .logo { font-family: 'Noto Serif SC', serif; font-size: 22px; font-weight: 600; color: #3D2314; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .logo svg { color: #C67B5C; }
+    .user-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .badge { background: rgba(198,123,92,0.10); padding: 6px 16px; border-radius: 30px; font-size: 14px; color: #8B7355; font-weight: 500; }
 
-    .btn { background: var(--color-primary); color: white; border: none; padding: 10px 22px; border-radius: var(--radius-btn); cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s ease; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
-    .btn:hover { background: var(--color-primary-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(160, 88, 61, 0.3); }
+    .btn { background: linear-gradient(135deg, #C67B5C, #B5651D); color: white; border: none; padding: 10px 22px; border-radius: 24px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.25s; white-space: nowrap; box-shadow: 0 4px 14px rgba(181,101,29,0.18); display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { background: linear-gradient(135deg, #D4946A, #C67B5C); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(181,101,29,0.28); }
     .btn:active { transform: translateY(0); }
-    .btn-outline { background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); border: 1.5px solid rgba(198, 123, 92, 0.4); color: var(--color-primary-dark); }
-    .btn-outline:hover { background: rgba(255,255,255,0.7); border-color: var(--color-primary); transform: translateY(-1px); }
+    .btn-outline { background: transparent; border: 1.5px solid #C67B5C; color: #C67B5C; box-shadow: none; }
+    .btn-outline:hover { background: rgba(198,123,92,0.06); }
     .logo span, .btn span { display: inline-flex; align-items: center; }
 
     .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
@@ -159,6 +160,13 @@
       .notification-dot { animation: none; }
     }
 
+    .site-footer { text-align: center; padding: 24px 20px; margin-top: 48px; color: #B09080; font-size: 13px; position: relative; z-index: 1; }
+    .site-footer .footer-divider { width: 40px; height: 2px; background: rgba(198,123,92,0.2); margin: 0 auto 14px; border-radius: 1px; }
+    .site-footer a { color: #8B7355; text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+    .site-footer a:hover { color: #C67B5C; }
+    .site-footer a svg { width: 14px; height: 14px; }
+    .site-footer .footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+
     @media (max-width: 640px) {
       .navbar { padding: 10px 16px; }
       .logo { font-size: 18px; }
@@ -177,7 +185,7 @@
   <div class="user-info">
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <span class="badge" id="userDisplay"></span>
-    <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backArrow"></span>返回办事通</button>
+    <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backIcon"></span>返回办事通</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -190,7 +198,7 @@
       <span style="font-size:13px;color:var(--color-text-muted);display:inline-flex;align-items:center;gap:4px;"><span id="anonymousTip"></span>所有人看到的内容都是匿名的</span>
       <span style="display:flex; gap:8px; align-items:center;">
         <span style="font-size:13px;color:var(--color-text-muted);" id="charCount">0/500</span>
-        <button class="btn" id="submitPostBtn"><span id="pinIcon"></span>贴上去</button>
+        <button class="btn" id="submitPostBtn">贴上去</button>
       </span>
     </div>
   </div>
@@ -224,6 +232,23 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+
+<footer class="site-footer">
+  <div class="footer-divider"></div>
+  <div>© 2026 Liu_Tianze. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="https://github.com/LiuTianZe070119/class_console" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      GitHub
+    </a>
+  </div>
+  <div class="footer-links" style="margin-top:2px;font-size:12px;">
+    友情链接：
+    <a href="https://zhlgd.whut.edu.cn" target="_blank" rel="noopener">智慧理工大</a>
+    <span style="color:#D0C0B0;">|</span>
+    <a href="https://resource.haoli.site/" target="_blank" rel="noopener">资源共享平台</a>
+  </div>
+</footer>
 <script>
   // ========== SVG Icon System ==========
   function getIcon(name, size) {
@@ -232,7 +257,7 @@
     var icons = {
       'tree-pine': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8h3v2l-4 5h10l-4-5v-2h3L12 2z"/><path d="M12 16v6"/></svg>',
       'bell': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
-      'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>',
+      'arrow-left': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
       'edit': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
       'eye': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
       'pin': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="3.5" r="1.8"/><path d="M15 5.5v5l3 1.5V13H6v-1.5l3-1.5v-5h6z"/></svg>',
@@ -250,10 +275,9 @@
   function initIcons() {
     document.getElementById('logoIcon').innerHTML = getIcon('tree-pine', 26);
     document.getElementById('bellIcon').innerHTML = getIcon('bell', 24);
-    document.getElementById('backArrow').innerHTML = getIcon('arrow-left', 18);
+    document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
     document.getElementById('editIcon').innerHTML = getIcon('edit', 22);
     document.getElementById('anonymousTip').innerHTML = getIcon('eye', 16);
-    document.getElementById('pinIcon').innerHTML = getIcon('pin', 18);
     document.getElementById('deleteReasonIcon').innerHTML = getIcon('trash', 22);
     document.querySelector('#detailModalContent .close-icon').innerHTML = getIcon('x', 24);
   }
