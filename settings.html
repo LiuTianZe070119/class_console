@@ -297,7 +297,7 @@
     .close-icon svg { width: 24px; height: 24px; }
     .modal h3 { color: var(--text); transition: color 0.4s; }
 
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+    .toast-container { position: fixed; top: 70px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
     .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .toast.success { background: var(--toast-success); }
     .toast.error { background: var(--toast-error); }
@@ -643,11 +643,11 @@
       updateThemeUI(theme);
 
       // 从数据库加载默认匿名设置
-      var defaultAnon = profile.default_anonymous !== null ? profile.default_anonymous : (getSettings().defaultAnonymous || false);
+      var defaultAnon = (profile.default_anonymous === true);
       document.getElementById('defaultAnonToggle').checked = defaultAnon;
-      var settings = getSettings();
-      settings.defaultAnonymous = defaultAnon;
-      saveSettings(settings);
+      var localSettings2 = getSettings();
+      localSettings2.defaultAnonymous = defaultAnon;
+      saveSettings(localSettings2);
     } else {
       // 数据库无记录时回退 localStorage
       var theme = getTheme();

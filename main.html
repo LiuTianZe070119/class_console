@@ -257,7 +257,7 @@ body[data-theme="black"] {
     .spinner { display: inline-block; width: 20px; height: 20px; border: 2.5px solid var(--accent-light); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+    .toast-container { position: fixed; top: 70px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
     .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .toast.success { background: var(--toast-success); }
     .toast.error { background: var(--toast-error); }
@@ -608,7 +608,7 @@ body[data-theme="black"] {
   }
 
   // ===== 智谱AI 名言语录 =====
-  var ZHIPU_API_KEY = '454590f5a48742b49534678fdd5f7484.tD433AZMcCRMRmyn';
+  var AI_QUOTE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co/functions/v1/ai-quote';
   var currentQuote = null;
   var currentQuoteDetail = null;
   var QUOTE_KEY = 'cached_quote';
@@ -636,22 +636,19 @@ body[data-theme="black"] {
   async function fetchQuote() {
     var topic = quoteTopics[Math.floor(Math.random() * quoteTopics.length)];
     var seed = Date.now() + '_' + Math.floor(Math.random() * 100000);
-    var resp = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+    var resp = await fetch(AI_QUOTE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_API_KEY },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
       body: JSON.stringify({
-        model: 'glm-4-flash',
         messages: [{
           role: 'user',
           content: '请推荐一句关于' + topic + '的中国经典名言或古诗词。不要推荐过于常见的句子，优先推荐相对小众但有深度的。只返回纯JSON（不要markdown代码块），格式：{"text":"名句内容","author":"作者/出处","type":"classic|poem|motto"}。随机种子：' + seed
-        }],
-        temperature: 0.99,
-        max_tokens: 300
+        }]
       })
     });
     var data = await resp.json();
     if (!data.choices) {
-      console.error('Zhipu API error:', JSON.stringify(data));
+      console.error('AI API error:', JSON.stringify(data));
       throw new Error('API error: ' + (data.error?.message || JSON.stringify(data)));
     }
     try {
@@ -674,17 +671,14 @@ body[data-theme="black"] {
 
   async function fetchQuoteDetail() {
     var typeHint = currentQuote.type === 'poem' ? '这是一首古诗，请提供：白话翻译、名句解读、作者简介。' : '这是一句名言，请提供：名句解读、作者简介、现实意义。';
-    var resp = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+    var resp = await fetch(AI_QUOTE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_API_KEY },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
       body: JSON.stringify({
-        model: 'glm-4-flash',
         messages: [{
           role: 'user',
           content: '关于"' + currentQuote.text + '"（' + currentQuote.author + '），' + typeHint + '返回JSON：{"translation":"白话翻译（仅古诗需要，否则为空）","interpretation":"名句解读","authorBio":"作者简介","significance":"现实意义"}。不要markdown。'
-        }],
-        temperature: 0.7,
-        max_tokens: 1000
+        }]
       })
     });
     var data = await resp.json();

@@ -224,6 +224,19 @@
     .input-field:focus, textarea:focus, select:focus { border-color: var(--input-border-focus); box-shadow: 0 0 0 3px var(--accent-light); background: var(--card-bg); }
     .input-field::placeholder, textarea::placeholder { color: var(--text-light); }
 
+
+    .anon-pill { display: inline-flex; align-items: center; gap: 6px; padding: 11px 16px; border-radius: 24px; cursor: pointer; font-size: 14px; border: 1.5px solid var(--input-border); color: var(--text-muted); background: var(--input-bg); transition: all 0.2s; user-select: none; }
+    .anon-pill input { display: none; }
+    .anon-pill .anon-dot { width: 10px; height: 10px; border-radius: 50%; background: #CCC; transition: all 0.2s; }
+    .anon-pill.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .anon-pill.active .anon-dot { background: var(--accent); }
+    /* 自定义下拉 */
+    .select-pill { display: flex; align-items: center; gap: 8px; padding: 11px 16px; border-radius: 24px; cursor: pointer; font-size: 14px; border: 1.5px solid var(--input-border); color: var(--text); background: var(--input-bg); transition: all 0.2s; user-select: none; position: relative; overflow: visible; }
+    .select-pill:hover { border-color: var(--accent); }
+    .select-pill .select-arrow { font-size: 10px; color: var(--text-muted); margin-left: auto; }
+    .select-drop { position: fixed; background: var(--modal-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 16px; box-shadow: 0 8px 24px var(--shadow-lg); border: 1px solid var(--card-border); overflow: hidden; z-index: 2000; }
+    .select-drop div { padding: 10px 16px; cursor: pointer; font-size: 14px; color: var(--text); transition: background 0.15s; white-space: nowrap; }
+    .select-drop div:hover { background: var(--accent-light2); }
     .sort-bar { display: flex; gap: 12px; margin-bottom: 20px; }
     .sort-btn { background: var(--input-bg); border: 1.5px solid var(--input-border); padding: 8px 24px; border-radius: 24px; cursor: pointer; font-weight: 500; transition: all 0.2s; color: var(--text-muted); display: inline-flex; align-items: center; gap: 5px; }
     .sort-btn:hover { border-color: var(--accent); color: var(--text); }
@@ -269,7 +282,7 @@
     .notif-footer button:hover { background: var(--accent-light2); }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+    .toast-container { position: fixed; top: 70px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
     .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .toast.success { background: var(--toast-success); }
     .toast.error { background: var(--toast-error); }
@@ -377,18 +390,16 @@
       <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;">
       <div class="photo-preview-strip" id="photoPreviewStrip"></div>
     </div>
-    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-      <select id="targetSelect" style="flex:2; min-width:140px;">
-        <option value="班长">反馈给：班长</option>
-        <option value="团支书">团支书</option>
-        <option value="学习委员">学习委员</option>
-        <option value="生活委员">生活委员</option>
-        <option value="班主任">班主任</option>
-      </select>
-      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; color:var(--text); transition:color 0.4s;">
-        <input type="checkbox" id="anonymousCheck"> 匿名发布
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:stretch;">
+      <div class="select-pill" id="targetPill" style="flex:1; min-width:130px;">
+        <span id="targetLabel">反馈给：班长</span>
+        <span class="select-arrow">▾</span>
+      </div>
+      <label class="anon-pill" id="anonPill">
+        <input type="checkbox" id="anonymousCheck">
+        <span class="anon-dot"></span>匿名
       </label>
-      <button class="btn" id="submitOpinionBtn">发布</button>
+      <button class="btn" id="submitOpinionBtn" style="height:auto;">发布</button>
     </div>
   </div>
 
@@ -401,6 +412,16 @@
 </div>
 
 <!-- 确认弹窗 -->
+<!-- 自定义下拉浮层 -->
+<div class="select-drop" id="targetDrop" style="display:none;">
+  <div data-val="班长">班长</div>
+  <div data-val="团支书">团支书</div>
+  <div data-val="学习委员">学习委员</div>
+  <div data-val="宣传委员">宣传委员</div>
+  <div data-val="生活委员">生活委员</div>
+  <div data-val="心理委员">心理委员</div>
+</div>
+
 <div class="modal" id="confirmModal">
   <div class="modal-content" style="text-align:center; max-width:360px;">
     <h3 id="confirmTitle" style="font-size:18px; color:var(--text); transition:color 0.4s;">确认操作</h3>
@@ -455,7 +476,7 @@
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <select id="assignSelect" style="padding:10px 14px; border-radius:24px; border:1.5px solid var(--input-border);">
-            <option value="班长">班长</option><option value="团支书">团支书</option><option value="学习委员">学习委员</option><option value="生活委员">生活委员</option><option value="班主任">班主任</option>
+            <option value="班长">班长</option><option value="团支书">团支书</option><option value="学习委员">学习委员</option><option value="宣传委员">宣传委员</option><option value="生活委员">生活委员</option><option value="心理委员">心理委员</option>
           </select>
           <button class="btn-outline btn" id="assignBtn"><span id="refreshIcon"></span> 重新分配</button>
         </div>
@@ -717,6 +738,48 @@
     var userStr = sessionStorage.getItem('currentUser');
     if (!userStr) { window.location.href = 'index.html'; return; }
     currentUser = JSON.parse(userStr);
+    // 读取默认匿名设置
+    var rawSettings = localStorage.getItem('classroom_user_settings');
+    if (rawSettings) {
+      try { var s = JSON.parse(rawSettings); if (s.defaultAnonymous) { document.getElementById('anonymousCheck').checked = true; document.getElementById('anonPill').classList.add('active'); } } catch(e) {}
+    }
+    // 自定义下拉：反馈给
+    var targetLabel = document.getElementById('targetLabel');
+    targetLabel.dataset.val = '班长';
+    document.getElementById('targetPill').addEventListener('click', function(e) {
+      e.stopPropagation();
+      var drop = document.getElementById('targetDrop');
+      if (drop.style.display === 'block') { drop.style.display = 'none'; return; }
+      var rect = this.getBoundingClientRect();
+      drop.style.top = (rect.bottom + 4) + 'px';
+      drop.style.left = rect.left + 'px';
+      drop.style.minWidth = rect.width + 'px';
+      drop.style.display = 'block';
+    });
+    document.getElementById('targetDrop').querySelectorAll('div').forEach(function(div) {
+      div.addEventListener('click', function(e) {
+        e.stopPropagation();
+        targetLabel.textContent = '反馈给：' + this.dataset.val;
+        targetLabel.dataset.val = this.dataset.val;
+        document.getElementById('targetDrop').style.display = 'none';
+      });
+    });
+    document.addEventListener('click', function() { document.getElementById('targetDrop').style.display = 'none'; });
+    window.addEventListener('scroll', function() {
+      var drop = document.getElementById('targetDrop');
+      if (drop.style.display === 'block') {
+        var rect = document.getElementById('targetPill').getBoundingClientRect();
+        drop.style.top = (rect.bottom + 4) + 'px';
+        drop.style.left = rect.left + 'px';
+      }
+    }, true);
+
+    // 匿名药丸点击切换
+    document.getElementById('anonPill').addEventListener('click', function() {
+      var cb = document.getElementById('anonymousCheck');
+      cb.checked = !cb.checked;
+      this.classList.toggle('active', cb.checked);
+    });
     updateNotifDot();
     await loadOpinions();
     await updateDashboard();
@@ -783,7 +846,7 @@
   function getProgress(op) {
     if (op.status === 'open') return 0;
     if (op.status === 'in_progress') return 1;
-    if (op.status === 'closed') return op.avgRating ? 3 : 2;
+    if (op.status === 'closed') return op.avgRating ? 4 : 2;
     return 0;
   }
 
@@ -886,7 +949,7 @@
   document.getElementById('submitOpinionBtn').addEventListener('click', async function() {
     var title = document.getElementById('titleInput').value.trim();
     var content = document.getElementById('contentInput').value.trim();
-    var target = document.getElementById('targetSelect').value;
+    var target = document.getElementById('targetLabel').dataset.val || '班长';
     var anonymous = document.getElementById('anonymousCheck').checked;
     if (!title || !content) { toast('请填写标题和内容', 'warn'); return; }
     showLoading();
@@ -948,7 +1011,8 @@
       return;
     }
     document.getElementById('modalTitle').innerText = op.title;
-    document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + op.status;
+    var statusText = { open: '待处理', in_progress: '解决中', closed: '已完结' };
+    document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + (statusText[op.status] || op.status);
     document.getElementById('modalContent').innerText = op.content;
     var ph = renderPhotoStrip(op.photos, 'large');
     var mp = document.getElementById('modalPhotos');
@@ -1131,7 +1195,8 @@
     if (op) {
       currentOpinionId = popupOpinionId;
       document.getElementById('modalTitle').innerText = op.title;
-      document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + op.status;
+      var statusText = { open: '待处理', in_progress: '解决中', closed: '已完结' };
+    document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + (statusText[op.status] || op.status);
       document.getElementById('modalContent').innerText = op.content;
       var ph2 = renderPhotoStrip(op.photos, 'large');
       document.getElementById('modalPhotos').innerHTML = ph2;
