@@ -351,6 +351,14 @@
     .site-footer a svg { width: 14px; height: 14px; }
     .site-footer .footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 
+    .tutorial-overlay { position: fixed; inset: 0; background: var(--modal-overlay); z-index: 2000; }
+    .tutorial-highlight { position: fixed; z-index: 2001; border-radius: 12px; box-shadow: 0 0 0 4px var(--accent), 0 0 40px rgba(198,123,92,0.25); pointer-events: none; transition: all 0.35s ease; }
+    .tutorial-bubble { position: fixed; z-index: 2002; background: var(--modal-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 20px 24px; max-width: 380px; box-shadow: 0 12px 40px var(--shadow-lg); border: 1px solid var(--card-border); transition: all 0.35s ease; font-size: 14px; color: var(--text); line-height: 1.7; }
+    .tutorial-bubble .tutorial-text b { color: var(--accent); }
+    .tutorial-btn { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; }
+    .tutorial-skip { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 8px 12px; font-family: inherit; }
+    .tutorial-help { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: var(--modal-bg); backdrop-filter: blur(12px); border: 1.5px solid var(--card-border); color: var(--accent); font-size: 20px; cursor: pointer; z-index: 500; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 16px var(--shadow); font-family: inherit; }
+
     @media (max-width: 640px) {
       .navbar { padding: 10px 16px; }
       .logo { font-size: 18px; }
@@ -1334,6 +1342,39 @@
     return div.innerHTML;
   }
 
+  // ===== 新手教程 =====
+  var tutorialSteps = [
+    { sel: '.post-box', text: '📝 这里是<b>意见箱</b>。填写标题和内容，选择反馈给哪位班委，就可以提交你的意见。可以添加图片辅助说明，也可以选择匿名。', pos: 'bottom' },
+    { sel: '.sort-bar', text: '🔍 下方的卡片展示每条意见的处理进度。你可以点赞、查看详情，追踪问题的解决状态。', pos: 'bottom' }
+  ];
+  var tutorialStepO = 0;
+  function showTutorialStep(n) {
+    var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
+    if (!el) { nextTutorialStepO(); return; }
+    var rect = el.getBoundingClientRect();
+    document.getElementById('tutorialHighlight').style.display = 'block';
+    document.getElementById('tutorialHighlight').style.top = (rect.top-6)+'px';
+    document.getElementById('tutorialHighlight').style.left = (rect.left-6)+'px';
+    document.getElementById('tutorialHighlight').style.width = (rect.width+12)+'px';
+    document.getElementById('tutorialHighlight').style.height = (rect.height+12)+'px';
+    document.getElementById('tutorialBubble').style.display = 'block';
+    document.getElementById('tutorialText').innerHTML = step.text;
+    document.getElementById('tutorialNext').textContent = '下一步 →';
+    var bw=380, bh=160, bx=rect.left+rect.width/2-bw/2, by=rect.bottom+12;
+    bx=Math.max(10,Math.min(bx,window.innerWidth-bw-10));by=Math.max(10,Math.min(by,window.innerHeight-bh-10));
+    document.getElementById('tutorialBubble').style.top=by+'px';document.getElementById('tutorialBubble').style.left=bx+'px';
+    document.getElementById('tutorialOverlay').style.display = 'block';
+    tutorialStepO=n;sessionStorage.setItem('tutorial_step',n+4);sessionStorage.setItem('tutorial_page','opinions');
+  }
+  function nextTutorialStepO(){tutorialStepO++;if(tutorialStepO<tutorialSteps.length)showTutorialStep(tutorialStepO);else{sessionStorage.setItem('tutorial_step',8);sessionStorage.setItem('tutorial_page','treehole');window.location.href='treehole.html';}}
+  function endTutorial(){document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');if(currentUser){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}}
+  document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('tutorialNext').addEventListener('click',nextTutorialStepO);
+    document.getElementById('tutorialSkip').addEventListener('click',endTutorial);
+    window.addEventListener('scroll',function(){if(document.getElementById('tutorialOverlay').style.display==='block')showTutorialStep(tutorialStepO);});
+    if(!localStorage.getItem('tutorial_done')&&sessionStorage.getItem('tutorial_page')==='opinions'){tutorialStepO=parseInt(sessionStorage.getItem('tutorial_step')||'0')-6;setTimeout(function(){showTutorialStep(Math.max(0,tutorialStepO));},600);}
+  });
+
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
   // 输入弹窗按钮
   document.getElementById('promptOkBtn').addEventListener('click', function() {
@@ -1352,6 +1393,15 @@
   initIcons();
   init();
 </script>
+<div class="tutorial-overlay" id="tutorialOverlay" style="display:none;"></div>
+<div class="tutorial-highlight" id="tutorialHighlight" style="display:none;"></div>
+<div class="tutorial-bubble" id="tutorialBubble" style="display:none;">
+  <div class="tutorial-text" id="tutorialText"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <button class="tutorial-skip" id="tutorialSkip">跳过教程</button>
+    <button class="tutorial-btn" id="tutorialNext">下一步 →</button>
+  </div>
+</div>
 <footer class="site-footer">
   <div class="footer-divider"></div>
   <div>© 2026 Liu_Tianze. All rights reserved.</div>

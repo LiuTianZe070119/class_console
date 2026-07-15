@@ -357,7 +357,7 @@
       errEl.textContent = '账号或密码错误';
       toast('登录失败：账号或密码错误', 'error');
     } else {
-      var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous').eq('id', res.data.user.id).single();
+      var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', res.data.user.id).single();
       var sessionUser = {
         id: res.data.user.id,
         student_id: profileRes.data.student_id,
@@ -366,7 +366,7 @@
         position: profileRes.data.position
       };
       sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
-      // 同步主题到 localStorage 缓存
+      // 同步设置到 localStorage 缓存
       if (profileRes.data.theme) localStorage.setItem('classroom_theme', profileRes.data.theme);
       if (profileRes.data.default_anonymous !== null) {
         var settings = localStorage.getItem('classroom_user_settings');
@@ -374,6 +374,7 @@
         s.defaultAnonymous = profileRes.data.default_anonymous;
         localStorage.setItem('classroom_user_settings', JSON.stringify(s));
       }
+      if (profileRes.data.tutorial_done) localStorage.setItem('tutorial_done', '1');
       window.location.href = 'main.html';
     }
   });
@@ -430,7 +431,7 @@
     }
     if (res.data.user && res.data.session) {
       setTimeout(async function() {
-        var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous').eq('id', res.data.user.id).single();
+        var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', res.data.user.id).single();
         var sessionUser = {
           id: res.data.user.id,
           student_id: profileRes.data.student_id,
@@ -447,6 +448,7 @@
           s2.defaultAnonymous = profileRes.data.default_anonymous;
           localStorage.setItem('classroom_user_settings', JSON.stringify(s2));
         }
+        if (profileRes.data.tutorial_done) localStorage.setItem('tutorial_done', '1');
         window.location.href = 'main.html';
       }, 500);
     } else {

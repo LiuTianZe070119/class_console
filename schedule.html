@@ -155,6 +155,16 @@
     .site-footer a svg { width: 14px; height: 14px; }
     .site-footer .footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 
+    .tutorial-overlay { position: fixed; inset: 0; background: var(--modal-overlay); z-index: 2000; }
+    .tutorial-highlight { position: fixed; z-index: 2001; border-radius: 12px; box-shadow: 0 0 0 4px var(--accent), 0 0 40px rgba(198,123,92,0.25); pointer-events: none; transition: all 0.35s ease; }
+    .tutorial-bubble { position: fixed; z-index: 2002; background: var(--modal-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 20px 24px; max-width: 380px; box-shadow: 0 12px 40px var(--shadow-lg); border: 1px solid var(--card-border); transition: all 0.35s ease; font-size: 14px; color: var(--text); line-height: 1.7; }
+    .tutorial-bubble .tutorial-text { margin-bottom: 16px; }
+    .tutorial-bubble .tutorial-text b { color: var(--accent); }
+    .tutorial-btn { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.2s; }
+    .tutorial-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px var(--btn-shadow); }
+    .tutorial-skip { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 8px 12px; font-family: inherit; }
+    .tutorial-help { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: var(--modal-bg); backdrop-filter: blur(12px); border: 1.5px solid var(--card-border); color: var(--accent); font-size: 20px; cursor: pointer; z-index: 500; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 16px var(--shadow); font-family: inherit; }
+
     @media (max-width: 480px) { .student-list { grid-template-columns: 1fr; } }
     .student-group h4 { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #E8D8C8; font-size: 14px; display: flex; align-items: center; gap: 6px; }
     .student-group h4 svg { width: 16px; height: 16px; }
@@ -671,9 +681,52 @@
     }
   });
 
+  var tutorialSteps = [
+    { sel: '#scheduleGrid', text: '📅 这里是<b>课表</b>。点击格子标记有课的时间段，填好后点击保存。你的课表会被统计到全班级数据中，利于班委了解各个同学的上课时间，灵活安排活动。', pos: 'right' }
+  ];
+  var tutorialStep = 0;
+  function showTutorialStep(n) {
+    var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
+    if (!el) { nextTutorialStep(); return; }
+    var rect = el.getBoundingClientRect();
+    var hl = document.getElementById('tutorialHighlight');
+    hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    var bubble = document.getElementById('tutorialBubble'); bubble.style.display = 'block';
+    document.getElementById('tutorialText').innerHTML = step.text;
+    document.getElementById('tutorialNext').textContent = '下一步 →';
+    var bw=380, bh=160, bx, by;
+    if(step.pos==='right'){bx=rect.right+12;by=rect.top+rect.height/2-bh/2;}
+    else{bx=rect.left+rect.width/2-bw/2;by=rect.bottom+12;}
+    bx=Math.max(10,Math.min(bx,window.innerWidth-bw-10));by=Math.max(10,Math.min(by,window.innerHeight-bh-10));
+    bubble.style.top=by+'px';bubble.style.left=bx+'px';
+    document.getElementById('tutorialOverlay').style.display = 'block';
+    tutorialStep=n;sessionStorage.setItem('tutorial_step',n+8);sessionStorage.setItem('tutorial_page','schedule');
+  }
+  function nextTutorialStep() { sessionStorage.setItem('tutorial_step',11);sessionStorage.setItem('tutorial_page','settings');window.location.href='settings.html'; }
+  function endTutorial() {
+    document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';
+    localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');
+    if(currentUser){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('tutorialNext').addEventListener('click',nextTutorialStep);
+    document.getElementById('tutorialSkip').addEventListener('click',endTutorial);
+    window.addEventListener('scroll',function(){if(document.getElementById('tutorialOverlay').style.display==='block')showTutorialStep(tutorialStep);});
+    if(!localStorage.getItem('tutorial_done')&&sessionStorage.getItem('tutorial_page')==='schedule'){tutorialStep=parseInt(sessionStorage.getItem('tutorial_step')||'0')-10;setTimeout(function(){showTutorialStep(Math.max(0,tutorialStep));},600);}
+  });
+
   initIcons();
   init();
 </script>
+<div class="tutorial-overlay" id="tutorialOverlay" style="display:none;"></div>
+<div class="tutorial-highlight" id="tutorialHighlight" style="display:none;"></div>
+<div class="tutorial-bubble" id="tutorialBubble" style="display:none;">
+  <div class="tutorial-text" id="tutorialText"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <button class="tutorial-skip" id="tutorialSkip">跳过教程</button>
+    <button class="tutorial-btn" id="tutorialNext">下一步 →</button>
+  </div>
+</div>
 <footer class="site-footer">
   <div class="footer-divider"></div>
   <div>© 2026 Liu_Tianze. All rights reserved.</div>

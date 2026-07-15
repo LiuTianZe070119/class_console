@@ -266,6 +266,15 @@ body[data-theme="black"] {
     .site-footer a svg { width: 14px; height: 14px; }
     .site-footer .footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 
+    .tutorial-overlay { position: fixed; inset: 0; background: var(--modal-overlay); z-index: 2000; }
+    .tutorial-highlight { position: fixed; z-index: 2001; border-radius: 12px; box-shadow: 0 0 0 4px var(--accent), 0 0 40px rgba(198,123,92,0.25); pointer-events: none; transition: all 0.35s ease; }
+    .tutorial-bubble { position: fixed; z-index: 2002; background: var(--modal-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 20px 24px; max-width: 380px; box-shadow: 0 12px 40px var(--shadow-lg); border: 1px solid var(--card-border); transition: all 0.35s ease; font-size: 14px; color: var(--text); line-height: 1.7; }
+    .tutorial-bubble .tutorial-text b { color: var(--accent); }
+    .tutorial-bubble .tutorial-text { margin-bottom: 16px; }
+    .tutorial-btn { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.2s; }
+    .tutorial-skip { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 8px 12px; font-family: inherit; }
+    .tutorial-help { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: var(--modal-bg); backdrop-filter: blur(12px); border: 1.5px solid var(--card-border); color: var(--accent); font-size: 20px; cursor: pointer; z-index: 500; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 16px var(--shadow); font-family: inherit; }
+
     @media (max-width: 640px) {
       .navbar { padding: 10px 16px; }
       .logo { font-size: 18px; }
@@ -336,6 +345,17 @@ body[data-theme="black"] {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+
+<div class="tutorial-overlay" id="tutorialOverlay" style="display:none;"></div>
+<div class="tutorial-highlight" id="tutorialHighlight" style="display:none;"></div>
+<div class="tutorial-bubble" id="tutorialBubble" style="display:none;">
+  <div class="tutorial-text" id="tutorialText"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <button class="tutorial-skip" id="tutorialSkip">跳过教程</button>
+    <button class="tutorial-btn" id="tutorialNext">下一步 →</button>
+  </div>
+</div>
+<button class="tutorial-help" id="tutorialHelp" title="使用帮助">?</button>
 
 <footer class="site-footer">
   <div class="footer-divider"></div>
@@ -756,6 +776,68 @@ body[data-theme="black"] {
   initBgDecorations();
   initCardEntrance();
   initQuote();
+  // ===== 新手教程 =====
+  var tutorialSteps = [
+    { sel: '#welcomeTitle', text: '👋 欢迎来到<b>班级办事通</b>！这里是你处理班级事务的起点。接下来我将带你依次了解每个功能。', pos: 'bottom' },
+    { sel: '.hub-card[href="opinions.html"]', text: '📝 <b>意见箱</b> — 提出意见和建议，班委会及时处理并反馈结果。你可以追踪处理进度，对结果进行评分。', pos: 'bottom' },
+    { sel: '.hub-card[href="treehole.html"]', text: '🌲 <b>树洞</b> — 一个匿名的便利贴墙。写下你想说的话，贴上墙，所有人看到的内容都是匿名的。', pos: 'bottom' },
+    { sel: '.hub-card[href="schedule.html"]', text: '📅 <b>课表</b> — 标记你每周的上课时间，方便查看空闲时段。统计后利于班委灵活安排活动时间。', pos: 'bottom' },
+    { sel: '.hub-card[href="settings.html"]', text: '⚙️ <b>个人设置</b> — 切换主题颜色、修改密码、还有其他一些设置，让办事通变得更顺手，更好用。', pos: 'bottom' },
+    { sel: '#quoteSection', text: '📜 页面底部会为你推荐 AI 生成的名言古诗词，你可以手动切换，也可以利用AI查看解读。好了，接下来我们一起去看看每个功能页面吧！', pos: 'top' }
+  ];
+  var tutorialStep = 0;
+  function showTutorialStep(n) {
+    var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
+    if (!el) { nextTutorialStep(); return; }
+    var rect = el.getBoundingClientRect();
+    var hl = document.getElementById('tutorialHighlight');
+    hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    document.getElementById('tutorialBubble').style.display = 'block';
+    document.getElementById('tutorialText').innerHTML = step.text;
+    document.getElementById('tutorialNext').textContent = '下一步 →';
+    var bw=380, bh=160, bx, by;
+    if(step.pos==='bottom'){bx=rect.left+rect.width/2-bw/2;by=rect.bottom+12;}
+    else{bx=rect.left+rect.width/2-bw/2;by=rect.top-bh-12;}
+    bx=Math.max(10,Math.min(bx,window.innerWidth-bw-10));by=Math.max(10,Math.min(by,window.innerHeight-bh-10));
+    document.getElementById('tutorialBubble').style.top=by+'px';document.getElementById('tutorialBubble').style.left=bx+'px';
+    document.getElementById('tutorialOverlay').style.display = 'block';
+    tutorialStep=n;sessionStorage.setItem('tutorial_step',n);sessionStorage.setItem('tutorial_page','main');
+  }
+  function nextTutorialStep(){tutorialStep++;if(tutorialStep<tutorialSteps.length)showTutorialStep(tutorialStep);else{sessionStorage.setItem('tutorial_step',6);sessionStorage.setItem('tutorial_page','opinions');window.location.href='opinions.html';}}
+  function endTutorial(){document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');if(currentUser){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}}
+  document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('tutorialNext').addEventListener('click',nextTutorialStep);
+    document.getElementById('tutorialSkip').addEventListener('click',endTutorial);
+    document.getElementById('tutorialHelp').addEventListener('click',function(){tutorialStep=0;localStorage.removeItem('tutorial_done');showTutorialStep(0);});
+    window.addEventListener('scroll',function(){if(document.getElementById('tutorialOverlay').style.display==='block')showTutorialStep(tutorialStep);});
+    if(sessionStorage.getItem('tutorial_step')==='done'){showCompletionStep();}
+    else if(!localStorage.getItem('tutorial_done')){setTimeout(function(){showTutorialStep(0);},800);}
+  });
+  var completionStep = 0;
+  function showCompletionStep(){
+    document.getElementById('tutorialOverlay').style.display='block';
+    if(completionStep===0){
+      // 第一步：聚焦 ? 按钮
+      var el=document.getElementById('tutorialHelp');
+      var rect=el.getBoundingClientRect();
+      var hl=document.getElementById('tutorialHighlight');
+      hl.style.display='block';hl.style.top=(rect.top-6)+'px';hl.style.left=(rect.left-6)+'px';hl.style.width=(rect.width+12)+'px';hl.style.height=(rect.height+12)+'px';
+      var b=document.getElementById('tutorialBubble');
+      b.style.display='block';b.style.top=(rect.top-170)+'px';b.style.left=Math.max(10,(window.innerWidth-380)/2)+'px';
+      document.getElementById('tutorialText').innerHTML='💡 任何时候点击这个 <b>？</b> 按钮，都可以重新查看教程。';
+      document.getElementById('tutorialNext').textContent='下一步 →';
+      document.getElementById('tutorialNext').onclick=function(){completionStep=1;showCompletionStep();};
+    }else{
+      // 第二步：完成
+      document.getElementById('tutorialHighlight').style.display='none';
+      var b=document.getElementById('tutorialBubble');
+      b.style.top=(window.innerHeight/2-90)+'px';b.style.left=(window.innerWidth/2-190)+'px';
+      document.getElementById('tutorialText').innerHTML='🎉 <b>教程完毕！</b><br>你已经了解了班级办事通的全部功能，现在开始使用吧！';
+      document.getElementById('tutorialNext').textContent='开始使用';
+      document.getElementById('tutorialNext').onclick=endTutorial;
+    }
+  }
+
   init();
 </script>
 </body>
