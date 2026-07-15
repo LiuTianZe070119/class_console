@@ -289,7 +289,7 @@
     .toast.warn { background: var(--toast-warn); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #E8D8C8; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid var(--accent-light); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
 
     /* 照片上传 */
     .photo-add-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: 2px dashed #D0C0B0; border-radius: 18px; cursor: pointer; color: var(--text-muted); font-size: 14px; font-weight: 500; transition: all 0.2s; background: rgba(255,255,255,0.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); user-select: none; }
@@ -344,10 +344,10 @@
     .step-caption.done { color: #5D9B6F; }
     .step-caption.current { color: #C67B5C; font-weight: 650; }
 
-    .site-footer { text-align: center; padding: 24px 20px; margin-top: 48px; color: #B09080; font-size: 13px; position: relative; z-index: 1; }
+    .site-footer { text-align: center; padding: 24px 20px; margin-top: 48px; color: var(--text-light); font-size: 13px; position: relative; z-index: 1; }
     .site-footer .footer-divider { width: 40px; height: 2px; background: rgba(198,123,92,0.2); margin: 0 auto 14px; border-radius: 1px; }
-    .site-footer a { color: #8B7355; text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 4px; }
-    .site-footer a:hover { color: #C67B5C; }
+    .site-footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+    .site-footer a:hover { color: var(--accent); }
     .site-footer a svg { width: 14px; height: 14px; }
     .site-footer .footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 
@@ -373,7 +373,7 @@
   <div class="logo"><span id="logoIcon"></span> 意见箱</div>
   <div class="user-info">
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
-    <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backIcon"></span>返回办事通</button>
+    <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon"></span>返回办事通</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -1269,7 +1269,7 @@
     }
 
     if (displayNotifs.length > 0) {
-      html += '<div style="text-align:center;font-size:11px;color:var(--text-light);padding:6px 0 2px;">' + getIcon('lightbulb', 12) + ' 点击消息即可标为已读</div>';
+      html += '<div style="text-align:center;font-size:11px;color:var(--text-light);padding:6px 0 2px;">' + ' 点击消息即可标为已读</div>';
     }
     if (!showAll) {
       if (unreadNotifs.length === 0) {

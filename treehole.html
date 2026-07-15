@@ -183,7 +183,8 @@
     .post-box h3 { color: var(--text); margin-bottom: 16px; font-family: 'Noto Serif SC', serif; font-size: 18px; display: flex; align-items: center; gap: 8px; }
     .post-box h3 svg { color: var(--accent); }
     textarea { width: 100%; padding: 14px 18px; border: 1.5px solid var(--input-border); border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 15px; outline: none; transition: all 0.2s ease; background: var(--input-bg); resize: vertical; min-height: 80px; color: var(--text); }
-    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); background: rgba(255,255,255,0.8); }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); background: var(--card-bg); }
+    textarea::placeholder, input::placeholder { color: var(--text-light); }
 
     .sticky-wall { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 10px 0; }
     .sticky-note { width: 220px; min-height: 180px; padding: 20px 18px 14px; border-radius: 4px 20px 8px 24px; box-shadow: 3px 4px 14px rgba(139, 90, 60, 0.1), 0 1px 3px rgba(139, 90, 60, 0.06); cursor: pointer; transition: all 0.25s ease; position: relative; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.5); }
@@ -220,21 +221,18 @@
     .detail-delete-btn:hover { background: rgba(199, 86, 74, 0.08); border-color: var(--danger); }
     .detail-delete-btn svg { width: 16px; height: 16px; }
 
-    .notification-bell { position: relative; cursor: pointer; padding: 6px 8px; border-radius: 12px; transition: background 0.2s; display: flex; align-items: center; }
-    .notification-bell:hover { background: rgba(255,255,255,0.5); }
-    .notification-bell svg { width: 24px; height: 24px; color: var(--text); }
-    .notification-dot { position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; animation: blink 1s infinite; border: 2px solid rgba(255,255,255,0.8); }
-    .notification-dropdown { position: fixed; top: 60px; right: 20px; width: 340px; max-height: 420px; overflow-y: auto; background: var(--notif-dropdown-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 16px 48px var(--shadow-lg); border-radius: var(--radius-card); padding: 12px; display: none; z-index: 200; border: 1px solid var(--card-border); }
-    .notification-item { padding: 10px 14px; border-bottom: 1px solid var(--divider); font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; display: flex; align-items: flex-start; gap: 10px; }
-    .notification-item:hover { background: rgba(255,255,255,0.6); }
-    .notification-item.unread { background: var(--notif-unread); font-weight: 600; }
+    .notification-bell { position: relative; cursor: pointer; padding: 4px; border-radius: 12px; transition: background 0.2s; display: flex; align-items: center; }
+    .notification-bell:hover { background: var(--bell-hover, rgba(198,123,92,0.08)); }
+    .notification-bell svg { width: 26px; height: 26px; color: var(--text-muted); }
+    .notification-dot { position: absolute; top: 0; right: -2px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; }
+    .notification-dropdown { position: absolute; top: 55px; right: 20px; background: var(--notif-dropdown-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 40px var(--shadow-lg); border-radius: 20px; padding: 12px; display: none; z-index: 100; border: 1px solid var(--card-border); }
+    .notification-item { padding: 10px 14px; border-bottom: 1px solid var(--divider); font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; color: var(--text); }
+    .notification-item:hover { background: var(--notif-hover); }
+    .notification-item.unread { background: var(--notif-unread); font-weight: 500; }
     .notification-item.read { color: var(--text-muted); }
-    .notification-item .notif-icon { flex-shrink: 0; margin-top: 1px; }
-    .notification-item .notif-icon svg { width: 18px; height: 18px; }
-    .notification-item .notif-body { flex: 1; min-width: 0; }
     .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid var(--divider); margin-top: 8px; }
-    .notif-footer button { background: none; border: none; color: var(--accent-dark); cursor: pointer; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 4px; }
-    .notif-footer button:hover { background: rgba(255,255,255,0.5); }
+    .notif-footer button { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
+    .notif-footer button:hover { background: var(--accent-light2); }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
     .delete-reason-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(var(--blur-modal)); -webkit-backdrop-filter: blur(var(--blur-modal)); display: none; align-items: center; justify-content: center; z-index: 2000; }
@@ -260,7 +258,7 @@
 
     .reply-input-row { display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--divider); }
     .reply-input-row input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1.5px solid var(--input-border); outline: none; font-size: 15px; background: var(--input-bg); color: var(--text); transition: all 0.2s ease; }
-    .reply-input-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); background: rgba(255,255,255,0.8); }
+    .reply-input-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); background: var(--card-bg); }
 
     .emoji-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--divider); }
     .emoji-btn { font-size: 22px; cursor: pointer; padding: 6px 10px; border-radius: 16px; transition: all 0.15s ease; position: relative; user-select: none; background: transparent; border: none; }
@@ -281,7 +279,7 @@
 
     .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid rgba(198, 123, 92, 0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(253, 246, 240, 0.5); backdrop-filter: blur(2px); z-index: 999; align-items: center; justify-content: center; }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(2px); z-index: 999; align-items: center; justify-content: center; }
     .loading-overlay.active { display: flex; }
 
     @media (prefers-reduced-motion: reduce) {
@@ -316,7 +314,7 @@
   <div class="logo"><span id="logoIcon"></span>树洞</div>
   <div class="user-info">
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
-    <button class="btn-outline btn" onclick="window.location.href='main.html'"><span id="backIcon"></span>返回办事通</button>
+    <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon"></span>返回办事通</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -408,7 +406,10 @@
       'message-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
       'inbox': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3H10l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
       'x': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>',
-      'clipboard': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
+      'clipboard': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+      'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      'refresh-cw': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+      'clock': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
       'lightbulb': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7V17h8v-2.3c1.8-1.3 3-3.4 3-5.7a7 7 0 0 0-7-7z"/></svg>',
       'heart': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
     };
@@ -417,7 +418,7 @@
 
   function initIcons() {
     document.getElementById('logoIcon').innerHTML = getIcon('tree-pine', 26);
-    document.getElementById('bellIcon').innerHTML = getIcon('bell', 24);
+    document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
     document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
     document.getElementById('editIcon').innerHTML = getIcon('edit', 22);
     document.getElementById('anonymousTip').innerHTML = getIcon('eye', 16);
@@ -827,31 +828,32 @@
       html = '<div style="padding:16px;text-align:center;color:var(--text-muted);">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
     } else {
       html = displayNotifs.map(function(n) {
-        var icon = getIcon('bell', 18);
-        var label = '';
-        if (n.type === 'treehole_delete') { icon = getIcon('trash', 18); label = '便利贴被管理员删除'; }
-        else if (n.type === 'treehole_reply') { icon = getIcon('message-circle', 18); label = '便利贴有新回复'; }
-        var timeHtml = '<br><span style="font-size:11px;color:var(--text-muted);">' + formatTime(n.created_at) + '</span>';
-        return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-post-id="' + (n.post_id || '') + '">' +
-          '<span class="notif-icon">' + icon + '</span>' +
-          '<span class="notif-body">' + label + (n.content ? '<br><span style="font-size:12px;color:var(--text-muted);">内容：' + escapeHtml(n.content.substring(0, 40) + (n.content.length > 40 ? '...' : '')) + '</span>' : '') +
-          (n.reason ? '<br><span style="font-size:12px;color:var(--danger);">原因：' + escapeHtml(n.reason) + '</span>' : '') +
-          timeHtml + '</span>' +
+        var icon = getIcon('bell', 16), label = '', detail = '', opinionId = n.opinion_id || '', postId = n.post_id || '';
+        if (n.type === 'reply') { icon = getIcon('message-circle', 16); label = '有新回复'; detail = n.opinion_title; }
+        else if (n.type === 'closed') { icon = getIcon('check-circle', 16); label = '已完结'; detail = n.opinion_title; }
+        else if (n.type === 'reassign') { icon = getIcon('refresh-cw', 16); label = '已重分配'; detail = n.opinion_title; }
+        else if (n.type === 'in_progress') { icon = getIcon('clock', 16); label = '问题开始处理'; detail = n.opinion_title; }
+        else if (n.type === 'opinion_delete') { icon = getIcon('trash', 16); label = '已被管理员删除'; detail = n.opinion_title; }
+        else if (n.type === 'treehole_delete') { icon = getIcon('trash', 16); label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
+        else if (n.type === 'treehole_reply') { icon = getIcon('message-circle', 16); label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
+        var timeHtml = '<br><span style="font-size:11px;color:var(--text-light);">' + new Date(n.created_at).toLocaleString() + '</span>';
+        return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '" data-opinion="' + opinionId + '" data-post-id="' + postId + '">' +
+          icon + ' ' + (detail ? escapeHtml(detail) + ' - ' : '') + label + timeHtml +
         '</div>';
       }).join('');
     }
 
     if (displayNotifs.length > 0) {
-      html += '<div style="text-align:center;font-size:11px;color:var(--text-muted);padding:6px 0 2px;">' + getIcon('lightbulb', 14) + ' 点击消息即可标为已读</div>';
+      html += '<div style="text-align:center;font-size:11px;color:var(--text-light);padding:6px 0 2px;">点击消息即可标为已读</div>';
     }
     if (!showAll) {
       if (unreadNotifs.length === 0) {
-        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 16) + ' 查看历史通知</button></div>';
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看历史通知 →</button></div>';
       } else if (readNotifs.length > 0) {
-        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 16) + ' 查看全部消息</button></div>';
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看全部消息 →</button></div>';
       }
     } else {
-      html += '<div class="notif-footer"><button id="showUnreadBtn">' + getIcon('arrow-left', 16) + ' 仅看未读</button></div>';
+      html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
     }
 
     dropdown.innerHTML = html;
@@ -863,8 +865,12 @@
         if (idx !== -1) { notifs[idx].read = true; saveNotifs(notifs); }
         updateNotifDot();
         dropdown.style.display = 'none';
-        var postId = item.dataset.postId;
-        if (postId) { openDetail(postId); }
+        if (item.dataset.type === 'treehole_delete' || item.dataset.type === 'treehole_reply') {
+          var postId = item.dataset.postId;
+          if (postId) { openDetail(postId); }
+        } else {
+          window.location.href = 'opinions.html';
+        }
       });
     });
 

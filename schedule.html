@@ -81,7 +81,18 @@
     .btn-outline:hover { background: var(--accent-light2); transform: translateY(-2px); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .notification-bell { cursor: pointer; display: flex; align-items: center; }
+    .notification-bell { position: relative; cursor: pointer; padding: 4px; border-radius: 12px; transition: background 0.2s; display: flex; align-items: center; }
     .notification-bell svg { width: 26px; height: 26px; color: var(--text-muted); }
+    .notification-bell:hover { background: var(--accent-light2); }
+    .notification-dot { position: absolute; top: 0; right: -2px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; }
+    .notification-dropdown { position: absolute; top: 55px; right: 20px; background: var(--modal-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 340px; max-height: 420px; overflow-y: auto; box-shadow: 0 16px 40px var(--shadow-lg); border-radius: 20px; padding: 12px; display: none; z-index: 100; border: 1px solid var(--card-border); }
+    .notification-item { padding: 10px 14px; border-bottom: 1px solid var(--divider); font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 4px; transition: background 0.15s; color: var(--text); }
+    .notification-item:hover { background: var(--accent-light2); }
+    .notification-item.unread { background: var(--accent-light); font-weight: 500; }
+    .notification-item.read { color: var(--text-muted); }
+    .notif-footer { text-align: center; padding: 10px 0 2px; border-top: 1px solid var(--divider); margin-top: 8px; }
+    .notif-footer button { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 16px; transition: background 0.2s; }
+    .notif-footer button:hover { background: var(--accent-light2); }
     .logo span, .btn span { display: inline-flex; align-items: center; }
     .card {
       background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -121,7 +132,7 @@
     /* 节标题 */
     .section-title { padding: 10px 0 2px 85px; font-size: 13px; font-weight: 600; color: var(--accent); display: flex; gap: 10px; align-items: baseline; }
     .section-title .section-time { font-weight: 400; font-size: 12px; color: var(--text-muted); }
-    .notice { font-size: 13px; color: var(--text-muted); margin-top: 12px; padding: 10px 16px; background: rgba(255,255,255,0.5); border-radius: 12px; display: flex; align-items: center; gap: 6px; }
+    .notice { font-size: 13px; color: var(--text-muted); margin-top: 12px; padding: 10px 16px; background: var(--card-bg); border-radius: 12px; display: flex; align-items: center; gap: 6px; }
     .stats-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); }
     .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
@@ -163,7 +174,7 @@
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
     /* Loading spinner */
-    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid #E8D8C8; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid var(--accent-light); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(253,246,240,0.6); z-index: 999; align-items: center; justify-content: center; }
     .loading-overlay.active { display: flex; }
@@ -178,9 +189,10 @@
   <div class="logo"><span id="logoIcon"></span>课表统计</div>
   <div style="display:flex; gap:10px; align-items:center;">
     <span class="has-unsaved" id="unsavedHint" style="display:none;"><span id="dotIcon"></span> 有未保存的修改</span>
-    <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span></div>
+    <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <button class="btn-outline btn" onclick="goBack()"><span id="backIcon"></span>返回办事通</button>
   </div>
+  <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
 
 <div id="scheduleCard" class="card">
@@ -260,6 +272,75 @@
 
   let currentUser = null;
   let scheduleUserId = null;
+  function getNotifs() { var raw = localStorage.getItem('classroom_notifications'); return raw ? JSON.parse(raw) : []; }
+  function saveNotifs(arr) { localStorage.setItem('classroom_notifications', JSON.stringify(arr)); }
+  function updateNotifDot() {
+    var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
+    document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
+  }
+  function escapeHtml(text) { var div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+  function renderNotifDropdown(showAll) {
+    var dropdown = document.getElementById('notificationDropdown');
+    var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) { return new Date(b.created_at) - new Date(a.created_at); });
+    var unreadNotifs = allNotifs.filter(function(n) { return !n.read; });
+    var readNotifs = allNotifs.filter(function(n) { return n.read; });
+    var displayNotifs = showAll ? allNotifs : unreadNotifs;
+    var html = '';
+    if (displayNotifs.length === 0) {
+      html = '<div style="padding:16px;text-align:center;color:var(--text-muted);">' + (showAll ? '暂无任何通知' : '暂无新通知') + '</div>';
+    } else {
+      html = displayNotifs.map(function(n) {
+        var icon = getIcon('bell', 16), label = '', detail = '';
+        if (n.type === 'reply') { icon = getIcon('message-circle', 16); label = '有新回复'; detail = n.opinion_title; }
+        else if (n.type === 'closed') { icon = getIcon('check-circle', 16); label = '已完结'; detail = n.opinion_title; }
+        else if (n.type === 'reassign') { icon = getIcon('refresh-cw', 16); label = '已重分配'; detail = n.opinion_title; }
+        else if (n.type === 'in_progress') { icon = getIcon('clock', 16); label = '问题开始处理'; detail = n.opinion_title; }
+        else if (n.type === 'opinion_delete') { icon = getIcon('trash', 16); label = '已被管理员删除'; detail = n.opinion_title; }
+        else if (n.type === 'treehole_delete') { icon = getIcon('trash', 16); label = '便利贴被删除'; detail = (n.content || '').substring(0, 40); }
+        else if (n.type === 'treehole_reply') { icon = getIcon('message-circle', 16); label = '便利贴有新回复'; detail = (n.content || '').substring(0, 40); }
+        var timeHtml = '<br><span style="font-size:11px;color:var(--text-light);">' + new Date(n.created_at).toLocaleString() + '</span>';
+        return '<div class="notification-item ' + (n.read ? 'read' : 'unread') + '" data-id="' + n.id + '" data-type="' + n.type + '" data-opinion="' + (n.opinion_id || '') + '" data-post-id="' + (n.post_id || '') + '">' + icon + ' ' + (detail ? escapeHtml(detail) + ' - ' : '') + label + timeHtml + '</div>';
+      }).join('');
+    }
+    if (displayNotifs.length > 0) {
+      html += '<div style="text-align:center;font-size:11px;color:var(--text-light);padding:6px 0 2px;">点击消息即可标为已读</div>';
+    }
+    if (!showAll) {
+      if (unreadNotifs.length === 0) {
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看历史通知 →</button></div>';
+      } else if (readNotifs.length > 0) {
+        html += '<div class="notif-footer"><button id="showAllNotifsBtn">' + getIcon('clipboard', 14) + ' 查看全部消息 →</button></div>';
+      }
+    } else {
+      html += '<div class="notif-footer"><button id="showUnreadBtn">← 仅看未读</button></div>';
+    }
+    dropdown.innerHTML = html;
+    dropdown.querySelectorAll('.notification-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var notifs = getNotifs();
+        var idx = notifs.findIndex(function(n) { return n.id === item.dataset.id; });
+        if (idx !== -1) { notifs[idx].read = true; saveNotifs(notifs); }
+        updateNotifDot();
+        if (item.dataset.type === 'treehole_delete' || item.dataset.type === 'treehole_reply') { window.location.href = 'treehole.html'; }
+        else { window.location.href = 'opinions.html'; }
+        dropdown.style.display = 'none';
+      });
+    });
+    var showAllBtn = document.getElementById('showAllNotifsBtn');
+    if (showAllBtn) { showAllBtn.addEventListener('click', function(e) { e.stopPropagation(); renderNotifDropdown(true); }); }
+    var showUnreadBtn = document.getElementById('showUnreadBtn');
+    if (showUnreadBtn) { showUnreadBtn.addEventListener('click', function(e) { e.stopPropagation(); renderNotifDropdown(false); }); }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('notificationBell').addEventListener('click', function(e) {
+      e.stopPropagation();
+      var dropdown = document.getElementById('notificationDropdown');
+      if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; }
+      else { renderNotifDropdown(false); dropdown.style.display = 'block'; }
+    });
+    document.addEventListener('click', function() { document.getElementById('notificationDropdown').style.display = 'none'; });
+  });
+
   let isAdminView = false;
   let scheduleData = {};
   let originalSchedule = {};
@@ -307,6 +388,7 @@
       return;
     }
     currentUser = JSON.parse(userStr);
+    updateNotifDot();
 
     if (currentUser.role === 'admin') {
       isAdminView = true;
@@ -555,10 +637,12 @@
     if (!isAdminView && JSON.stringify(scheduleData) !== JSON.stringify(originalSchedule)) {
       showConfirm('未保存的修改', '你还有未保存的修改，确定退出吗？\n退出后修改将丢失。', function() {
         _confirmedLeave = true;
-        window.location.href = 'main.html';
+        showLoading();
+        setTimeout(function(){window.location.href='main.html'},100);
       }, true);
     } else {
-      window.location.href = 'main.html';
+      showLoading();
+      setTimeout(function(){window.location.href='main.html'},100);
     }
   }
 
