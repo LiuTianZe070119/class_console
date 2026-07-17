@@ -387,7 +387,12 @@
 </div>
 
 <div class="container">
-  <div class="dashboard" id="dashboard"></div>
+  <div class="dashboard" id="dashboard">
+    <div class="stat-card"><div class="stat-value">-</div><div class="stat-label"><span id="dashIcon1"></span> 提问数</div></div>
+    <div class="stat-card"><div class="stat-value">-</div><div class="stat-label"><span id="dashIcon2"></span> 解决率</div></div>
+    <div class="stat-card"><div class="stat-value">-</div><div class="stat-label"><span id="dashIcon3"></span> 满意率</div></div>
+    <div class="stat-card"><div class="stat-value">-</div><div class="stat-label"><span id="dashIcon4"></span> 平均用时</div></div>
+  </div>
 
   <div class="post-box">
     <h3 style="margin-bottom:16px; color:var(--text); display:flex; align-items:center; gap:8px; transition:color 0.4s;"><span id="editIconH3"></span> 提出意见或问题</h3>
@@ -814,11 +819,13 @@
       avgTime = avgHrs < 1 ? Math.round(avgHrs * 60) + '分钟' : avgHrs.toFixed(1) + '小时';
     }
 
-    document.getElementById('dashboard').innerHTML =
-      '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">' + getIcon('message-circle', 16) + ' 提问数</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + resolveRate + '</div><div class="stat-label">' + getIcon('check-circle', 16) + ' 解决率</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + avgSat + '</div><div class="stat-label">' + getIcon('star', 16) + ' 满意率</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + avgTime + '</div><div class="stat-label">' + getIcon('clock', 16) + ' 平均用时</div></div>';
+    var vals = document.querySelectorAll('#dashboard .stat-value');
+    if (vals.length >= 4) {
+      vals[0].textContent = total;
+      vals[1].textContent = resolveRate;
+      vals[2].textContent = avgSat;
+      vals[3].textContent = avgTime;
+    }
   }
 
   async function loadOpinions() {
