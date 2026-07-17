@@ -143,8 +143,8 @@ body[data-theme="black"] {
 
     .form { display: none; }
     .form.active { display: block; }
-    .input-group { margin-bottom: 16px; }
-    label { color: var(--text); font-weight: 500; margin-left: 6px; display: block; margin-bottom: 4px; font-size: 14px; }
+    .input-group { margin-bottom: 8px; }
+    label { color: var(--text); font-weight: 500; margin-left: 6px; display: block; margin-bottom: 2px; font-size: 14px; }
 
     input {
       width: 100%; padding: 14px 18px;
@@ -160,8 +160,8 @@ body[data-theme="black"] {
     .btn {
       width: 100%;
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-      color: white; border: none; padding: 15px; font-size: 17px; font-weight: 600;
-      border-radius: 24px; cursor: pointer; margin-top: 8px; transition: all 0.25s;
+      color: white; border: none; padding: 14px; font-size: 17px; font-weight: 600;
+      border-radius: 24px; cursor: pointer; margin-top: 4px; transition: all 0.25s;
       box-shadow: 0 4px 16px var(--btn-shadow);
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
@@ -173,7 +173,13 @@ body[data-theme="black"] {
     }
     .btn:active { transform: translateY(0); }
 
-    .error { color: var(--danger); text-align: center; min-height: 20px; margin: 8px 0; font-size: 14px; }
+    .remember-row { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: var(--text-muted); user-select: none; margin: 6px 0; }
+    .remember-row input { display: none; }
+    .remember-check { width: 18px; height: 18px; border: 1.5px solid var(--input-border); border-radius: 5px; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .remember-row input:checked + .remember-check { background: var(--accent); border-color: var(--accent); }
+    .remember-row input:checked + .remember-check::after { content: ''; width: 5px; height: 8px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-top: -2px; }
+    .remember-text { font-size: 14px; }
+    .input-error { border-color: var(--danger) !important; box-shadow: 0 0 0 3px rgba(199,86,74,0.15) !important; }
     .divider { text-align: center; margin: 18px 0 4px; color: var(--text-muted); font-size: 13px; }
 
     .toast-container { position: fixed; top: 70px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
@@ -186,7 +192,7 @@ body[data-theme="black"] {
     .spinner { display: inline-block; width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .site-footer { text-align: center; padding: 24px 20px; margin-top: 48px; color: var(--text-light); font-size: 13px; position: relative; z-index: 1; }
+    .site-footer { text-align: center; padding: 24px 20px; margin-top: 20px; color: var(--text-light); font-size: 13px; position: relative; z-index: 1; }
     .site-footer .footer-divider { width: 40px; height: 2px; background: rgba(198,123,92,0.2); margin: 0 auto 14px; border-radius: 1px; }
     .site-footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 4px; }
     .site-footer a:hover { color: var(--accent); }
@@ -219,7 +225,11 @@ body[data-theme="black"] {
       <label>密码</label>
       <input type="password" id="loginPassword" placeholder="请输入密码" autocomplete="current-password">
     </div>
-    <div class="error" id="loginError"></div>
+    <label class="remember-row">
+      <input type="checkbox" id="rememberPwd">
+      <span class="remember-check"></span>
+      <span class="remember-text">记住密码</span>
+    </label>
     <button class="btn" id="loginBtn">登录</button>
   </div>
 
@@ -240,8 +250,7 @@ body[data-theme="black"] {
       <label>确认密码</label>
       <input type="password" id="regPasswordConfirm" placeholder="••••••" autocomplete="new-password">
     </div>
-    <div class="error" id="regError"></div>
-    <div style="text-align:center;color:var(--text-muted);font-size:12px;margin-bottom:4px;">注册需学号与姓名在班级名单中</div>
+    <div style="text-align:center;color:var(--text-muted);font-size:12px;margin:4px 0;">注册需学号与姓名在班级名单中</div>
     <button class="btn" id="registerBtn">注册</button>
   </div>
 </div>
@@ -313,6 +322,19 @@ body[data-theme="black"] {
   // 初始化品牌图标
   document.getElementById('brandIcon').innerHTML = getIcon('clipboard', 52);
 
+  // 记住密码：自动填充
+  (function() {
+    var saved = localStorage.getItem('remembered_login');
+    if (saved) {
+      try {
+        var cred = JSON.parse(saved);
+        document.getElementById('loginStudentId').value = cred.id || '';
+        document.getElementById('loginPassword').value = cred.pw || '';
+        document.getElementById('rememberPwd').checked = true;
+      } catch(e) {}
+    }
+  })();
+
   var SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -337,14 +359,25 @@ body[data-theme="black"] {
     });
   });
 
+  function clearInputErrors() {
+    document.querySelectorAll('.input-error').forEach(function(el) { el.classList.remove('input-error'); });
+  }
+  // 输入时自动清除错误状态
+  document.getElementById('loginStudentId').addEventListener('input', function() { this.classList.remove('input-error'); });
+  document.getElementById('loginPassword').addEventListener('input', function() { this.classList.remove('input-error'); });
+
   // 登录
   document.getElementById('loginBtn').addEventListener('click', async function() {
     var btn = this;
     var studentId = document.getElementById('loginStudentId').value.trim();
     var password = document.getElementById('loginPassword').value;
-    var errEl = document.getElementById('loginError');
-    errEl.textContent = '';
-    if (!studentId || !password) { errEl.textContent = '请填写学号和密码'; return; }
+    clearInputErrors();
+    if (!studentId || !password) {
+      if (!studentId) document.getElementById('loginStudentId').classList.add('input-error');
+      if (!password) document.getElementById('loginPassword').classList.add('input-error');
+      toast('请填写学号和密码', 'warn');
+      return;
+    }
 
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> 登录中…';
@@ -353,9 +386,16 @@ body[data-theme="black"] {
     if (res.error) {
       btn.disabled = false;
       btn.textContent = '登录';
-      errEl.textContent = '账号或密码错误';
-      toast('登录失败：账号或密码错误', 'error');
+      document.getElementById('loginStudentId').classList.add('input-error');
+      document.getElementById('loginPassword').classList.add('input-error');
+      toast('账号或密码错误', 'error');
     } else {
+      // 记住密码
+      if (document.getElementById('rememberPwd').checked) {
+        localStorage.setItem('remembered_login', JSON.stringify({ id: studentId, pw: password }));
+      } else {
+        localStorage.removeItem('remembered_login');
+      }
       var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', res.data.user.id).single();
       var sessionUser = {
         id: res.data.user.id,
@@ -379,6 +419,12 @@ body[data-theme="black"] {
     }
   });
 
+  // 注册输入框错误清除
+  document.getElementById('regStudentId').addEventListener('input', function() { this.classList.remove('input-error'); });
+  document.getElementById('regName').addEventListener('input', function() { this.classList.remove('input-error'); });
+  document.getElementById('regPassword').addEventListener('input', function() { this.classList.remove('input-error'); });
+  document.getElementById('regPasswordConfirm').addEventListener('input', function() { this.classList.remove('input-error'); });
+
   // 注册
   document.getElementById('registerBtn').addEventListener('click', async function() {
     var btn = this;
@@ -386,11 +432,25 @@ body[data-theme="black"] {
     var realName = document.getElementById('regName').value.trim();
     var password = document.getElementById('regPassword').value;
     var passwordConfirm = document.getElementById('regPasswordConfirm').value;
-    var errEl = document.getElementById('regError');
-    errEl.textContent = '';
-    if (!studentId || !realName || !password || !passwordConfirm) { errEl.textContent = '请填写所有字段'; return; }
-    if (password.length < 6) { errEl.textContent = '密码至少6位'; return; }
-    if (password !== passwordConfirm) { errEl.textContent = '两次密码不一致'; return; }
+    clearInputErrors();
+    if (!studentId || !realName || !password || !passwordConfirm) {
+      if (!studentId) document.getElementById('regStudentId').classList.add('input-error');
+      if (!realName) document.getElementById('regName').classList.add('input-error');
+      if (!password) document.getElementById('regPassword').classList.add('input-error');
+      if (!passwordConfirm) document.getElementById('regPasswordConfirm').classList.add('input-error');
+      toast('请填写所有字段', 'warn');
+      return;
+    }
+    if (password.length < 6) {
+      document.getElementById('regPassword').classList.add('input-error');
+      toast('密码至少6位', 'warn');
+      return;
+    }
+    if (password !== passwordConfirm) {
+      document.getElementById('regPasswordConfirm').classList.add('input-error');
+      toast('两次密码不一致', 'warn');
+      return;
+    }
 
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> 注册中…';
@@ -402,13 +462,14 @@ body[data-theme="black"] {
 
     if (res.error || !res.data) {
       btn.disabled = false; btn.textContent = '注册';
-      errEl.textContent = '学号或姓名不在班级名单中';
+      document.getElementById('regStudentId').classList.add('input-error');
+      document.getElementById('regName').classList.add('input-error');
       toast('学号或姓名不在班级名单中', 'warn');
       return;
     }
     if (res.data.registered) {
       btn.disabled = false; btn.textContent = '注册';
-      errEl.textContent = '该学号已被注册过了';
+      document.getElementById('regStudentId').classList.add('input-error');
       toast('该学号已被注册', 'warn');
       return;
     }
@@ -423,11 +484,14 @@ body[data-theme="black"] {
     });
     if (authRes.error) {
       btn.disabled = false; btn.textContent = '注册';
-      errEl.textContent = authRes.error.message;
+      document.getElementById('regPassword').classList.add('input-error');
+      document.getElementById('regPasswordConfirm').classList.add('input-error');
       toast(authRes.error.message, 'error');
       return;
     }
     if (authRes.data.user && authRes.data.session) {
+      // 注册成功自动记住密码
+      localStorage.setItem('remembered_login', JSON.stringify({ id: studentId, pw: password }));
       setTimeout(async function() {
         var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', authRes.data.user.id).single();
         var sessionUser = {
@@ -451,7 +515,6 @@ body[data-theme="black"] {
         window.location.href = redir2 || 'main.html';
       }, 500);
     } else {
-      errEl.textContent = '注册失败，请稍后重试';
       toast('注册失败，请稍后重试', 'error');
     }
   });

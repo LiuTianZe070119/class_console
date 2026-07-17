@@ -1,5 +1,0 @@
-zhangsan:123456:student:张三
-lisi:123456:student:李四
-wangwu:123456:student:王五
-liutianze:123456:admin:刘天择
-monitor:monitor123:admin:班长赵琳
