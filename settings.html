@@ -349,7 +349,7 @@
   </div>
   <div id="navGuest" style="display:none; gap:10px; align-items:center;">
     <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon2"></span>返回办事通</button>
-    <button class="btn" onclick="window.location.href='index.html'">登录</button>
+    <button class="btn" onclick="sessionStorage.setItem('login_redirect',location.href);window.location.href='index.html'">登录</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -369,7 +369,7 @@
       </div>
     </div>
     <div id="loginPromptRow" style="display:none; margin-top:12px; text-align:center;">
-      <button class="btn" onclick="window.location.href='index.html'" style="width:100%;justify-content:center;">立即登录</button>
+      <button class="btn" onclick="sessionStorage.setItem('login_redirect',location.href);window.location.href='index.html'" style="width:100%;justify-content:center;">立即登录</button>
     </div>
   </div>
 

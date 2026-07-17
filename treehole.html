@@ -173,6 +173,8 @@
     .btn { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: white; border: none; padding: 10px 22px; border-radius: 24px; cursor: pointer; font-weight: 550; font-size: 15px; transition: all 0.25s; white-space: nowrap; box-shadow: 0 4px 14px var(--btn-shadow); display: inline-flex; align-items: center; gap: 6px; }
     .btn:hover { background: linear-gradient(135deg, var(--accent-hover), var(--accent)); transform: translateY(-2px); box-shadow: 0 6px 20px var(--btn-shadow-hover); }
     .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn:disabled:hover { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); transform: none; box-shadow: none; }
     .btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); box-shadow: none; }
     .btn-outline:hover { background: var(--accent-light2); }
     .logo span, .btn span { display: inline-flex; align-items: center; }
@@ -250,8 +252,8 @@
     .delete-reply-btn svg { width: 14px; height: 14px; }
 
     .reply-bubble { padding: 12px 16px; border-radius: 20px; margin-bottom: 10px; position: relative; }
-    .reply-bubble.odd { background: rgba(255,255,255,0.5); margin-right: 40px; border-bottom-left-radius: 6px; border: 1px solid rgba(255,255,255,0.3); }
-    .reply-bubble.even { background: var(--accent-light); margin-left: 40px; text-align: right; border-bottom-right-radius: 6px; border: 1px solid var(--accent-light); }
+    .reply-bubble.odd { background: var(--card-bg); margin-right: 40px; border-bottom-left-radius: 6px; border: 1px solid var(--card-border); }
+    .reply-bubble.even { background: var(--accent-light); margin-left: 40px; text-align: right; border-bottom-right-radius: 6px; border: 1px solid var(--card-border); }
     .reply-bubble .reply-author { font-weight: 600; font-size: 13px; color: var(--accent-dark); margin-bottom: 4px; }
     .reply-bubble .reply-text { font-size: 15px; color: var(--text); line-height: 1.5; }
     .reply-bubble .reply-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; justify-content: inherit; }
@@ -277,6 +279,7 @@
     .toast.warn { background: var(--toast-warn); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+    .guest-lock-overlay { position: absolute; inset: 0; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); background: rgba(255,255,255,0.3); border-radius: 16px; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
     .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid rgba(198, 123, 92, 0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(2px); z-index: 999; align-items: center; justify-content: center; }
@@ -328,21 +331,27 @@
   </div>
   <div class="user-info" id="guestNav" style="display:none;">
     <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon2"></span>返回办事通</button>
-    <button class="btn" onclick="window.location.href='index.html'">登录</button>
+    <button class="btn" onclick="sessionStorage.setItem('login_redirect',location.href);window.location.href='index.html'">登录</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
 
 <div class="container">
-  <div class="post-box">
+  <div class="post-box" id="mainPostBox" style="position:relative;">
     <h3><span id="editIcon"></span>写一张便利贴</h3>
-    <textarea id="postContent" placeholder="分享你的想法… 发布后将以匿名形式展示，但内容请保持友善~" maxlength="500"></textarea>
+    <textarea id="postContent" placeholder="分享你的想法… 发布后将以匿名形式展示，但内容请保持友善~" maxlength="500" rows="3"></textarea>
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
       <span style="font-size:13px;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;"><span id="anonymousTip"></span>所有人看到的内容都是匿名的</span>
       <span style="display:flex; gap:8px; align-items:center;">
         <span style="font-size:13px;color:var(--text-muted);" id="charCount">0/500</span>
         <button class="btn" id="submitPostBtn">贴上去</button>
       </span>
+    </div>
+    <div class="guest-lock-overlay" id="guestLockOverlay" style="display:none;">
+      <div style="margin-bottom:8px;color:var(--accent);opacity:0.7;"><span id="lockIconGuest"></span></div>
+      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;">请先登录后使用树洞功能</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">登录后可以写便利贴、回复和发表情</div>
+      <button class="btn" onclick="sessionStorage.setItem('login_redirect',location.href);window.location.href='index.html'" style="width:auto;padding:10px 32px;">登录</button>
     </div>
   </div>
 
@@ -450,6 +459,8 @@
     document.getElementById('anonymousTip').innerHTML = getIcon('eye', 16);
     document.getElementById('deleteReasonIcon').innerHTML = getIcon('trash', 22);
     document.querySelector('#detailModalContent .close-icon').innerHTML = getIcon('x', 24);
+    var lockGuest = document.getElementById('lockIconGuest');
+    if (lockGuest) lockGuest.innerHTML = getIcon('lock', 48);
   }
 
   // ========== App Logic ==========
@@ -556,7 +567,9 @@
     initIcons();
 
     if (currentUser.role === 'guest') {
-      document.querySelector('.post-box').innerHTML = '<div style="text-align:center;padding:32px 20px;"><div style="margin-bottom:12px;color:var(--accent);opacity:0.6;">' + getIcon('lock', 48) + '</div><div style="color:var(--text);margin-bottom:8px;font-size:18px;font-weight:600;">请先登录后使用树洞功能</div><p style="color:var(--text-muted);margin-bottom:18px;font-size:14px;">登录后可以写便利贴、回复和发表情</p><button class="btn" onclick="window.location.href=\'index.html\'" style="font-size:16px;padding:12px 32px;">登录</button></div>';
+      document.getElementById('guestLockOverlay').style.display = 'flex';
+      document.getElementById('postContent').disabled = true;
+      document.getElementById('submitPostBtn').disabled = true;
       document.getElementById('guestNav').style.display = 'flex';
       document.getElementById('userNav').style.display = 'none';
       document.getElementById('notificationDropdown').style.display = 'none';
@@ -564,8 +577,12 @@
       document.getElementById('userNav').style.display = 'flex';
       document.getElementById('guestNav').style.display = 'none';
       updateNotifDot();
+      // 草稿恢复
+      var draft = localStorage.getItem('draft_treehole_content');
+      if (draft) { document.getElementById('postContent').value = draft; document.getElementById('charCount').textContent = draft.length + '/500'; }
       document.getElementById('postContent').addEventListener('input', function() {
         document.getElementById('charCount').textContent = this.value.length + '/500';
+        localStorage.setItem('draft_treehole_content', this.value);
       });
     }
 
@@ -685,6 +702,7 @@
     if (res.error) { toast('发布失败：' + res.error.message, 'error'); return; }
     document.getElementById('postContent').value = '';
     document.getElementById('charCount').textContent = '0/500';
+    localStorage.removeItem('draft_treehole_content');
     toast('便利贴已贴上墙！');
     loadPosts();
   });

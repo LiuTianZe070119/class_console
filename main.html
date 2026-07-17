@@ -524,6 +524,14 @@ body[data-theme="black"] {
     if (!isGuest) {
       updateNotifDot();
       checkScheduleStatus();
+      // 登录用户：请求 AI 生成新的名言
+      showQuoteLoading('AI生成中');
+      try { saveQuote(await fetchQuote()); } catch(e) {}
+      renderQuote();
+    } else {
+      // 访客：使用静态名言
+      saveQuote({ text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' });
+      renderQuote();
     }
   }
 
@@ -639,7 +647,7 @@ body[data-theme="black"] {
 
   // 登录按钮
   document.getElementById('loginBtn').addEventListener('click', function() {
-    window.location.href = 'index.html';
+    sessionStorage.setItem('login_redirect',location.href);window.location.href='index.html';
   });
 
   document.getElementById('logoutBtn').addEventListener('click', async function() {
@@ -751,7 +759,7 @@ body[data-theme="black"] {
     html += '<div class="quote-actions">';
     if (isGuest) {
       html += '<span class="quote-ai-label">' + getIcon('lock', 14) + ' 请先登录后使用AI功能</span>';
-      html += '<button class="quote-btn" onclick="window.location.href=\'index.html\'">去登录</button>';
+      html += '<button class="quote-btn" onclick="sessionStorage.setItem(\'login_redirect\',location.href);window.location.href=\'index.html\'">去登录</button>';
     } else {
       html += '<span class="quote-ai-label">AI生成，仅供参考</span>';
       html += '<button class="quote-btn" id="learnMoreBtn">了解更多</button>';
@@ -765,10 +773,10 @@ body[data-theme="black"] {
     }
   }
 
-  async function initQuote() {
+  function initQuote() {
+    // 先渲染静态占位，AI 在 init() 中根据登录状态决定是否请求
     if (!currentQuote) {
-      showQuoteLoading('AI生成中');
-      try { saveQuote(await fetchQuote()); } catch(e) { saveQuote({ text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' }); }
+      saveQuote({ text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' });
     }
     renderQuote();
   }

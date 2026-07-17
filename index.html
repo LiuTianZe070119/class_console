@@ -373,7 +373,9 @@ body[data-theme="black"] {
         localStorage.setItem('classroom_user_settings', JSON.stringify(s));
       }
       if (profileRes.data.tutorial_done) localStorage.setItem('tutorial_done', '1');
-      window.location.href = 'main.html';
+      var redir = sessionStorage.getItem('login_redirect');
+      sessionStorage.removeItem('login_redirect');
+      window.location.href = redir || 'main.html';
     }
   });
 
@@ -444,7 +446,9 @@ body[data-theme="black"] {
           localStorage.setItem('classroom_user_settings', JSON.stringify(s2));
         }
         if (profileRes.data.tutorial_done) localStorage.setItem('tutorial_done', '1');
-        window.location.href = 'main.html';
+        var redir2 = sessionStorage.getItem('login_redirect');
+        sessionStorage.removeItem('login_redirect');
+        window.location.href = redir2 || 'main.html';
       }, 500);
     } else {
       errEl.textContent = '注册失败，请稍后重试';
