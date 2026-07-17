@@ -322,9 +322,13 @@
 
 <div class="navbar">
   <div class="logo"><span id="logoIcon"></span>树洞</div>
-  <div class="user-info">
+  <div class="user-info" id="userNav" style="display:none;">
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon"></span>返回办事通</button>
+  </div>
+  <div class="user-info" id="guestNav" style="display:none;">
+    <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon2"></span>返回办事通</button>
+    <button class="btn" onclick="window.location.href='index.html'">登录</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -430,7 +434,8 @@
       'refresh-cw': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
       'clock': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
       'lightbulb': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7V17h8v-2.3c1.8-1.3 3-3.4 3-5.7a7 7 0 0 0-7-7z"/></svg>',
-      'heart': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
+      'heart': '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+      lock: '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>'
     };
     return icons[name] || '';
   }
@@ -439,6 +444,8 @@
     document.getElementById('logoIcon').innerHTML = getIcon('tree-pine', 26);
     document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
     document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
+    var backIcon2 = document.getElementById('backIcon2');
+    if (backIcon2) backIcon2.innerHTML = getIcon('arrow-left', 16);
     document.getElementById('editIcon').innerHTML = getIcon('edit', 22);
     document.getElementById('anonymousTip').innerHTML = getIcon('eye', 16);
     document.getElementById('deleteReasonIcon').innerHTML = getIcon('trash', 22);
@@ -489,6 +496,7 @@
     updateNotifDot();
   }
   function updateNotifDot() {
+    if (!currentUser || !currentUser.id) return;
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
     document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
   }
@@ -539,15 +547,27 @@
 
   async function init() {
     var userStr = sessionStorage.getItem('currentUser');
-    if (!userStr) { window.location.href = 'index.html'; return; }
-    currentUser = JSON.parse(userStr);
+    if (!userStr) {
+      currentUser = { id: null, real_name: '访客', role: 'guest' };
+    } else {
+      currentUser = JSON.parse(userStr);
+    }
 
     initIcons();
-    updateNotifDot();
 
-    document.getElementById('postContent').addEventListener('input', function() {
-      document.getElementById('charCount').textContent = this.value.length + '/500';
-    });
+    if (currentUser.role === 'guest') {
+      document.querySelector('.post-box').innerHTML = '<div style="text-align:center;padding:32px 20px;"><div style="margin-bottom:12px;color:var(--accent);opacity:0.6;">' + getIcon('lock', 48) + '</div><div style="color:var(--text);margin-bottom:8px;font-size:18px;font-weight:600;">请先登录后使用树洞功能</div><p style="color:var(--text-muted);margin-bottom:18px;font-size:14px;">登录后可以写便利贴、回复和发表情</p><button class="btn" onclick="window.location.href=\'index.html\'" style="font-size:16px;padding:12px 32px;">登录</button></div>';
+      document.getElementById('guestNav').style.display = 'flex';
+      document.getElementById('userNav').style.display = 'none';
+      document.getElementById('notificationDropdown').style.display = 'none';
+    } else {
+      document.getElementById('userNav').style.display = 'flex';
+      document.getElementById('guestNav').style.display = 'none';
+      updateNotifDot();
+      document.getElementById('postContent').addEventListener('input', function() {
+        document.getElementById('charCount').textContent = this.value.length + '/500';
+      });
+    }
 
     await loadPosts();
   }
@@ -751,6 +771,7 @@
 
     renderEmojiBar();
     document.getElementById('detailReplyInput').value = '';
+    document.querySelector('#detailModal .reply-input-row').style.display = currentUser.role === 'guest' ? 'none' : 'flex';
     document.getElementById('detailModal').classList.add('active');
   }
 
@@ -765,6 +786,7 @@
 
     bar.querySelectorAll('.emoji-btn').forEach(function(btn) {
       btn.addEventListener('click', async function() {
+        if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
         var emoji = btn.dataset.emoji;
         if (detailReactions[emoji].byMe) {
           var delRes = await supabaseClient
@@ -791,6 +813,7 @@
   }
 
   document.getElementById('sendDetailReplyBtn').addEventListener('click', async function() {
+    if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
     var content = document.getElementById('detailReplyInput').value.trim();
     if (!content) { toast('请输入回复内容', 'warn'); return; }
     var id = crypto.randomUUID();
@@ -813,6 +836,7 @@
   document.getElementById('detailReplyInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
+      if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
       document.getElementById('sendDetailReplyBtn').click();
     }
   });
@@ -834,6 +858,7 @@
   }
 
   function renderNotifDropdown(showAll) {
+    if (!currentUser || !currentUser.id) return;
     var dropdown = document.getElementById('notificationDropdown');
     var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
       return new Date(b.created_at) - new Date(a.created_at);
@@ -982,13 +1007,23 @@
   function showTutorialStep(n) {
     var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
     if (!el) { nextTutorialStep(); return; }
+    var hidden = false; var p = el; while (p) { if (window.getComputedStyle(p).display === 'none') { hidden = true; break; } p = p.parentElement; }
     var rect = el.getBoundingClientRect();
     var hl = document.getElementById('tutorialHighlight');
-    hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      hl.style.display = 'none';
+    } else {
+      hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    }
     var bubble = document.getElementById('tutorialBubble'); bubble.style.display = 'block';
     document.getElementById('tutorialText').innerHTML = step.text;
     document.getElementById('tutorialNext').textContent = '下一步 →';
-    var bw = 380, bh = 160, bx = rect.left+rect.width/2-bw/2, by = rect.bottom+12;
+    var bw = 380, bh = 160, bx, by;
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      bx = window.innerWidth/2 - bw/2; by = window.innerHeight/2 - bh/2;
+    } else {
+      bx = rect.left+rect.width/2-bw/2; by = rect.bottom+12;
+    }
     bx = Math.max(10,Math.min(bx,window.innerWidth-bw-10)); by = Math.max(10,Math.min(by,window.innerHeight-bh-10));
     bubble.style.top = by+'px'; bubble.style.left = bx+'px';
     document.getElementById('tutorialOverlay').style.display = 'block';

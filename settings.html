@@ -343,9 +343,13 @@
 
 <div class="navbar">
   <div class="logo"><span id="logoIcon"></span>个人设置</div>
-  <div style="display:flex; gap:10px; align-items:center;">
+  <div id="navLoggedIn" style="display:flex; gap:10px; align-items:center;">
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon"></span>返回办事通</button>
+  </div>
+  <div id="navGuest" style="display:none; gap:10px; align-items:center;">
+    <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon2"></span>返回办事通</button>
+    <button class="btn" onclick="window.location.href='index.html'">登录</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -363,6 +367,9 @@
           <span class="profile-badge" id="profilePosition" style="display:none;"></span>
         </div>
       </div>
+    </div>
+    <div id="loginPromptRow" style="display:none; margin-top:12px; text-align:center;">
+      <button class="btn" onclick="window.location.href='index.html'" style="width:100%;justify-content:center;">立即登录</button>
     </div>
   </div>
 
@@ -473,6 +480,8 @@
     document.getElementById('logoIcon').innerHTML = getIcon('settings', 26);
     document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
     document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 18);
+    var backIcon2 = document.getElementById('backIcon2');
+    if (backIcon2) backIcon2.innerHTML = getIcon('arrow-left', 18);
     document.getElementById('userIcon').innerHTML = getIcon('user', 20);
     document.getElementById('settingsIcon').innerHTML = getIcon('settings', 20);
     document.getElementById('paletteIcon').innerHTML = getIcon('palette', 20);
@@ -498,6 +507,7 @@
   function getNotifs() { var raw = localStorage.getItem('classroom_notifications'); return raw ? JSON.parse(raw) : []; }
   function saveNotifs(notifs) { localStorage.setItem('classroom_notifications', JSON.stringify(notifs)); }
   function updateNotifDot() {
+    if (!currentUser || !currentUser.id) return;
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
     document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
   }
@@ -523,7 +533,7 @@
     else document.body.setAttribute('data-theme', theme);
     updateThemeUI(theme);
     // 同步到数据库
-    if (currentUser) {
+    if (currentUser && currentUser.id && currentUser.role !== 'guest') {
       var res = await supabaseClient.from('profiles').update({ theme: theme }).eq('id', currentUser.id);
       if (res.error) console.warn('主题同步失败:', res.error.message);
     }
@@ -540,13 +550,14 @@
   function getSettings() { var raw = localStorage.getItem(SETTINGS_KEY); return raw ? JSON.parse(raw) : {}; }
   function saveSettings(settings) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
   async function syncSettingsToDB(key, value) {
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.id || currentUser.role === 'guest') return;
     var update = {}; update[key] = value;
     var res = await supabaseClient.from('profiles').update(update).eq('id', currentUser.id);
     if (res.error) console.warn('设置同步失败:', res.error.message);
   }
 
   function renderNotifDropdown(showAll) {
+    if (!currentUser || !currentUser.id) return;
     var dropdown = document.getElementById('notificationDropdown');
     var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
       return new Date(b.created_at) - new Date(a.created_at);
@@ -629,8 +640,40 @@
 
   async function init() {
     var userStr = sessionStorage.getItem('currentUser');
-    if (!userStr) { window.location.href = 'index.html'; return; }
+    if (!userStr) {
+      // Guest mode
+      currentUser = { id: null, real_name: '访客', role: 'guest' };
+      document.getElementById('navLoggedIn').style.display = 'none';
+      document.getElementById('navGuest').style.display = 'flex';
+      document.getElementById('loginPromptRow').style.display = 'block';
+      // Profile card: guest info
+      document.getElementById('profileName').textContent = '未登录';
+      document.getElementById('profileRole').textContent = '访客';
+      document.getElementById('profileRole').style.background = 'rgba(139,115,85,0.1)';
+      document.getElementById('profileRole').style.color = 'var(--text-muted)';
+      document.getElementById('profileAvatar').textContent = '?';
+      // Hide logout
+      var logoutSection = document.getElementById('logoutBtn').parentElement;
+      if (logoutSection) logoutSection.style.display = 'none';
+      // Disable settings actions
+      document.getElementById('changePwdBtn').style.opacity = '0.5';
+      document.getElementById('changePwdBtn').style.pointerEvents = 'none';
+      document.getElementById('defaultAnonToggle').disabled = true;
+      document.getElementById('clearNotifsBtn').style.opacity = '0.5';
+      document.getElementById('clearNotifsBtn').style.pointerEvents = 'none';
+      document.getElementById('notifCount').textContent = '登录后可查看';
+      // Theme still works
+      initIcons();
+      var theme = getTheme();
+      if (theme !== 'brown') document.body.setAttribute('data-theme', theme);
+      else document.body.removeAttribute('data-theme');
+      updateThemeUI(theme);
+      return;
+    }
     currentUser = JSON.parse(userStr);
+    document.getElementById('navLoggedIn').style.display = 'flex';
+    document.getElementById('navGuest').style.display = 'none';
+    document.getElementById('loginPromptRow').style.display = 'none';
 
     initIcons();
 
@@ -688,6 +731,7 @@
 
   // -- 默认匿名开关 --
   document.getElementById('defaultAnonToggle').addEventListener('change', function() {
+    if (!currentUser || currentUser.role === 'guest') { toast('请先登录', 'warn'); this.checked = !this.checked; return; }
     var settings = getSettings();
     settings.defaultAnonymous = this.checked;
     saveSettings(settings);
@@ -697,6 +741,7 @@
 
   // 修改密码
   document.getElementById('changePwdBtn').addEventListener('click', function() {
+    if (!currentUser || currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
     document.getElementById('pwdModal').classList.add('active');
   });
   document.getElementById('closePwdModalBtn').addEventListener('click', function() {
@@ -715,12 +760,13 @@
     else {
       toast('密码修改成功，即将跳转登录页');
       sessionStorage.clear();
-      setTimeout(function() { window.location.href = 'index.html'; }, 1500);
+      setTimeout(function() { window.location.href = 'main.html'; }, 1500);
     }
   });
 
   // 清空通知
   document.getElementById('clearNotifsBtn').addEventListener('click', function() {
+    if (!currentUser || currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
     showConfirm('清空通知', '确定要清空所有通知记录吗？\n此操作不可恢复。', function() {
       var notifs = getNotifs().filter(function(n) { return n.user_id !== currentUser.id; });
       saveNotifs(notifs);
@@ -732,11 +778,12 @@
 
   // 退出登录
   document.getElementById('logoutBtn').addEventListener('click', function() {
+    if (!currentUser || currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
     showConfirm('退出登录', '确定要退出登录吗？', async function() {
       await supabaseClient.auth.signOut();
-      sessionStorage.clear();
+      sessionStorage.removeItem('currentUser');
       localStorage.removeItem('classroom_notifications');
-      window.location.href = 'index.html';
+      window.location.href = 'main.html';
     });
   });
 
@@ -762,15 +809,23 @@
   function showTutorialStep(n) {
     var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
     if (!el) { nextTutorialStep(); return; }
+    var hidden = false; var p = el; while (p) { if (window.getComputedStyle(p).display === 'none') { hidden = true; break; } p = p.parentElement; }
     var rect = el.getBoundingClientRect();
     var hl = document.getElementById('tutorialHighlight');
-    hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      hl.style.display = 'none';
+    } else {
+      hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    }
     var bubble = document.getElementById('tutorialBubble'); bubble.style.display = 'block';
     document.getElementById('tutorialText').innerHTML = step.text;
     document.getElementById('tutorialNext').textContent = '下一步 →';
     var bw=380, bh=160, bx, by;
-    if(step.pos==='center'){bx=window.innerWidth/2-bw/2;by=window.innerHeight/2-bh/2;}
-    else{bx=rect.left+rect.width/2-bw/2;by=rect.top-bh-12;}
+    if (hidden || (rect.width === 0 && rect.height === 0) || step.pos==='center') {
+      bx=window.innerWidth/2-bw/2;by=window.innerHeight/2-bh/2;
+    } else {
+      bx=rect.left+rect.width/2-bw/2;by=rect.top-bh-12;
+    }
     bx=Math.max(10,Math.min(bx,window.innerWidth-bw-10));by=Math.max(10,Math.min(by,window.innerHeight-bh-10));
     bubble.style.top=by+'px';bubble.style.left=bx+'px';
     document.getElementById('tutorialOverlay').style.display = 'block';
@@ -784,7 +839,7 @@
   function endTutorial() {
     document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';
     localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');
-    if(currentUser){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}
+    if(currentUser && currentUser.id && currentUser.role !== 'guest'){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}
   }
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('tutorialNext').addEventListener('click',nextTutorialStep);

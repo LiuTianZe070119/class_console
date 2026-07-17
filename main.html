@@ -294,10 +294,11 @@ body[data-theme="black"] {
 <div class="navbar">
   <div class="logo"><span id="logoIcon"></span>班级办事通</div>
   <div class="user-info">
-    <div class="notification-bell" id="notificationBell">
+    <div class="notification-bell" id="notificationBell" style="display:none;">
       <span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span>
     </div>
-    <button class="btn-outline btn" id="logoutBtn">退出</button>
+    <button class="btn" id="loginBtn" style="display:none;">登录</button>
+    <button class="btn-outline btn" id="logoutBtn" style="display:none;">退出</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -305,7 +306,7 @@ body[data-theme="black"] {
 <div class="container">
   <div class="welcome">
     <h1 id="welcomeTitle"><span id="welcomeIcon"></span></h1>
-    <p>选择一个板块开始使用</p>
+    <p id="welcomeSubtitle">选择一个板块开始使用</p>
   </div>
 
   <div class="hub-grid">
@@ -403,7 +404,8 @@ body[data-theme="black"] {
       book: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15Z"/></svg>',
       'chevron-right': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
       'alert-triangle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-      settings: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>'
+      settings: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>',
+      lock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>'
     };
     return (icons[name] || '').replace(/width="24"/g,'width="'+ (arguments[1]||24) +'"').replace(/height="24"/g,'height="'+ (arguments[1]||24) +'"');
   }
@@ -485,23 +487,54 @@ body[data-theme="black"] {
 
   async function init() {
     var userStr = sessionStorage.getItem('currentUser');
-    if (!userStr) { window.location.href = 'index.html'; return; }
-    currentUser = JSON.parse(userStr);
+    var isGuest = false;
+    if (!userStr) {
+      // 访客模式 - 不跳转，设置访客用户
+      currentUser = { real_name: '访客', role: 'guest' };
+      isGuest = true;
+    } else {
+      currentUser = JSON.parse(userStr);
+    }
+
+    // 根据角色显示/隐藏导航栏元素
+    if (isGuest) {
+      document.getElementById('loginBtn').style.display = 'inline-flex';
+      document.getElementById('notificationBell').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'none';
+    } else {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('notificationBell').style.display = 'block';
+      document.getElementById('logoutBtn').style.display = 'inline-flex';
+    }
+
+    // 欢迎语
     var hour = new Date().getHours();
     var greeting = hour < 6 ? '夜深了' : hour < 9 ? '早上好' : hour < 12 ? '上午好' : hour < 14 ? '中午好' : hour < 18 ? '下午好' : hour < 22 ? '晚上好' : '夜深了';
     var greetingIcon = getIcon('heart', 28) + ' ';
     document.getElementById('welcomeIcon').innerHTML = greetingIcon;
-    document.getElementById('welcomeTitle').innerHTML = greetingIcon + greeting + '，' + currentUser.real_name;
-    updateNotifDot();
-    checkScheduleStatus();
+
+    if (isGuest) {
+      document.getElementById('welcomeTitle').innerHTML = greetingIcon + '欢迎回来，' + currentUser.real_name;
+      document.getElementById('welcomeSubtitle').textContent = '请登录以使用完整功能';
+    } else {
+      document.getElementById('welcomeTitle').innerHTML = greetingIcon + greeting + '，' + currentUser.real_name;
+      document.getElementById('welcomeSubtitle').textContent = '选择一个板块开始使用';
+    }
+
+    if (!isGuest) {
+      updateNotifDot();
+      checkScheduleStatus();
+    }
   }
 
   function updateNotifDot() {
+    if (!currentUser || currentUser.role === 'guest') return;
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
     document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
   }
 
   async function checkScheduleStatus() {
+    if (!currentUser || currentUser.role === 'guest') return;
     var res = await supabaseClient
       .from('student_schedule')
       .select('id')
@@ -513,6 +546,7 @@ body[data-theme="black"] {
   }
 
   function renderNotifDropdown(showAll) {
+    if (!currentUser || currentUser.role === 'guest') return;
     var dropdown = document.getElementById('notificationDropdown');
     var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) {
       return new Date(b.created_at) - new Date(a.created_at);
@@ -590,6 +624,7 @@ body[data-theme="black"] {
 
   document.getElementById('notificationBell').addEventListener('click', function(e) {
     e.stopPropagation();
+    if (!currentUser || currentUser.role === 'guest') return;
     var dropdown = document.getElementById('notificationDropdown');
     if (dropdown.style.display === 'block') {
       dropdown.style.display = 'none';
@@ -602,10 +637,15 @@ body[data-theme="black"] {
     document.getElementById('notificationDropdown').style.display = 'none';
   });
 
+  // 登录按钮
+  document.getElementById('loginBtn').addEventListener('click', function() {
+    window.location.href = 'index.html';
+  });
+
   document.getElementById('logoutBtn').addEventListener('click', async function() {
     await supabaseClient.auth.signOut();
-    sessionStorage.clear();
-    window.location.href = 'index.html';
+    sessionStorage.removeItem('currentUser');
+    window.location.href = 'main.html';
   });
 
   function escapeHtml(text) {
@@ -704,17 +744,25 @@ body[data-theme="black"] {
 
   function renderQuote() {
     var q = currentQuote;
+    var isGuest = !currentUser || currentUser.role === 'guest';
     var html = '<div class="quote-card">';
     html += '<div class="quote-text">' + escapeHtml(q.text) + '</div>';
     html += '<div class="quote-author">—— ' + escapeHtml(q.author) + '</div>';
     html += '<div class="quote-actions">';
-    html += '<span class="quote-ai-label">AI生成，仅供参考</span>';
-    html += '<button class="quote-btn" id="learnMoreBtn">了解更多</button>';
-    html += '<button class="quote-btn" id="refreshQuoteBtn">换一个</button>';
+    if (isGuest) {
+      html += '<span class="quote-ai-label">' + getIcon('lock', 14) + ' 请先登录后使用AI功能</span>';
+      html += '<button class="quote-btn" onclick="window.location.href=\'index.html\'">去登录</button>';
+    } else {
+      html += '<span class="quote-ai-label">AI生成，仅供参考</span>';
+      html += '<button class="quote-btn" id="learnMoreBtn">了解更多</button>';
+      html += '<button class="quote-btn" id="refreshQuoteBtn">换一个</button>';
+    }
     html += '</div></div>';
     document.getElementById('quoteSection').innerHTML = html;
-    document.getElementById('learnMoreBtn').addEventListener('click', openQuoteDetail);
-    document.getElementById('refreshQuoteBtn').addEventListener('click', refreshQuote);
+    if (!isGuest) {
+      document.getElementById('learnMoreBtn').addEventListener('click', openQuoteDetail);
+      document.getElementById('refreshQuoteBtn').addEventListener('click', refreshQuote);
+    }
   }
 
   async function initQuote() {
@@ -789,22 +837,32 @@ body[data-theme="black"] {
   function showTutorialStep(n) {
     var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
     if (!el) { nextTutorialStep(); return; }
+    var hidden = false; var p = el; while (p) { if (window.getComputedStyle(p).display === 'none') { hidden = true; break; } p = p.parentElement; }
     var rect = el.getBoundingClientRect();
     var hl = document.getElementById('tutorialHighlight');
-    hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      hl.style.display = 'none';
+    } else {
+      hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    }
     document.getElementById('tutorialBubble').style.display = 'block';
     document.getElementById('tutorialText').innerHTML = step.text;
     document.getElementById('tutorialNext').textContent = '下一步 →';
     var bw=380, bh=160, bx, by;
-    if(step.pos==='bottom'){bx=rect.left+rect.width/2-bw/2;by=rect.bottom+12;}
-    else{bx=rect.left+rect.width/2-bw/2;by=rect.top-bh-12;}
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      bx = window.innerWidth/2 - bw/2; by = window.innerHeight/2 - bh/2;
+    } else if (step.pos==='bottom') {
+      bx=rect.left+rect.width/2-bw/2;by=rect.bottom+12;
+    } else {
+      bx=rect.left+rect.width/2-bw/2;by=rect.top-bh-12;
+    }
     bx=Math.max(10,Math.min(bx,window.innerWidth-bw-10));by=Math.max(10,Math.min(by,window.innerHeight-bh-10));
     document.getElementById('tutorialBubble').style.top=by+'px';document.getElementById('tutorialBubble').style.left=bx+'px';
     document.getElementById('tutorialOverlay').style.display = 'block';
     tutorialStep=n;sessionStorage.setItem('tutorial_step',n);sessionStorage.setItem('tutorial_page','main');
   }
   function nextTutorialStep(){tutorialStep++;if(tutorialStep<tutorialSteps.length)showTutorialStep(tutorialStep);else{sessionStorage.setItem('tutorial_step',6);sessionStorage.setItem('tutorial_page','opinions');window.location.href='opinions.html';}}
-  function endTutorial(){document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');if(currentUser){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}}
+  function endTutorial(){document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');if(currentUser && currentUser.role !== 'guest'){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}}
   document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('tutorialNext').addEventListener('click',nextTutorialStep);
     document.getElementById('tutorialSkip').addEventListener('click',endTutorial);

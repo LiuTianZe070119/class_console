@@ -379,9 +379,13 @@
 
 <div class="navbar">
   <div class="logo"><span id="logoIcon"></span> 意见箱</div>
-  <div class="user-info">
+  <div class="user-info" id="loggedInNav">
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon"></span>返回办事通</button>
+  </div>
+  <div class="user-info" id="guestNav" style="display:none;">
+    <button class="btn-outline btn" onclick="showLoading();setTimeout(function(){window.location.href='main.html'},100)"><span id="backIcon2"></span>返回办事通</button>
+    <button class="btn" onclick="window.location.href='index.html'">登录</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
 </div>
@@ -414,6 +418,13 @@
       </label>
       <button class="btn" id="submitOpinionBtn" style="height:auto;">发布</button>
     </div>
+  </div>
+
+  <div class="post-box" id="guestPostPrompt" style="display:none; text-align:center; padding:40px 24px;">
+    <div style="margin-bottom:12px; color:var(--accent); opacity:0.6;"><span id="lockIconGuest"></span></div>
+    <h3 style="color:var(--text); margin-bottom:8px; font-size:18px;">请先登录后使用意见箱功能</h3>
+    <p style="color:var(--text-muted); margin-bottom:18px; font-size:14px;">登录后可以发布意见、点赞和回复</p>
+    <button class="btn" onclick="window.location.href='index.html'" style="font-size:16px; padding:12px 32px;">登录</button>
   </div>
 
   <div class="sort-bar">
@@ -554,7 +565,9 @@
       'message-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>',
       'star-filled': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
       camera: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg>',
-      hourglass: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22"/><path d="M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2"/></svg>'
+      hourglass: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22"/><path d="M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2"/></svg>',
+      lock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>',
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>'
     };
     return (icons[name] || '').replace(/width="24"/g,'width="'+ (arguments[1]||24) +'"').replace(/height="24"/g,'height="'+ (arguments[1]||24) +'"');
   }
@@ -563,6 +576,8 @@
     document.getElementById('logoIcon').innerHTML = getIcon('message-circle', 26);
     document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
     document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
+    var backIcon2 = document.getElementById('backIcon2');
+    if (backIcon2) backIcon2.innerHTML = getIcon('arrow-left', 16);
     document.getElementById('closeModalIcon').innerHTML = getIcon('x', 24);
     document.getElementById('editIconH3').innerHTML = getIcon('edit', 22);
     document.getElementById('flameIcon1').innerHTML = getIcon('flame', 16);
@@ -573,6 +588,8 @@
     document.getElementById('unlockIcon').innerHTML = getIcon('unlock', 16);
     document.getElementById('partyIcon').innerHTML = getIcon('star', 48);
     document.getElementById('cameraIcon').innerHTML = getIcon('camera', 18);
+    var lockGuest = document.getElementById('lockIconGuest');
+    if (lockGuest) lockGuest.innerHTML = getIcon('lock', 48);
     // 构建星星评分区
     buildStarRating('starRating', 5);
     buildStarPopupRating();
@@ -749,8 +766,18 @@
 
   async function init() {
     var userStr = sessionStorage.getItem('currentUser');
-    if (!userStr) { window.location.href = 'index.html'; return; }
-    currentUser = JSON.parse(userStr);
+    if (!userStr) { currentUser = { id: null, real_name: '访客', role: 'guest' }; }
+    else { currentUser = JSON.parse(userStr); }
+
+    // Guest mode UI adjustments
+    if (currentUser.role === 'guest') {
+      document.getElementById('loggedInNav').style.display = 'none';
+      document.getElementById('guestNav').style.display = 'flex';
+      document.querySelector('.post-box').style.display = 'none';
+      document.getElementById('guestPostPrompt').style.display = 'block';
+      document.getElementById('submitOpinionBtn').textContent = '请先登录';
+    }
+
     // 读取默认匿名设置
     var rawSettings = localStorage.getItem('classroom_user_settings');
     if (rawSettings) {
@@ -943,6 +970,7 @@
 
     container.querySelectorAll('.like-btn').forEach(function(btn) {
       btn.addEventListener('click', async function() {
+        if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
         var opId = btn.dataset.id;
         var res = await supabaseClient.from('likes').upsert(
           { opinion_id: opId, user_id: currentUser.id },
@@ -962,6 +990,7 @@
   }
 
   document.getElementById('submitOpinionBtn').addEventListener('click', async function() {
+    if (currentUser.role === 'guest') { window.location.href = 'index.html'; return; }
     var title = document.getElementById('titleInput').value.trim();
     var content = document.getElementById('contentInput').value.trim();
     var target = document.getElementById('targetLabel').dataset.val || '班长';
@@ -1021,10 +1050,6 @@
     currentOpinionId = opinionId;
     var op = opinionsData.find(function(o) { return o.id === opinionId; });
     if (!op) return;
-    if (currentUser.id === op.author_id && op.status === 'closed' && !op.avgRating) {
-      showRatingPopup(op);
-      return;
-    }
     document.getElementById('modalTitle').innerText = op.title;
     var statusText = { open: '待处理', in_progress: '解决中', closed: '已完结' };
     document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + (statusText[op.status] || op.status);
@@ -1042,6 +1067,12 @@
     }).join('') || '<div style="text-align:center;color:var(--text-light);padding:20px;">暂无回复</div>';
     document.getElementById('replyInput').value = '';
 
+    if (currentUser.role === 'guest') {
+      document.getElementById('replyInputArea').style.display = 'none';
+    } else {
+      document.getElementById('replyInputArea').style.display = 'flex';
+    }
+
     var isAdmin = currentUser.role === 'admin';
     document.getElementById('adminActions').style.display = isAdmin ? 'block' : 'none';
     document.getElementById('actionStart').style.display = 'none';
@@ -1053,12 +1084,17 @@
       else if (op.status === 'closed') document.getElementById('actionClosed').style.display = 'block';
     }
     var isAuthor = currentUser.id === op.author_id;
-    var canRate = isAuthor && op.status === 'closed';
+    var canRate = currentUser.role !== 'guest' && isAuthor && op.status === 'closed';
     document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
     if (canRate) {
-      selectedStars = 0;
-      document.querySelectorAll('#starRating .star-svg').forEach(function(s) { s.classList.remove('active'); });
-      document.getElementById('ratingText').textContent = '未评分';
+      // 查询是否已评分
+      var myRatingRes = await supabaseClient.from('ratings').select('score').eq('opinion_id', currentOpinionId).eq('user_id', currentUser.id).maybeSingle();
+      var myScore = myRatingRes.data ? myRatingRes.data.score : 0;
+      selectedStars = myScore;
+      document.querySelectorAll('#starRating .star-svg').forEach(function(s) {
+        s.classList.toggle('active', parseInt(s.dataset.val) <= myScore);
+      });
+      document.getElementById('ratingText').textContent = myScore ? myScore + '.0' : '未评分';
     }
     document.getElementById('detailModal').classList.add('active');
   };
@@ -1069,6 +1105,7 @@
   });
 
   document.getElementById('sendReplyBtn').addEventListener('click', async function() {
+    if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
     var content = document.getElementById('replyInput').value.trim();
     if (!content) { toast('请输入回复内容', 'warn'); return; }
     var id = crypto.randomUUID();
@@ -1233,6 +1270,11 @@
         ' <span style="font-size:12px;color:var(--text-muted);">' + new Date(r.created_at).toLocaleString() + '</span></div>';
     }).join('') || '<div style="text-align:center;color:var(--text-light);padding:20px;">暂无回复</div>';
     document.getElementById('replyInput').value = '';
+    if (currentUser.role === 'guest') {
+      document.getElementById('replyInputArea').style.display = 'none';
+    } else {
+      document.getElementById('replyInputArea').style.display = 'flex';
+    }
     var op2 = opinionsData.find(function(o) { return o.id === opinionId; });
     var isAdmin = currentUser.role === 'admin';
     document.getElementById('adminActions').style.display = isAdmin ? 'block' : 'none';
@@ -1244,7 +1286,7 @@
       else if (op2.status === 'in_progress') document.getElementById('actionInProgress').style.display = 'block';
       else if (op2.status === 'closed') document.getElementById('actionClosed').style.display = 'block';
     }
-    var canRate = currentUser.id === op2.author_id && op2.status === 'closed' && !op2.avgRating;
+    var canRate = currentUser.role !== 'guest' && currentUser.id === op2.author_id && op2.status === 'closed' && !op2.avgRating;
     document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
     document.getElementById('detailModal').classList.add('active');
   }
@@ -1351,30 +1393,44 @@
 
   // ===== 新手教程 =====
   var tutorialSteps = [
-    { sel: '.post-box', text: '📝 这里是<b>意见箱</b>。填写标题和内容，选择反馈给哪位班委，就可以提交你的意见。可以添加图片辅助说明，也可以选择匿名。', pos: 'bottom' },
+    { sel: '.post-box', fallback: '#guestPostPrompt', text: '📝 这里是<b>意见箱</b>。填写标题和内容，选择反馈给哪位班委，就可以提交你的意见。可以添加图片辅助说明，也可以选择匿名。', pos: 'bottom' },
     { sel: '.sort-bar', text: '🔍 下方的卡片展示每条意见的处理进度。你可以点赞、查看详情，追踪问题的解决状态。', pos: 'bottom' }
   ];
   var tutorialStepO = 0;
   function showTutorialStep(n) {
     var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
     if (!el) { nextTutorialStepO(); return; }
+    var hidden = false; var p = el; while (p) { if (window.getComputedStyle(p).display === 'none') { hidden = true; break; } p = p.parentElement; }
     var rect = el.getBoundingClientRect();
-    document.getElementById('tutorialHighlight').style.display = 'block';
-    document.getElementById('tutorialHighlight').style.top = (rect.top-6)+'px';
-    document.getElementById('tutorialHighlight').style.left = (rect.left-6)+'px';
-    document.getElementById('tutorialHighlight').style.width = (rect.width+12)+'px';
-    document.getElementById('tutorialHighlight').style.height = (rect.height+12)+'px';
+    if ((hidden || (rect.width === 0 && rect.height === 0)) && step.fallback) {
+      var fb = document.querySelector(step.fallback);
+      if (fb) { el = fb; hidden = false; rect = el.getBoundingClientRect(); }
+    }
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      document.getElementById('tutorialHighlight').style.display = 'none';
+    } else {
+      document.getElementById('tutorialHighlight').style.display = 'block';
+      document.getElementById('tutorialHighlight').style.top = (rect.top-6)+'px';
+      document.getElementById('tutorialHighlight').style.left = (rect.left-6)+'px';
+      document.getElementById('tutorialHighlight').style.width = (rect.width+12)+'px';
+      document.getElementById('tutorialHighlight').style.height = (rect.height+12)+'px';
+    }
     document.getElementById('tutorialBubble').style.display = 'block';
     document.getElementById('tutorialText').innerHTML = step.text;
     document.getElementById('tutorialNext').textContent = '下一步 →';
-    var bw=380, bh=160, bx=rect.left+rect.width/2-bw/2, by=rect.bottom+12;
+    var bw=380, bh=160, bx, by;
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      bx = window.innerWidth/2 - bw/2; by = window.innerHeight/2 - bh/2;
+    } else {
+      bx=rect.left+rect.width/2-bw/2; by=rect.bottom+12;
+    }
     bx=Math.max(10,Math.min(bx,window.innerWidth-bw-10));by=Math.max(10,Math.min(by,window.innerHeight-bh-10));
     document.getElementById('tutorialBubble').style.top=by+'px';document.getElementById('tutorialBubble').style.left=bx+'px';
     document.getElementById('tutorialOverlay').style.display = 'block';
     tutorialStepO=n;sessionStorage.setItem('tutorial_step',n+4);sessionStorage.setItem('tutorial_page','opinions');
   }
   function nextTutorialStepO(){tutorialStepO++;if(tutorialStepO<tutorialSteps.length)showTutorialStep(tutorialStepO);else{sessionStorage.setItem('tutorial_step',8);sessionStorage.setItem('tutorial_page','treehole');window.location.href='treehole.html';}}
-  function endTutorial(){document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');if(currentUser){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}}
+  function endTutorial(){document.getElementById('tutorialOverlay').style.display='none';document.getElementById('tutorialHighlight').style.display='none';document.getElementById('tutorialBubble').style.display='none';localStorage.setItem('tutorial_done','1');sessionStorage.removeItem('tutorial_step');if(currentUser && currentUser.id){supabaseClient.from('profiles').update({tutorial_done:true}).eq('id',currentUser.id)}}
   document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('tutorialNext').addEventListener('click',nextTutorialStepO);
     document.getElementById('tutorialSkip').addEventListener('click',endTutorial);

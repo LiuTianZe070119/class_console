@@ -7,165 +7,161 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
 
-    :root {
-      --bg-start: #FDF6F0; --bg-mid: #F8EDE3; --bg-end: #F2E0D0;
-      --text: #3D2314; --text-muted: #8B7355; --text-light: #B09080;
-      --accent: #C67B5C; --accent-hover: #D4946A; --accent-dark: #B5651D;
-      --accent-light: rgba(198,123,92,0.10); --accent-light2: rgba(198,123,92,0.06);
-      --card-bg: rgba(255,255,255,0.45); --card-border: rgba(255,255,255,0.4);
-      --navbar-bg: rgba(255,255,255,0.18); --navbar-border: rgba(255,255,255,0.4);
-      --input-bg: rgba(255,255,255,0.5); --input-border: #E0D0C0; --input-border-focus: #C67B5C;
-      --danger: #C7564A; --danger-hover: #A8403A;
-      --danger-bg: linear-gradient(135deg, #C7564A, #A8403A);
-      --danger-bg-hover: linear-gradient(135deg, #D9665A, #C7564A);
-      --btn-shadow: rgba(181,101,29,0.18); --btn-shadow-hover: rgba(181,101,29,0.28);
-      --shadow: rgba(61,35,20,0.05); --shadow-lg: rgba(61,35,20,0.12);
-      --modal-bg: rgba(255,255,255,0.7); --modal-overlay: rgba(61,35,20,0.25);
-      --divider: rgba(139,115,85,0.08);
-      --toast-success: rgba(93,155,111,0.92); --toast-error: rgba(199,86,74,0.92); --toast-warn: rgba(232,145,58,0.92);
-    }
-    body[data-theme="green"] {
-      --bg-start: #F2F7F4; --bg-mid: #E8F0EA; --bg-end: #D8E8DC;
-      --text: #1A3D2A; --text-muted: #5B7B6A; --text-light: #8B9B8A;
-      --accent: #5B8C6B; --accent-hover: #7BAA8B; --accent-dark: #3D6B4D;
-      --accent-light: rgba(91,140,107,0.10); --accent-light2: rgba(91,140,107,0.06);
-      --card-bg: rgba(255,255,255,0.45); --card-border: rgba(255,255,255,0.4);
-      --navbar-bg: rgba(255,255,255,0.18); --navbar-border: rgba(255,255,255,0.4);
-      --input-bg: rgba(255,255,255,0.5); --input-border: #C8D8C8; --input-border-focus: #5B8C6B;
-      --danger: #C7564A; --danger-hover: #A8403A;
-      --btn-shadow: rgba(61,107,77,0.18); --btn-shadow-hover: rgba(61,107,77,0.28);
-      --shadow: rgba(26,61,42,0.05); --shadow-lg: rgba(26,61,42,0.12);
-      --modal-bg: rgba(255,255,255,0.7); --modal-overlay: rgba(26,61,42,0.25);
-      --divider: rgba(91,123,106,0.08);
-    }
-    body[data-theme="white"] {
-      --bg-start: #FAFAFA; --bg-mid: #F5F5F5; --bg-end: #F0F0F0;
-      --text: #1A1A1A; --text-muted: #666; --text-light: #999;
-      --accent: #555; --accent-hover: #777; --accent-dark: #333;
-      --accent-light: rgba(85,85,85,0.08); --accent-light2: rgba(85,85,85,0.04);
-      --card-bg: rgba(255,255,255,0.75); --card-border: rgba(0,0,0,0.06);
-      --navbar-bg: rgba(255,255,255,0.65); --navbar-border: rgba(0,0,0,0.06);
-      --input-bg: rgba(255,255,255,0.85); --input-border: #DDD; --input-border-focus: #555;
-      --danger: #C7564A; --danger-hover: #A8403A;
-      --btn-shadow: rgba(0,0,0,0.1); --btn-shadow-hover: rgba(0,0,0,0.18);
-      --shadow: rgba(0,0,0,0.04); --shadow-lg: rgba(0,0,0,0.1);
-      --modal-bg: rgba(255,255,255,0.9); --modal-overlay: rgba(0,0,0,0.15);
-      --divider: rgba(0,0,0,0.06);
-    }
-    body[data-theme="black"] {
-      --bg-start: #1A1A1A; --bg-mid: #161616; --bg-end: #111;
-      --text: #E0D8D0; --text-muted: #999; --text-light: #777;
-      --accent: #C67B5C; --accent-hover: #D4946A; --accent-dark: #B5651D;
-      --accent-light: rgba(198,123,92,0.12); --accent-light2: rgba(198,123,92,0.06);
-      --card-bg: rgba(40,40,40,0.6); --card-border: rgba(255,255,255,0.06);
-      --navbar-bg: rgba(30,30,30,0.6); --navbar-border: rgba(255,255,255,0.06);
-      --input-bg: rgba(50,50,50,0.5); --input-border: #444; --input-border-focus: #C67B5C;
-      --danger: #D9665A; --danger-hover: #C7564A;
-      --btn-shadow: rgba(181,101,29,0.25); --btn-shadow-hover: rgba(181,101,29,0.4);
-      --shadow: rgba(0,0,0,0.3); --shadow-lg: rgba(0,0,0,0.5);
-      --modal-bg: rgba(40,40,40,0.9); --modal-overlay: rgba(0,0,0,0.5);
-      --divider: rgba(255,255,255,0.06);
-    }
+:root {
+  --bg-start: #FDF6F0; --bg-mid: #F8EDE3; --bg-end: #F2E0D0;
+  --text: #3D2314; --text-muted: #8B7355; --text-light: #A09080;
+  --accent: #C67B5C; --accent-hover: #D4946A; --accent-dark: #B5651D;
+  --accent-light: rgba(198,123,92,0.10); --accent-light2: rgba(198,123,92,0.06);
+  --card-bg: rgba(255,255,255,0.15); --card-border: rgba(255,255,255,0.5);
+  --navbar-bg: rgba(255,255,255,0.18); --navbar-border: rgba(255,255,255,0.4);
+  --input-bg: rgba(255,255,255,0.5); --input-border: #E0D0C0; --input-border-focus: #C67B5C;
+  --danger: #C7564A; --danger-hover: #A8403A;
+  --danger-bg: linear-gradient(135deg, #C7564A, #A8403A);
+  --danger-bg-hover: linear-gradient(135deg, #D9665A, #C7564A);
+  --btn-shadow: rgba(181,101,29,0.18); --btn-shadow-hover: rgba(181,101,29,0.28);
+  --shadow: rgba(61,35,20,0.05); --shadow-lg: rgba(61,35,20,0.12);
+  --modal-bg: rgba(255,255,255,0.7); --modal-overlay: rgba(61,35,20,0.25);
+  --divider: rgba(139,115,85,0.08);
+  --toast-success: rgba(93,155,111,0.92); --toast-error: rgba(199,86,74,0.92); --toast-warn: rgba(232,145,58,0.92);
+}
+body[data-theme="green"] {
+  --bg-start: #F2F7F4; --bg-mid: #E8F0EA; --bg-end: #D8E8DC;
+  --text: #1A3D2A; --text-muted: #5B7B6A; --text-light: #8B9B8A;
+  --accent: #5B8C6B; --accent-hover: #7BAA8B; --accent-dark: #3D6B4D;
+  --accent-light: rgba(91,140,107,0.10); --accent-light2: rgba(91,140,107,0.06);
+  --card-bg: rgba(255,255,255,0.15); --card-border: rgba(255,255,255,0.5);
+  --navbar-bg: rgba(255,255,255,0.18); --navbar-border: rgba(255,255,255,0.4);
+  --input-bg: rgba(255,255,255,0.5); --input-border: #C8D8C8; --input-border-focus: #5B8C6B;
+  --danger: #C7564A; --danger-hover: #A8403A;
+  --btn-shadow: rgba(61,107,77,0.18); --btn-shadow-hover: rgba(61,107,77,0.28);
+  --shadow: rgba(26,61,42,0.05); --shadow-lg: rgba(26,61,42,0.12);
+  --modal-bg: rgba(255,255,255,0.7); --modal-overlay: rgba(26,61,42,0.25);
+  --divider: rgba(91,123,106,0.08);
+}
+body[data-theme="white"] {
+  --bg-start: #FAFAFA; --bg-mid: #F5F5F5; --bg-end: #F0F0F0;
+  --text: #1A1A1A; --text-muted: #666; --text-light: #999;
+  --accent: #555; --accent-hover: #777; --accent-dark: #333;
+  --accent-light: rgba(85,85,85,0.08); --accent-light2: rgba(85,85,85,0.04);
+  --card-bg: rgba(255,255,255,0.6); --card-border: rgba(0,0,0,0.06);
+  --navbar-bg: rgba(255,255,255,0.65); --navbar-border: rgba(0,0,0,0.06);
+  --input-bg: rgba(255,255,255,0.85); --input-border: #DDD; --input-border-focus: #555;
+  --danger: #C7564A; --danger-hover: #A8403A;
+  --btn-shadow: rgba(0,0,0,0.1); --btn-shadow-hover: rgba(0,0,0,0.18);
+  --shadow: rgba(0,0,0,0.04); --shadow-lg: rgba(0,0,0,0.1);
+  --modal-bg: rgba(255,255,255,0.9); --modal-overlay: rgba(0,0,0,0.15);
+  --divider: rgba(0,0,0,0.06);
+}
+body[data-theme="black"] {
+  --bg-start: #1A1A1A; --bg-mid: #161616; --bg-end: #111;
+  --text: #E0D8D0; --text-muted: #999; --text-light: #777;
+  --accent: #C67B5C; --accent-hover: #D4946A; --accent-dark: #B5651D;
+  --accent-light: rgba(198,123,92,0.12); --accent-light2: rgba(198,123,92,0.06);
+  --card-bg: rgba(40,40,40,0.4); --card-border: rgba(255,255,255,0.06);
+  --navbar-bg: rgba(30,30,30,0.6); --navbar-border: rgba(255,255,255,0.06);
+  --input-bg: rgba(50,50,50,0.5); --input-border: #444; --input-border-focus: #C67B5C;
+  --danger: #D9665A; --danger-hover: #C7564A;
+  --btn-shadow: rgba(181,101,29,0.25); --btn-shadow-hover: rgba(181,101,29,0.4);
+  --shadow: rgba(0,0,0,0.3); --shadow-lg: rgba(0,0,0,0.5);
+  --modal-bg: rgba(40,40,40,0.9); --modal-overlay: rgba(0,0,0,0.5);
+  --divider: rgba(255,255,255,0.06);
+}
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Serif SC', 'PingFang SC', serif; }
-
     h1, h2, h3, .tab, .btn { font-family: 'Noto Serif SC', serif; }
 
     body {
       min-height: 100vh;
-      background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 40%, var(--bg-end) 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      gap: 24px;
-      transition: background 0.4s, color 0.4s, border-color 0.4s, box-shadow 0.4s;
+      background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 30%, var(--bg-end) 60%, var(--bg-mid) 100%);
+      background-size: 300% 300%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px; gap: 24px;
+      animation: bgShift 20s ease-in-out infinite;
+      overflow-x: hidden; overflow-y: auto;
+      transition: background 0.4s, color 0.4s;
     }
+    @keyframes bgShift {
+      0% { background-position: 0% 50%; }
+      25% { background-position: 50% 100%; }
+      50% { background-position: 100% 50%; }
+      75% { background-position: 50% 0%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .bg-decorations { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bg-orb {
+      position: absolute; border-radius: 50%;
+      animation: orbFloat var(--dur, 25s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+      filter: blur(80px);
+      background: var(--accent);
+      opacity: 0.08;
+    }
+    @keyframes orbFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      20% { transform: translate(var(--dx, 80px), var(--dy, -60px)) scale(1.1); }
+      40% { transform: translate(calc(var(--dx, 80px) * -0.6), calc(var(--dy, -60px) * -0.8)) scale(0.85); }
+      60% { transform: translate(calc(var(--dx, 80px) * 0.3), calc(var(--dy, -60px) * -0.4)) scale(1.05); }
+      80% { transform: translate(calc(var(--dx, 80px) * -0.8), calc(var(--dy, -60px) * 0.5)) scale(0.9); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    .sparkle {
+      position: absolute; width: 4px; height: 4px;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: sparkleFloat var(--dur, 10s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    @keyframes sparkleFloat {
+      0% { transform: translate(0, 0) scale(1); opacity: 0; }
+      20% { opacity: 0.6; }
+      50% { transform: translate(var(--dx, 20px), var(--dy, -30px)) scale(1.6); opacity: 0.7; }
+      80% { opacity: 0.15; }
+      100% { transform: translate(calc(var(--dx, 20px) * 2), calc(var(--dy, -30px) * 2)) scale(0.5); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { .bg-orb, .sparkle, body { animation: none !important; } }
 
     .login-card {
       background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      width: 420px;
-      max-width: 100%;
-      padding: 40px 34px;
-      border-radius: 32px;
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      width: 420px; max-width: 100%; padding: 40px 34px; border-radius: 32px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 8px 40px -8px var(--shadow-lg), 0 2px 8px var(--shadow);
+      box-shadow: 0 8px 40px -8px var(--shadow), 0 2px 8px var(--shadow);
+      position: relative; z-index: 1;
     }
-
     .brand { text-align: center; margin-bottom: 24px; }
     .brand-icon { margin-bottom: 12px; display: flex; justify-content: center; color: var(--accent); }
     .brand-icon svg { width: 52px; height: 52px; }
     h1 { color: var(--text); font-size: 28px; font-weight: 600; }
     .sub { color: var(--text-muted); margin: 6px 0 16px; font-size: 14px; }
 
-    .tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 24px;
-      background: var(--accent-light);
-      border-radius: 28px;
-      padding: 5px;
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 11px;
-      border-radius: 24px;
-      cursor: pointer;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: all 0.25s;
-      font-size: 15px;
-      user-select: none;
-    }
-    .tab.active {
-      background: white;
-      color: var(--accent);
-      box-shadow: 0 2px 12px var(--shadow);
-    }
-    .tab:hover:not(.active) { color: var(--text); background: var(--card-bg); }
+    .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--accent-light); border-radius: 28px; padding: 5px; }
+    .tab { flex: 1; text-align: center; padding: 11px; border-radius: 24px; cursor: pointer; font-weight: 500; color: var(--text-muted); transition: all 0.25s; font-size: 15px; user-select: none; }
+    .tab.active { background: white; color: var(--accent); box-shadow: 0 2px 12px var(--shadow); }
+    .tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.5); }
 
     .form { display: none; }
     .form.active { display: block; }
-
     .input-group { margin-bottom: 16px; }
     label { color: var(--text); font-weight: 500; margin-left: 6px; display: block; margin-bottom: 4px; font-size: 14px; }
 
     input {
-      width: 100%;
-      padding: 14px 18px;
+      width: 100%; padding: 14px 18px;
       border: 1.5px solid var(--input-border);
-      border-radius: 20px;
-      font-size: 16px;
-      outline: none;
-      transition: all 0.25s;
+      border-radius: 20px; font-size: 16px; outline: none; transition: all 0.25s;
       background: var(--input-bg);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
       color: var(--text);
     }
     input::placeholder { color: var(--text-light); }
-    input:focus {
-      border-color: var(--input-border-focus);
-      box-shadow: 0 0 0 4px var(--accent-light);
-      background: var(--card-bg);
-    }
+    input:focus { border-color: var(--input-border-focus); box-shadow: 0 0 0 4px var(--accent-light); background: var(--input-bg); }
 
     .btn {
       width: 100%;
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-      color: white;
-      border: none;
-      padding: 15px;
-      font-size: 17px;
-      font-weight: 600;
-      border-radius: 24px;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: all 0.25s;
+      color: white; border: none; padding: 15px; font-size: 17px; font-weight: 600;
+      border-radius: 24px; cursor: pointer; margin-top: 8px; transition: all 0.25s;
       box-shadow: 0 4px 16px var(--btn-shadow);
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
@@ -180,49 +176,33 @@
     .error { color: var(--danger); text-align: center; min-height: 20px; margin: 8px 0; font-size: 14px; }
     .divider { text-align: center; margin: 18px 0 4px; color: var(--text-muted); font-size: 13px; }
 
-    /* Toast */
-    .spinner { display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
     .toast-container { position: fixed; top: 70px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
-    .toast {
-      padding: 14px 22px;
-      border-radius: 16px;
-      color: white;
-      font-weight: 500;
-      font-size: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      animation: slideIn 0.3s ease;
-      max-width: 380px;
-      cursor: pointer;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
+    .toast { padding: 14px 22px; border-radius: 16px; color: white; font-weight: 500; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 380px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .toast.success { background: var(--toast-success); }
     .toast.error { background: var(--toast-error); }
     .toast.warn { background: var(--toast-warn); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    .site-footer { text-align: center; padding: 24px 20px 16px; color: var(--text-light); font-size: 13px; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .site-footer { text-align: center; padding: 24px 20px; margin-top: 48px; color: var(--text-light); font-size: 13px; position: relative; z-index: 1; }
     .site-footer .footer-divider { width: 40px; height: 2px; background: rgba(198,123,92,0.2); margin: 0 auto 14px; border-radius: 1px; }
     .site-footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 4px; }
     .site-footer a:hover { color: var(--accent); }
     .site-footer a svg { width: 14px; height: 14px; }
     .site-footer .footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
-
-    @media (max-width: 480px) {
-      .login-card { padding: 28px 20px; border-radius: 24px; }
-    }
   </style>
 </head>
 <body>
 <script>(function(){var t=localStorage.getItem('classroom_theme');if(t&&t!=='brown')document.body.setAttribute('data-theme',t);})();</script>
+<div class="bg-decorations" id="bgDecorations"></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="login-card">
   <div class="brand">
     <div class="brand-icon" id="brandIcon"></div>
     <h1>班级办事通</h1>
-    <p class="sub">意见反馈 · 课表统计 · 班级协同</p>
   </div>
 
   <div class="tabs">
@@ -261,10 +241,13 @@
       <input type="password" id="regPasswordConfirm" placeholder="••••••" autocomplete="new-password">
     </div>
     <div class="error" id="regError"></div>
+    <div style="text-align:center;color:var(--text-muted);font-size:12px;margin-bottom:4px;">注册需学号与姓名在班级名单中</div>
     <button class="btn" id="registerBtn">注册</button>
   </div>
+</div>
 
-  <div class="divider">注册需学号与姓名在班级名单中</div>
+<div style="position:relative;z-index:1;">
+  <a href="main.html" style="display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--accent);color:var(--accent);box-shadow:none;padding:12px 28px;font-size:15px;border-radius:24px;cursor:pointer;font-weight:550;text-decoration:none;transition:all 0.25s;font-family:inherit;" onmouseover="this.style.background='var(--accent-light2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='transparent';this.style.transform='translateY(0)'">以访客身份浏览</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
@@ -301,6 +284,32 @@
     return (icons[name] || '').replace('width="24"','width="'+ (arguments[1]||24) +'"').replace('height="24"','height="'+ (arguments[1]||24) +'"');
   }
 
+  // 背景装饰
+  (function() {
+    var container = document.getElementById('bgDecorations');
+    var html = '';
+    for (var i = 0; i < 4; i++) {
+      var size = 200 + Math.floor(Math.random() * 250);
+      var top = -5 + Math.floor(Math.random() * 85);
+      var left = -5 + Math.floor(Math.random() * 85);
+      var dur = 20 + Math.floor(Math.random() * 18);
+      var delay = Math.floor(Math.random() * 12);
+      var dx = (Math.random() - 0.5) * 200;
+      var dy = (Math.random() - 0.5) * 200;
+      html += '<div class="bg-orb" style="width:' + size + 'px;height:' + size + 'px;top:' + top + '%;left:' + left + '%;--dur:' + dur + 's;--delay:' + delay + 's;--dx:' + dx.toFixed(0) + 'px;--dy:' + dy.toFixed(0) + 'px;"></div>';
+    }
+    for (var k = 0; k < 20; k++) {
+      var sx = 2 + Math.floor(Math.random() * 96);
+      var sy = 3 + Math.floor(Math.random() * 94);
+      var sdur = 7 + Math.floor(Math.random() * 13);
+      var sdelay = Math.floor(Math.random() * 12);
+      var dx2 = (Math.random() - 0.5) * 80;
+      var dy2 = -(20 + Math.random() * 60);
+      html += '<div class="sparkle" style="left:' + sx + '%;top:' + sy + '%;--dur:' + sdur + 's;--delay:' + sdelay + 's;--dx:' + dx2.toFixed(0) + 'px;--dy:' + dy2.toFixed(0) + 'px;"></div>';
+    }
+    container.innerHTML = html;
+  })();
+
   // 初始化品牌图标
   document.getElementById('brandIcon').innerHTML = getIcon('clipboard', 52);
 
@@ -313,42 +322,32 @@
     var el = document.createElement('div');
     el.className = 'toast ' + type;
     el.textContent = msg;
-    el.addEventListener('click', function() { el.remove(); });
+    el.onclick = function() { el.remove(); };
     document.getElementById('toastContainer').appendChild(el);
     setTimeout(function() { if (el.parentNode) el.remove(); }, 4000);
   }
 
-  // 标签切换
+  // Tab 切换
   document.querySelectorAll('.tab').forEach(function(tab) {
     tab.addEventListener('click', function() {
       document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-      tab.classList.add('active');
-      var target = tab.dataset.tab;
-      document.getElementById('loginForm').classList.toggle('active', target === 'login');
-      document.getElementById('registerForm').classList.toggle('active', target === 'register');
-      document.getElementById('loginError').textContent = '';
-      document.getElementById('regError').textContent = '';
+      document.querySelectorAll('.form').forEach(function(f) { f.classList.remove('active'); });
+      this.classList.add('active');
+      document.getElementById(this.dataset.tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
     });
-  });
-
-  // 回车键提交
-  document.getElementById('loginPassword').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('loginBtn').click();
-  });
-  document.getElementById('regPasswordConfirm').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('registerBtn').click();
   });
 
   // 登录
   document.getElementById('loginBtn').addEventListener('click', async function() {
+    var btn = this;
     var studentId = document.getElementById('loginStudentId').value.trim();
     var password = document.getElementById('loginPassword').value;
     var errEl = document.getElementById('loginError');
-    var btn = this;
-    if (!studentId || !password) { errEl.textContent = '请填写完整'; return; }
+    errEl.textContent = '';
+    if (!studentId || !password) { errEl.textContent = '请填写学号和密码'; return; }
 
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>登录中';
+    btn.innerHTML = '<span class="spinner"></span> 登录中…';
     var email = studentId + '@class.local';
     var res = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
     if (res.error) {
@@ -366,7 +365,6 @@
         position: profileRes.data.position
       };
       sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
-      // 同步设置到 localStorage 缓存
       if (profileRes.data.theme) localStorage.setItem('classroom_theme', profileRes.data.theme);
       if (profileRes.data.default_anonymous !== null) {
         var settings = localStorage.getItem('classroom_user_settings');
@@ -381,34 +379,32 @@
 
   // 注册
   document.getElementById('registerBtn').addEventListener('click', async function() {
+    var btn = this;
     var studentId = document.getElementById('regStudentId').value.trim();
     var realName = document.getElementById('regName').value.trim();
     var password = document.getElementById('regPassword').value;
     var passwordConfirm = document.getElementById('regPasswordConfirm').value;
     var errEl = document.getElementById('regError');
-    var btn = this;
-
-    if (!studentId || !realName || !password) { errEl.textContent = '请填写完整'; return; }
+    errEl.textContent = '';
+    if (!studentId || !realName || !password || !passwordConfirm) { errEl.textContent = '请填写所有字段'; return; }
     if (password.length < 6) { errEl.textContent = '密码至少6位'; return; }
-    if (password !== passwordConfirm) { errEl.textContent = '两次输入的密码不一致'; return; }
+    if (password !== passwordConfirm) { errEl.textContent = '两次密码不一致'; return; }
 
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>注册中';
-    // 查询花名册
-    var rosterRes = await supabaseClient
-      .from('student_roster')
+    btn.innerHTML = '<span class="spinner"></span> 注册中…';
+    var res = await supabaseClient.from('class_roster')
       .select('*')
       .eq('student_id', studentId)
       .eq('real_name', realName)
       .maybeSingle();
 
-    if (rosterRes.error || !rosterRes.data) {
+    if (res.error || !res.data) {
       btn.disabled = false; btn.textContent = '注册';
       errEl.textContent = '学号或姓名不在班级名单中';
       toast('学号或姓名不在班级名单中', 'warn');
       return;
     }
-    if (rosterRes.data.registered) {
+    if (res.data.registered) {
       btn.disabled = false; btn.textContent = '注册';
       errEl.textContent = '该学号已被注册过了';
       toast('该学号已被注册', 'warn');
@@ -416,31 +412,30 @@
     }
 
     var email = studentId + '@class.local';
-    var res = await supabaseClient.auth.signUp({
+    var authRes = await supabaseClient.auth.signUp({
       email: email,
       password: password,
       options: {
         data: { student_id: studentId, real_name: realName }
       }
     });
-    if (res.error) {
+    if (authRes.error) {
       btn.disabled = false; btn.textContent = '注册';
-      errEl.textContent = res.error.message;
-      toast(res.error.message, 'error');
+      errEl.textContent = authRes.error.message;
+      toast(authRes.error.message, 'error');
       return;
     }
-    if (res.data.user && res.data.session) {
+    if (authRes.data.user && authRes.data.session) {
       setTimeout(async function() {
-        var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', res.data.user.id).single();
+        var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', authRes.data.user.id).single();
         var sessionUser = {
-          id: res.data.user.id,
+          id: authRes.data.user.id,
           student_id: profileRes.data.student_id,
           real_name: profileRes.data.real_name,
           role: profileRes.data.role,
           position: profileRes.data.position
         };
         sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
-        // 同步主题到 localStorage 缓存
         if (profileRes.data.theme) localStorage.setItem('classroom_theme', profileRes.data.theme);
         if (profileRes.data.default_anonymous !== null) {
           var settings2 = localStorage.getItem('classroom_user_settings');
@@ -459,7 +454,7 @@
 </script>
 <footer class="site-footer">
   <div class="footer-divider"></div>
-  <div>© 2026 Liu_Tianze. All rights reserved.</div>
+  <div>&copy; 2026 Liu_Tianze. All rights reserved.</div>
   <div class="footer-links">
     <a href="https://github.com/LiuTianZe070119/class_console" target="_blank" rel="noopener">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>

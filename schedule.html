@@ -197,12 +197,23 @@
 
 <div class="navbar">
   <div class="logo"><span id="logoIcon"></span>课表统计</div>
-  <div style="display:flex; gap:10px; align-items:center;">
+  <div id="navLoggedIn" style="display:flex; gap:10px; align-items:center;">
     <span class="has-unsaved" id="unsavedHint" style="display:none;"><span id="dotIcon"></span> 有未保存的修改</span>
     <div class="notification-bell" id="notificationBell"><span id="bellIcon"></span><span class="notification-dot" id="notificationDot" style="display:none;"></span></div>
     <button class="btn-outline btn" onclick="goBack()"><span id="backIcon"></span>返回办事通</button>
   </div>
   <div class="notification-dropdown" id="notificationDropdown"></div>
+  <div id="navGuest" style="display:none; gap:10px; align-items:center;">
+    <button class="btn-outline btn" onclick="goBack()"><span id="backIcon2"></span>返回办事通</button>
+    <button class="btn" onclick="window.location.href='index.html'">登录</button>
+  </div>
+</div>
+
+<div id="guestCard" class="card" style="display:none; text-align:center; padding:48px 24px;">
+  <div style="margin-bottom:12px; color:var(--accent); opacity:0.6;"><span id="lockIconGuest"></span></div>
+  <h3 style="color:var(--text); margin-bottom:8px;">请先登录后使用课表功能</h3>
+  <p style="color:var(--text-muted); margin-bottom:20px;">登录后可查看和编辑个人课表</p>
+  <button class="btn" onclick="window.location.href='index.html'" style="font-size:16px; padding:12px 32px;">登录</button>
 </div>
 
 <div id="scheduleCard" class="card">
@@ -260,7 +271,8 @@
       'check-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
       'dot': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>',
       lightbulb: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.59-.5 1.12-1.05 1.56-1.66A5 5 0 1 0 6.5 8.77c.4.65.9 1.24 1.48 1.73L9 11v5l3 3 3-3v-5Z"/><path d="M9 21h6"/><path d="M12 2v1"/></svg>',
-      heart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'
+      heart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+      lock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>'
     };
     return (icons[name] || '').replace(/width="24"/g,'width="'+ (arguments[1]||24) +'"').replace(/height="24"/g,'height="'+ (arguments[1]||24) +'"');
   }
@@ -270,10 +282,14 @@
     document.getElementById('logoIcon').innerHTML = getIcon('calendar', 26);
     document.getElementById('bellIcon').innerHTML = getIcon('bell', 26);
     document.getElementById('backIcon').innerHTML = getIcon('arrow-left', 16);
+    var backIcon2 = document.getElementById('backIcon2');
+    if (backIcon2) backIcon2.innerHTML = getIcon('arrow-left', 16);
     document.getElementById('saveIcon').innerHTML = getIcon('save', 16);
     document.getElementById('statsIcon').innerHTML = getIcon('bar-chart', 16);
     document.getElementById('closeModalIcon').innerHTML = getIcon('x', 24);
     document.getElementById('dotIcon').innerHTML = getIcon('dot', 12);
+    var lockGuest = document.getElementById('lockIconGuest');
+    if (lockGuest) lockGuest.innerHTML = getIcon('lock', 48);
   }
 
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
@@ -285,11 +301,13 @@
   function getNotifs() { var raw = localStorage.getItem('classroom_notifications'); return raw ? JSON.parse(raw) : []; }
   function saveNotifs(arr) { localStorage.setItem('classroom_notifications', JSON.stringify(arr)); }
   function updateNotifDot() {
+    if (!currentUser || !currentUser.id) return;
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
     document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
   }
   function escapeHtml(text) { var div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
   function renderNotifDropdown(showAll) {
+    if (!currentUser || !currentUser.id) return;
     var dropdown = document.getElementById('notificationDropdown');
     var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; }).sort(function(a,b) { return new Date(b.created_at) - new Date(a.created_at); });
     var unreadNotifs = allNotifs.filter(function(n) { return !n.read; });
@@ -393,11 +411,18 @@
   async function init() {
     const userStr = sessionStorage.getItem('currentUser');
     if (!userStr) {
-      toast('请先登录班级办事通', 'warn');
-      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+      // Guest mode: show login prompt, hide schedule
+      document.getElementById('navLoggedIn').style.display = 'none';
+      document.getElementById('navGuest').style.display = 'flex';
+      document.getElementById('guestCard').style.display = 'block';
+      document.getElementById('scheduleCard').style.display = 'none';
+      initIcons();
       return;
     }
     currentUser = JSON.parse(userStr);
+    document.getElementById('navLoggedIn').style.display = 'flex';
+    document.getElementById('navGuest').style.display = 'none';
+    document.getElementById('guestCard').style.display = 'none';
     updateNotifDot();
 
     if (currentUser.role === 'admin') {
@@ -682,21 +707,35 @@
   });
 
   var tutorialSteps = [
-    { sel: '#scheduleGrid', text: '📅 这里是<b>课表</b>。点击格子标记有课的时间段，填好后点击保存。你的课表会被统计到全班级数据中，利于班委了解各个同学的上课时间，灵活安排活动。', pos: 'right' }
+    { sel: '#scheduleGrid', fallback: '#guestCard', text: '📅 这里是<b>课表</b>。点击格子标记有课的时间段，填好后点击保存。你的课表会被统计到全班级数据中，利于班委了解各个同学的上课时间，灵活安排活动。', pos: 'right' }
   ];
   var tutorialStep = 0;
   function showTutorialStep(n) {
     var step = tutorialSteps[n]; var el = document.querySelector(step.sel);
     if (!el) { nextTutorialStep(); return; }
+    var hidden = false; var p = el; while (p) { if (window.getComputedStyle(p).display === 'none') { hidden = true; break; } p = p.parentElement; }
     var rect = el.getBoundingClientRect();
+    if ((hidden || (rect.width === 0 && rect.height === 0)) && step.fallback) {
+      var fb = document.querySelector(step.fallback);
+      if (fb) { el = fb; hidden = false; rect = el.getBoundingClientRect(); }
+    }
     var hl = document.getElementById('tutorialHighlight');
-    hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      hl.style.display = 'none';
+    } else {
+      hl.style.display = 'block'; hl.style.top = (rect.top-6)+'px'; hl.style.left = (rect.left-6)+'px'; hl.style.width = (rect.width+12)+'px'; hl.style.height = (rect.height+12)+'px';
+    }
     var bubble = document.getElementById('tutorialBubble'); bubble.style.display = 'block';
     document.getElementById('tutorialText').innerHTML = step.text;
     document.getElementById('tutorialNext').textContent = '下一步 →';
     var bw=380, bh=160, bx, by;
-    if(step.pos==='right'){bx=rect.right+12;by=rect.top+rect.height/2-bh/2;}
-    else{bx=rect.left+rect.width/2-bw/2;by=rect.bottom+12;}
+    if (hidden || (rect.width === 0 && rect.height === 0)) {
+      bx = window.innerWidth/2 - bw/2; by = window.innerHeight/2 - bh/2;
+    } else if (step.pos==='right') {
+      bx=rect.right+12;by=rect.top+rect.height/2-bh/2;
+    } else {
+      bx=rect.left+rect.width/2-bw/2;by=rect.bottom+12;
+    }
     bx=Math.max(10,Math.min(bx,window.innerWidth-bw-10));by=Math.max(10,Math.min(by,window.innerHeight-bh-10));
     bubble.style.top=by+'px';bubble.style.left=bx+'px';
     document.getElementById('tutorialOverlay').style.display = 'block';
