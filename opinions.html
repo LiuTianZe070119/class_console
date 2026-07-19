@@ -237,8 +237,13 @@
     .select-drop { position: fixed; background: var(--modal-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 16px; box-shadow: 0 8px 24px var(--shadow-lg); border: 1px solid var(--card-border); overflow: hidden; z-index: 2000; }
     .select-drop div { padding: 10px 16px; cursor: pointer; font-size: 14px; color: var(--text); transition: background 0.15s; white-space: nowrap; }
     .select-drop div:hover { background: var(--accent-light2); }
-    .sort-bar { display: flex; gap: 12px; margin-bottom: 20px; }
-    .sort-btn { background: var(--input-bg); border: 1.5px solid var(--input-border); padding: 8px 24px; border-radius: 24px; cursor: pointer; font-weight: 500; transition: all 0.2s; color: var(--text-muted); display: inline-flex; align-items: center; gap: 5px; }
+    .sort-bar { display: flex; gap: 12px; margin-bottom: 20px; justify-content: space-between; flex-wrap: wrap; }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { background: var(--input-bg); border: 1.5px solid var(--input-border); padding: 8px 20px; border-radius: 24px; cursor: pointer; font-weight: 500; transition: all 0.2s; color: var(--text-muted); font-size: 14px; font-family: inherit; }
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: white; border-color: var(--accent); }
+    .sort-group { display: flex; gap: 8px; }
+    .sort-btn { background: var(--input-bg); border: 1.5px solid var(--input-border); padding: 8px 16px; border-radius: 24px; cursor: pointer; font-weight: 500; transition: all 0.2s; color: var(--text-muted); display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-family: inherit; }
     .sort-btn:hover { border-color: var(--accent); color: var(--text); }
     .sort-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: white; border-color: var(--accent); }
 
@@ -248,12 +253,20 @@
     .card-delete-btn { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.12); color: white; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 5; transition: background 0.2s; padding: 0; }
     .card-delete-btn:hover { background: rgba(199,86,74,0.7); }
     .card-delete-btn svg { width: 12px; height: 12px; }
-    .card-header { display: flex; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-    .target-tag { background: var(--accent-light2); padding: 4px 14px; border-radius: 30px; font-size: 13px; color: var(--accent); font-weight: 500; transition: background 0.4s, color 0.4s; }
-    .actions { display: flex; gap: 16px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
-    .like-btn { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #8B7355; padding: 4px 12px; border-radius: 20px; transition: all 0.2s; user-select: none; }
-    .like-btn:hover { color: #C7564A; background: rgba(199,86,74,0.06); }
-    .like-btn.liked { color: #C7564A; }
+    .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .card-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 15px; flex-shrink: 0; }
+    .card-meta { flex: 1; min-width: 0; }
+    .card-author { font-weight: 600; font-size: 14px; color: var(--text); display: block; }
+    .card-time { font-size: 12px; color: var(--text-muted); }
+    .target-tag { background: var(--accent-light); padding: 5px 14px; border-radius: 30px; font-size: 13px; color: var(--accent); font-weight: 600; transition: background 0.4s, color 0.4s; white-space: nowrap; }
+    .card-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .card-content { color: var(--text); font-size: 14px; line-height: 1.7; margin-bottom: 10px; }
+    .actions { display: flex; gap: 12px; margin-top: 14px; align-items: center; flex-wrap: wrap; }
+    .card-action { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; padding: 7px 16px; border-radius: 20px; transition: all 0.2s; font-size: 14px; font-weight: 500; height: 36px; box-sizing: border-box; border: 1px solid var(--card-border); background: var(--accent-light2); color: var(--text-muted); }
+    .card-action.like-btn:hover { color: #C7564A; background: rgba(199,86,74,0.08); border-color: rgba(199,86,74,0.25); }
+    .card-action.like-btn.liked { color: #C7564A; background: rgba(199,86,74,0.1); border-color: rgba(199,86,74,0.25); }
+    .card-action.like-btn.liked svg { fill: #C7564A; }
+    .card-action.star-badge { color: #E8913A; background: rgba(232,145,58,0.08); border-color: rgba(232,145,58,0.15); cursor: default; }
 
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 1000; transition: background 0.4s; }
     .modal.active { display: flex; }
@@ -430,8 +443,16 @@
   </div>
 
   <div class="sort-bar">
-    <button class="sort-btn active" data-sort="heat"><span id="flameIcon1"></span> 按热度</button>
-    <button class="sort-btn" data-sort="time"><span id="clockIcon1"></span> 按时间</button>
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="open">待处理</button>
+      <button class="filter-btn" data-filter="in_progress">解决中</button>
+      <button class="filter-btn" data-filter="closed">已完结</button>
+    </div>
+    <div class="sort-group">
+      <button class="sort-btn active" data-sort="time"><span id="clockIcon1"></span> 按时间</button>
+      <button class="sort-btn" data-sort="heat"><span id="flameIcon1"></span> 按热度</button>
+    </div>
   </div>
 
   <div id="opinionsList"></div>
@@ -624,7 +645,8 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let currentUser = null;
-  let currentSort = 'heat';
+  let currentSort = 'time';
+  let currentFilter = 'all';
   let opinionsData = [];
   let currentOpinionId = null;
   let selectedStars = 0;
@@ -885,9 +907,12 @@
     }
   }
 
+  var userLikedSet = {};
+
   async function loadOpinions() {
     showLoading();
     var query = supabaseClient.from('opinions').select('*, likes(count), replies(count)');
+    if (currentFilter !== 'all') query = query.eq('status', currentFilter);
     query = query.order('created_at', { ascending: false });
     var res = await query;
     if (res.error) { hideLoading(); toast('加载失败：' + res.error.message, 'error'); return; }
@@ -899,6 +924,13 @@
       ratingsMap[r.opinion_id].push(r.score);
     });
 
+    // 获取当前用户点赞了哪些意见
+    userLikedSet = {};
+    if (currentUser && currentUser.id) {
+      var likesRes = await supabaseClient.from('likes').select('opinion_id').eq('user_id', currentUser.id);
+      (likesRes.data || []).forEach(function(l) { userLikedSet[l.opinion_id] = true; });
+    }
+
     hideLoading();
     opinionsData = (res.data || []).map(function(op) {
       var scores = ratingsMap[op.id] || [];
@@ -906,7 +938,8 @@
         ...op,
         likeCount: op.likes?.[0]?.count || 0,
         replyCount: op.replies?.[0]?.count || 0,
-        avgRating: scores.length ? (scores.reduce(function(s, r) { return s + r; }, 0) / scores.length).toFixed(1) : null
+        avgRating: scores.length ? (scores.reduce(function(s, r) { return s + r; }, 0) / scores.length).toFixed(1) : null,
+        liked: !!userLikedSet[op.id]
       };
     });
     if (currentSort === 'heat') {
@@ -920,6 +953,19 @@
     if (op.status === 'in_progress') return 1;
     if (op.status === 'closed') return op.avgRating ? 4 : 2;
     return 0;
+  }
+
+  var AVATAR_COLORS = ['#C67B5C','#5B8C6B','#4A90B8','#B87C4A','#7B6BA8','#B8556A','#5A9E8F','#C49B3F'];
+  function getAvatarColor(name) {
+    var h = 0; for (var i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
+    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  }
+
+  function getStatusStyle(status) {
+    if (status === 'open') return 'background:rgba(232,145,58,0.12);color:#C67B3A;';
+    if (status === 'in_progress') return 'background:rgba(91,140,107,0.12);color:#3D6B4D;';
+    if (status === 'closed') return 'background:rgba(85,85,85,0.1);color:#555;';
+    return '';
   }
 
   function renderOpinions() {
@@ -938,21 +984,23 @@
       };
       var isOwner = currentUser.id === op.author_id;
       var canDelete = isOwner || currentUser.role === 'admin';
+      var authorName = op.is_anonymous ? '匿名' : (op.author_name || '匿名');
+      var avatarColor = getAvatarColor(authorName);
+      var initial = authorName.charAt(0);
       return '<div class="opinion-card" style="position:relative;">' +
         (isOwner ? '<span class="owner-badge">我的意见</span>' : '') +
-        (canDelete ? '<button class="card-delete-btn" data-id="' + op.id + '" data-author="' + op.author_id + '" title="删除">' + getIcon('x', 14) + '</button>' : '') +
-        '<div class="card-header">' +
-          '<strong>' + escapeHtml(op.title) + '</strong>' +
+        (canDelete ? '<button class="card-delete-btn" data-id="' + op.id + '" data-author="' + op.author_id + '" title="删除" onclick="event.stopPropagation()">' + getIcon('x', 14) + '</button>' : '') +
+        '<div class="card-top">' +
+          '<div class="card-avatar" style="background:' + avatarColor + '">' + initial + '</div>' +
+          '<div class="card-meta">' +
+            '<span class="card-author">' + escapeHtml(authorName) + '</span>' +
+            '<span class="card-time">' + new Date(op.created_at).toLocaleString() + '</span>' +
+          '</div>' +
           '<span class="target-tag">@' + (op.assigned_to || op.target_role) + '</span>' +
         '</div>' +
-        '<p style="margin:12px 0;color:var(--text);">' + escapeHtml(op.content) + '</p>' +
+        '<div class="card-title">' + escapeHtml(op.title) + '</div>' +
+        '<div class="card-content">' + escapeHtml(op.content) + '</div>' +
         renderPhotoStrip(op.photos, 'small') +
-        '<div style="display:flex;gap:20px;font-size:14px;color:var(--text-muted);flex-wrap:wrap;">' +
-          '<span>' + getIcon('user', 14) + ' ' + (op.is_anonymous ? '匿名' : op.author_name) + '</span>' +
-          '<span>' + getIcon('calendar', 14) + ' ' + new Date(op.created_at).toLocaleString() + '</span>' +
-          '<span>' + getIcon('star', 14) + ' ' + (op.avgRating || '暂无') + '</span>' +
-          '<span>' + getIcon('message-circle', 14) + ' ' + op.replyCount + '</span>' +
-        '</div>' +
         '<div class="stepper">' + steps.map(function(s, i) {
           var cls = i < progress ? 'done' : i === progress ? 'current' : '';
           var icon = i < progress || (i === progress && i === 3) ? getIcon('check-circle', 14).replace(/width="24"/,'width="14"').replace(/height="24"/,'height="14"') : (i + 1);
@@ -961,9 +1009,10 @@
           return html;
         }).join('') + '</div>' +
         '<div class="actions">' +
-          '<span class="like-btn" data-id="' + op.id + '">' + getIcon('heart', 16) + ' ' + op.likeCount + '</span>' +
-          '<button class="btn-outline btn" onclick="openDetail(\'' + op.id + '\')">查看详情</button>' +
-          '<span style="font-size:14px;color:var(--text-muted);">' + (statusLabels[op.status] || op.status) + '</span>' +
+          '<span class="card-action like-btn' + (op.liked ? ' liked' : '') + '" data-id="' + op.id + '" onclick="event.stopPropagation()">' + getIcon('heart', 16) + ' <span>' + op.likeCount + '</span></span>' +
+          '<span class="card-action star-badge">' + getIcon('star-filled', 16) + ' ' + (op.avgRating || '暂无') + '</span>' +
+          '<span style="flex:1;"></span>' +
+          '<button class="card-action" style="cursor:pointer;" onclick="event.stopPropagation();openDetail(\'' + op.id + '\')">查看详情</button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1002,17 +1051,12 @@
       btn.addEventListener('click', async function() {
         if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
         var opId = btn.dataset.id;
-        var res = await supabaseClient.from('likes').upsert(
-          { opinion_id: opId, user_id: currentUser.id },
-          { onConflict: 'opinion_id, user_id' }
-        );
-        if (res.error) {
-          if (res.error.code === '23505') {
-            await supabaseClient.from('likes').delete().eq('opinion_id', opId).eq('user_id', currentUser.id);
-          } else {
-            toast('操作失败', 'error');
-            return;
-          }
+        var liked = btn.classList.contains('liked');
+        if (liked) {
+          await supabaseClient.from('likes').delete().eq('opinion_id', opId).eq('user_id', currentUser.id);
+        } else {
+          var insRes = await supabaseClient.from('likes').insert({ opinion_id: opId, user_id: currentUser.id });
+          if (insRes.error) { toast('操作失败', 'error'); return; }
         }
         loadOpinions();
       });
@@ -1055,9 +1099,18 @@
     }
   });
 
-  document.querySelectorAll('.sort-btn').forEach(function(btn) {
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      document.querySelectorAll('.sort-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      loadOpinions();
+    });
+  });
+
+  document.querySelectorAll('.sort-group .sort-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.sort-group .sort-btn').forEach(function(b) { b.classList.remove('active'); });
       btn.classList.add('active');
       currentSort = btn.dataset.sort;
       loadOpinions();

@@ -524,13 +524,16 @@ body[data-theme="black"] {
     if (!isGuest) {
       updateNotifDot();
       checkScheduleStatus();
-      // 登录用户：请求 AI 生成新的名言
-      showQuoteLoading('AI生成中');
-      try { saveQuote(await fetchQuote()); } catch(e) {}
+      // 登录用户：仅刚登录时刷新名言，普通刷新不重新生成
+      if (sessionStorage.getItem('just_logged_in')) {
+        sessionStorage.removeItem('just_logged_in');
+        showQuoteLoading('寻觅佳句中');
+        try { saveQuote(await fetchQuote()); } catch(e) {}
+      }
       renderQuote();
     } else {
-      // 访客：使用静态名言
-      saveQuote({ text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' });
+      // 访客：使用静态名言，不写入缓存
+      currentQuote = { text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' };
       renderQuote();
     }
   }
@@ -685,7 +688,7 @@ body[data-theme="black"] {
 
   function showQuoteLoading(msg) {
     document.getElementById('quoteSection').innerHTML =
-      '<div class="quote-card"><div class="quote-loading"><div class="spinner"></div>' + (msg || 'AI生成中') + '</div></div>';
+      '<div class="quote-card"><div class="quote-loading"><div class="spinner"></div>' + (msg || '寻觅佳句中') + '</div></div>';
   }
 
   async function fetchQuote() {
@@ -774,9 +777,9 @@ body[data-theme="black"] {
   }
 
   function initQuote() {
-    // 先渲染静态占位，AI 在 init() 中根据登录状态决定是否请求
+    // 先用缓存或静态占位渲染，不写入 sessionStorage
     if (!currentQuote) {
-      saveQuote({ text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' });
+      currentQuote = { text:'学而不思则罔，思而不学则殆。', author:'《论语》', type:'classic' };
     }
     renderQuote();
   }
