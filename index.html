@@ -396,15 +396,19 @@ body[data-theme="black"] {
       } else {
         localStorage.removeItem('remembered_login');
       }
-      var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', res.data.user.id).single();
+      var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done,avatar_config').eq('id', res.data.user.id).single();
       var sessionUser = {
         id: res.data.user.id,
         student_id: profileRes.data.student_id,
         real_name: profileRes.data.real_name,
         role: profileRes.data.role,
-        position: profileRes.data.position
+        position: profileRes.data.position,
+        avatar_config: profileRes.data.avatar_config
       };
       sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
+      if (profileRes.data.avatar_config) {
+        localStorage.setItem('avatar_cache_'+res.data.user.id, JSON.stringify(typeof profileRes.data.avatar_config==='string'?JSON.parse(profileRes.data.avatar_config):profileRes.data.avatar_config));
+      }
       if (profileRes.data.theme) localStorage.setItem('classroom_theme', profileRes.data.theme);
       if (profileRes.data.default_anonymous !== null) {
         var settings = localStorage.getItem('classroom_user_settings');
@@ -494,15 +498,19 @@ body[data-theme="black"] {
       // 注册成功自动记住密码
       localStorage.setItem('remembered_login', JSON.stringify({ id: studentId, pw: password }));
       setTimeout(async function() {
-        var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done').eq('id', authRes.data.user.id).single();
+        var profileRes = await supabaseClient.from('profiles').select('student_id,real_name,role,position,theme,default_anonymous,tutorial_done,avatar_config').eq('id', authRes.data.user.id).single();
         var sessionUser = {
           id: authRes.data.user.id,
           student_id: profileRes.data.student_id,
           real_name: profileRes.data.real_name,
           role: profileRes.data.role,
-          position: profileRes.data.position
+          position: profileRes.data.position,
+          avatar_config: profileRes.data.avatar_config
         };
         sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
+        if (profileRes.data.avatar_config) {
+          localStorage.setItem('avatar_cache_'+authRes.data.user.id, JSON.stringify(typeof profileRes.data.avatar_config==='string'?JSON.parse(profileRes.data.avatar_config):profileRes.data.avatar_config));
+        }
         if (profileRes.data.theme) localStorage.setItem('classroom_theme', profileRes.data.theme);
         if (profileRes.data.default_anonymous !== null) {
           var settings2 = localStorage.getItem('classroom_user_settings');

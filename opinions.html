@@ -255,6 +255,7 @@
     .card-delete-btn svg { width: 12px; height: 12px; }
     .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .card-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 15px; flex-shrink: 0; }
+    .admin-avatar-badge { display: flex; align-items: center; justify-content: center; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2)); z-index: 2; }
     .card-meta { flex: 1; min-width: 0; }
     .card-author { font-weight: 600; font-size: 14px; color: var(--text); display: block; }
     .card-time { font-size: 12px; color: var(--text-muted); }
@@ -271,7 +272,28 @@
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 1000; transition: background 0.4s; }
     .modal.active { display: flex; }
     .modal-content { background: var(--modal-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); width: 92%; max-width: 620px; max-height: 85vh; border-radius: 24px; padding: 24px; overflow-y: auto; box-shadow: 0 20px 50px var(--shadow-lg); border: 1px solid var(--card-border); transition: background 0.4s, border-color 0.4s, box-shadow 0.4s; }
-    .reply-item { background: var(--accent-light2); padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; color: var(--text); transition: background 0.4s, color 0.4s; }
+    .reply-item { display: flex; gap: 10px; background: var(--accent-light2); padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; color: var(--text); transition: background 0.4s, color 0.4s; align-items: flex-start; }
+    .reply-item .reply-body { flex: 1; min-width: 0; }
+    .reply-item .reply-body .reply-name { font-weight: 600; font-size: 14px; color: var(--text); }
+    .reply-item .reply-body .reply-content { margin-top: 2px; font-size: 14px; line-height: 1.6; }
+    .reply-item .reply-body .reply-time { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .reply-item.reply-final { background: linear-gradient(135deg, rgba(199,123,92,0.08), rgba(232,145,58,0.12)); border: 1px solid rgba(232,145,58,0.2); position: relative; }
+    .reply-final-badge { display: inline-block; font-size: 11px; font-weight: 600; color: #C67B3A; background: rgba(232,145,58,0.15); border: 1px solid rgba(232,145,58,0.25); padding: 2px 10px; border-radius: 12px; margin-left: 8px; vertical-align: middle; }
+    .reply-delete-btn { width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0; transition: all 0.2s; }
+    .reply-item:hover .reply-delete-btn { opacity: 0.6; }
+    .reply-delete-btn:hover { opacity: 1 !important; color: var(--danger); background: rgba(199,86,74,0.1); }
+
+    /* 旧分屏 CSS 保留以防引用 */
+    .timeline-item { position: relative; padding-left: 36px; padding-bottom: 18px; border-left: 2px solid var(--accent-light); margin-left: 4px; display: flex; gap: 10px; align-items: flex-start; }
+    .timeline-item:last-child { border-left-color: transparent; padding-bottom: 0; }
+    .timeline-dot { position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .timeline-dot.current { background: #E8913A; box-shadow: 0 0 0 4px rgba(232,145,58,0.15); }
+    .timeline-dot.done { background: #5D9B6F; }
+    .timeline-body { flex: 1; min-width: 0; }
+    .timeline-label { font-size: 13px; color: var(--text); font-weight: 500; }
+    .timeline-content { font-size: 14px; color: var(--text); line-height: 1.6; margin-top: 3px; }
+    .timeline-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .timeline-item.reply-final { background: linear-gradient(135deg, rgba(199,123,92,0.06), rgba(232,145,58,0.08)); border-radius: 12px; margin-left: 0; padding: 10px 14px 10px 42px; border-left: 2px solid rgba(232,145,58,0.3); }
     .close-icon { float: right; cursor: pointer; color: var(--text-muted); line-height: 1; transition: color 0.4s; }
     .close-icon:hover { color: var(--text); }
     .close-icon svg { width: 24px; height: 24px; }
@@ -500,7 +522,7 @@
     <div id="modalMeta" style="margin:12px 0; color:var(--text-muted); font-size:14px; transition:color 0.4s;"></div>
     <div id="modalContent" style="margin:12px 0; color:var(--text); font-size:15px; line-height:1.7; white-space:pre-wrap; transition:color 0.4s;"></div>
     <div class="modal-photos" id="modalPhotos" style="display:none;"></div>
-    <div id="repliesContainer" style="max-height:300px; overflow-y:auto; margin-bottom:16px;"></div>
+    <div id="repliesContainer" style="margin-bottom:16px;"></div>
     <div id="replyInputArea" style="display:flex; gap:8px; margin-bottom:12px;">
       <input type="text" id="replyInput" placeholder="输入回复/追问..." style="flex:1; padding:12px 16px; border-radius:24px; border:1.5px solid var(--input-border); background:var(--input-bg); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); outline:none; color:var(--text);">
       <button class="btn" id="sendReplyBtn">发送</button>
@@ -528,9 +550,7 @@
           <button class="btn-outline btn" id="assignBtn"><span id="refreshIcon"></span> 重新分配</button>
         </div>
       </div>
-      <div id="actionClosed" style="display:none;">
-        <button class="btn-outline btn" id="reopenBtn"><span id="unlockIcon"></span> 重新打开问题</button>
-      </div>
+      <div id="actionClosed" style="display:none;"></div>
     </div>
     <div id="ratingArea" style="margin-top:16px; padding-top:12px; border-top:1px solid var(--divider); display:none;">
       <span style="color:var(--text); font-weight:500; transition:color 0.4s;">评分：</span>
@@ -584,6 +604,7 @@
       user: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
       heart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
       lightbulb: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.59-.5 1.12-1.05 1.56-1.66A5 5 0 1 0 6.5 8.77c.4.65.9 1.24 1.48 1.73L9 11v5l3 3 3-3v-5Z"/><path d="M9 21h6"/><path d="M12 2v1"/></svg>',
+      'arrow-up': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>',
       x: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
       'message-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>',
       'star-filled': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
@@ -608,7 +629,6 @@
     document.getElementById('rocketIcon').innerHTML = getIcon('rocket', 16);
     document.getElementById('checkIcon2').innerHTML = getIcon('check-circle', 16);
     document.getElementById('refreshIcon').innerHTML = getIcon('refresh-cw', 16);
-    document.getElementById('unlockIcon').innerHTML = getIcon('unlock', 16);
     document.getElementById('partyIcon').innerHTML = getIcon('star', 48);
     document.getElementById('cameraIcon').innerHTML = getIcon('camera', 18);
     var lockGuest = document.getElementById('lockIconGuest');
@@ -931,6 +951,20 @@
       (likesRes.data || []).forEach(function(l) { userLikedSet[l.opinion_id] = true; });
     }
 
+    // 批量获取作者头像和角色
+    var authorIds = [...new Set((res.data||[]).map(function(o){return o.author_id;}).filter(Boolean))];
+    var authorMap = {};
+    if (authorIds.length > 0) {
+      var profilesRes = await supabaseClient.from('profiles').select('id,avatar_config,role').in('id', authorIds);
+      (profilesRes.data||[]).forEach(function(p){authorMap[p.id]=p;});
+      for (var uid in authorMap) {
+        if (authorMap[uid].avatar_config) {
+          localStorage.setItem('avatar_cache_'+uid, JSON.stringify(typeof authorMap[uid].avatar_config==='string'?JSON.parse(authorMap[uid].avatar_config):authorMap[uid].avatar_config));
+        }
+      }
+    }
+    window._authorMap = authorMap;
+
     hideLoading();
     opinionsData = (res.data || []).map(function(op) {
       var scores = ratingsMap[op.id] || [];
@@ -956,9 +990,55 @@
   }
 
   var AVATAR_COLORS = ['#C67B5C','#5B8C6B','#4A90B8','#B87C4A','#7B6BA8','#B8556A','#5A9E8F','#C49B3F'];
+  var AVATAR_PRESET_COLORS = ['#C67B5C','#5B8C6B','#4A90B8','#B87C4A','#7B6BA8','#B8556A','#5A9E8F','#C49B3F','#6B8E9E','#9B6B9E'];
+  var AVATAR_PRESET_NAMES = ['陶土','青松','海蓝','秋橙','紫藤','玫红','碧波','金麦','雾蓝','丁香'];
+  var AVATAR_TEXT_STYLES = {
+    'default': { fontFamily: '"Noto Serif SC", "PingFang SC", serif', fontWeight: '600', label: '默认' },
+    'sans':    { fontFamily: '"PingFang SC", "Microsoft YaHei", sans-serif', fontWeight: '600', label: '黑体' },
+    'cursive': { fontFamily: '"KaiTi", "STKaiti", "楷体", serif', fontWeight: '500', label: '楷体' }
+  };
   function getAvatarColor(name) {
     var h = 0; for (var i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
-    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+    return AVATAR_PRESET_COLORS[Math.abs(h) % AVATAR_PRESET_COLORS.length];
+  }
+  function getAvatarConfig(userId, realName) {
+    var cacheKey = 'avatar_cache_'+userId;
+    var cached = localStorage.getItem(cacheKey);
+    if (cached) { try { var c = JSON.parse(cached); if (c) return c; } catch(e) {} }
+    var defaultConfig = { type:'preset', preset:{ background:getAvatarColor(realName||'?'), textStyle:'default', displayName:'surname' } };
+    localStorage.setItem(cacheKey, JSON.stringify(defaultConfig));
+    return defaultConfig;
+  }
+  function getAdminBadgeSVG(size) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" viewBox="0 0 16 16">'+
+      '<path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8Z" fill="#F0A020"/>'+
+      '<path d="M11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z" fill="white"/>'+
+    '</svg>';
+  }
+  function renderAvatarElement(config, realName, size, isAdmin) {
+    size=size||36;
+    var avatarStyle='width:'+size+'px;height:'+size+'px;border-radius:50%;display:flex;align-items:center;justify-content:center;';
+    var avatarHtml='';
+    if(config&&config.type==='custom'&&config.custom_url){
+      avatarStyle+='background-size:cover;background-position:center;background-image:url('+config.custom_url+');';
+      avatarHtml="<div style='"+avatarStyle+"'></div>";
+    }else{
+      var bg=(config&&config.preset&&config.preset.background)?config.preset.background:getAvatarColor(realName||'?');
+      var sk=(config&&config.preset&&config.preset.textStyle)?config.preset.textStyle:'default';
+      var display=(config&&config.preset&&config.preset.displayName)?config.preset.displayName:'surname';
+      var ts=AVATAR_TEXT_STYLES[sk]||AVATAR_TEXT_STYLES['default'];
+      var ch='?';if(realName){ch=(display==='given'&&realName.length>=2)?realName.substring(1):realName.charAt(0);}
+      var cc=ch.length;var fs=cc<=1?Math.round(size*0.42):(cc<=2?Math.round(size*0.30):Math.round(size*0.22));
+      if(sk==='cursive')fs=Math.round(fs*1.15);
+      avatarStyle+='background:'+bg+';color:white;font-family:'+ts.fontFamily+';font-weight:'+ts.fontWeight+';font-size:'+fs+'px;';
+      avatarHtml="<div style='"+avatarStyle+"'>"+ch+"</div>";
+    }
+    var badgeHtml='';
+    if(isAdmin){
+      var bs=Math.round(size*0.4);
+      badgeHtml='<span class="admin-avatar-badge" style="position:absolute;bottom:'+Math.round(-size*0.04)+'px;right:'+Math.round(-size*0.04)+'px;width:'+bs+'px;height:'+bs+'px;filter:drop-shadow(0 2px 4px rgba(200,140,50,0.4));">'+getAdminBadgeSVG(bs)+'</span>';
+    }
+    return "<div style='position:relative;display:inline-flex;flex-shrink:0;'>"+avatarHtml+badgeHtml+"</div>";
   }
 
   function getStatusStyle(status) {
@@ -985,13 +1065,23 @@
       var isOwner = currentUser.id === op.author_id;
       var canDelete = isOwner || currentUser.role === 'admin';
       var authorName = op.is_anonymous ? '匿名' : (op.author_name || '匿名');
-      var avatarColor = getAvatarColor(authorName);
-      var initial = authorName.charAt(0);
+      var authorProfile = window._authorMap && window._authorMap[op.author_id];
+      var avatarConfig = null;
+      var isAuthorAdmin = false;
+      if (!op.is_anonymous) {
+        if (authorProfile) {
+          avatarConfig = authorProfile.avatar_config ? (typeof authorProfile.avatar_config==='string'?JSON.parse(authorProfile.avatar_config):authorProfile.avatar_config) : null;
+          isAuthorAdmin = authorProfile.role === 'admin';
+        }
+        // 兜底：从 localStorage 缓存读取，确保跨页面更新生效
+        if (!avatarConfig) avatarConfig = getAvatarConfig(op.author_id, authorName);
+      }
+      var avatarHtml = renderAvatarElement(avatarConfig, authorName, 36, isAuthorAdmin);
       return '<div class="opinion-card" style="position:relative;">' +
         (isOwner ? '<span class="owner-badge">我的意见</span>' : '') +
         (canDelete ? '<button class="card-delete-btn" data-id="' + op.id + '" data-author="' + op.author_id + '" title="删除" onclick="event.stopPropagation()">' + getIcon('x', 14) + '</button>' : '') +
         '<div class="card-top">' +
-          '<div class="card-avatar" style="background:' + avatarColor + '">' + initial + '</div>' +
+          avatarHtml +
           '<div class="card-meta">' +
             '<span class="card-author">' + escapeHtml(authorName) + '</span>' +
             '<span class="card-time">' + new Date(op.created_at).toLocaleString() + '</span>' +
@@ -1132,55 +1222,141 @@
 
   window.openDetail = async function(opinionId) {
     currentOpinionId = opinionId;
-    var op = opinionsData.find(function(o) { return o.id === opinionId; });
-    if (!op) return;
+    // 从数据库获取最新数据，避免缓存导致时间线不更新
+    var freshRes = await supabaseClient.from('opinions').select('*').eq('id', opinionId).single();
+    if (freshRes.error || !freshRes.data) return;
+    var op = freshRes.data;
+    // 同步更新 opinionsData 缓存
+    var idx = opinionsData.findIndex(function(o) { return o.id === opinionId; });
+    if (idx >= 0) { Object.assign(opinionsData[idx], op); } else { opinionsData.push(op); }
     document.getElementById('modalTitle').innerText = op.title;
     var statusText = { open: '待处理', in_progress: '解决中', closed: '已完结' };
-    document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + (statusText[op.status] || op.status);
-    document.getElementById('modalContent').innerText = op.content;
-    var ph = renderPhotoStrip(op.photos, 'large');
-    var mp = document.getElementById('modalPhotos');
-    mp.innerHTML = ph;
-    mp.style.display = ph ? 'flex' : 'none';
-    showLoading();
-    var res = await supabaseClient.from('replies').select('*').eq('opinion_id', opinionId).order('created_at', { ascending: true });
-    hideLoading();
-    document.getElementById('repliesContainer').innerHTML = (res.data || []).map(function(r) {
-      return '<div class="reply-item"><strong>' + r.user_name + '</strong>：' + escapeHtml(r.content) +
-        ' <span style="font-size:12px;color:var(--text-muted);">' + new Date(r.created_at).toLocaleString() + '</span></div>';
-    }).join('') || '<div style="text-align:center;color:var(--text-light);padding:20px;">暂无回复</div>';
-    document.getElementById('replyInput').value = '';
-
-    if (currentUser.role === 'guest') {
-      document.getElementById('replyInputArea').style.display = 'none';
-    } else {
-      document.getElementById('replyInputArea').style.display = 'flex';
-    }
-
-    var isAdmin = currentUser.role === 'admin';
-    document.getElementById('adminActions').style.display = isAdmin ? 'block' : 'none';
-    document.getElementById('actionStart').style.display = 'none';
-    document.getElementById('actionInProgress').style.display = 'none';
-    document.getElementById('actionClosed').style.display = 'none';
-    if (isAdmin) {
-      if (op.status === 'open') document.getElementById('actionStart').style.display = 'block';
-      else if (op.status === 'in_progress') document.getElementById('actionInProgress').style.display = 'block';
-      else if (op.status === 'closed') document.getElementById('actionClosed').style.display = 'block';
+    var authorProfile = window._authorMap && window._authorMap[op.author_id];
+    var avatarConfig = null;
+    var isAuthorAdmin = false;
+    if (!op.is_anonymous && authorProfile) {
+      avatarConfig = authorProfile.avatar_config ? (typeof authorProfile.avatar_config==='string'?JSON.parse(authorProfile.avatar_config):authorProfile.avatar_config) : null;
+      isAuthorAdmin = authorProfile.role === 'admin';
     }
     var isAuthor = currentUser.id === op.author_id;
-    var canRate = currentUser.role !== 'guest' && isAuthor && op.status === 'closed';
-    document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
-    if (canRate) {
-      // 查询是否已评分
+    var isClosed = op.status === 'closed';
+
+    // 先获取回复和评分数据
+    showLoading();
+    var repliesRes = await supabaseClient.from('replies').select('*').eq('opinion_id', opinionId).order('created_at', { ascending: true });
+    var repliesData = repliesRes.data || [];
+    var replyUserIds = [...new Set(repliesData.map(function(r){return r.user_id;}).filter(Boolean))];
+    var replyUserMap = {};
+    if (replyUserIds.length > 0) {
+      var replyProfilesRes = await supabaseClient.from('profiles').select('id,avatar_config,role').in('id', replyUserIds);
+      (replyProfilesRes.data||[]).forEach(function(p){replyUserMap[p.id]=p;});
+    }
+    var myScore = 0;
+    if (isAuthor && isClosed) {
       var myRatingRes = await supabaseClient.from('ratings').select('score').eq('opinion_id', currentOpinionId).eq('user_id', currentUser.id).maybeSingle();
-      var myScore = myRatingRes.data ? myRatingRes.data.score : 0;
-      selectedStars = myScore;
-      document.querySelectorAll('#starRating .star-svg').forEach(function(s) {
-        s.classList.toggle('active', parseInt(s.dataset.val) <= myScore);
-      });
-      document.getElementById('ratingText').textContent = myScore ? myScore + '.0' : '未评分';
+      myScore = myRatingRes.data ? myRatingRes.data.score : 0;
+    }
+
+    // 找最终回复
+    var finalReply = null;
+    for (var i = repliesData.length - 1; i >= 0; i--) {
+      if (repliesData[i].content && repliesData[i].content.indexOf('【最终方案】') === 0) { finalReply = repliesData[i]; break; }
+    }
+
+    // 作者看已完结且未评分 → 完成评分界面
+    if (isAuthor && isClosed && myScore === 0) {
+      document.getElementById('modalMeta').innerHTML = '';
+      document.getElementById('modalContent').innerHTML = '';
+      document.getElementById('modalPhotos').style.display = 'none';
+      var finalContent = finalReply ? finalReply.content.replace('【最终方案】','') : '';
+      var rated = myScore > 0;
+      var starsHtml = '';
+      for (var s = 1; s <= 5; s++) {
+        starsHtml += '<span class="star-popup' + (s <= myScore ? ' active' : '') + '" data-val="' + s + '" onclick="selectCompletionStar(' + s + ')" style="font-size:36px;cursor:pointer;color:' + (s <= myScore ? '#E8913A' : '#CCC') + ';transition:color 0.15s;">★</span>';
+      }
+      document.getElementById('modalContent').innerHTML =
+        '<div style="text-align:center;padding:16px 0;">' +
+          '<div style="font-size:56px;margin-bottom:8px;color:#5D9B6F;">' + getIcon('check-circle', 56) + '</div>' +
+          '<h2 style="color:var(--text);margin:0 0 8px;">你的问题已完结</h2>' +
+          '<p style="color:var(--text-muted);font-size:14px;margin:0 0 20px;">管理员已给出最终回复</p>' +
+          (finalContent ? '<div class="final-reply-box" style="background:linear-gradient(135deg,rgba(199,123,92,0.06),rgba(232,145,58,0.1));border:1px solid rgba(232,145,58,0.2);border-radius:16px;padding:14px 18px;margin-bottom:20px;text-align:left;font-size:14px;line-height:1.7;color:var(--text);">' + escapeHtml(finalContent) + '</div>' : '') +
+          '<p style="color:var(--text);font-weight:600;margin:0 0 8px;">' + (rated ? '你的评分' : '这个解决方案你满意吗？') + '</p>' +
+          '<div id="completionStars" style="margin-bottom:8px;">' + starsHtml + '</div>' +
+          '<div id="completionRatingText" style="font-size:16px;font-weight:700;color:#E8913A;min-height:24px;">' + (rated ? myScore + '.0 分' : '') + '</div>' +
+          (!rated ? '<button class="btn" id="submitCompletionRatingBtn" style="margin-top:12px;" onclick="submitCompletionRating()">提交评分</button>' : '') +
+        '</div>';
+    } else {
+      document.getElementById('modalMeta').innerHTML = '<div style="display:flex;align-items:center;gap:8px;">' +
+        (op.is_anonymous ? '' : renderAvatarElement(avatarConfig, op.author_name, 32, isAuthorAdmin)) +
+        '<span>发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + (statusText[op.status] || op.status) + '</span></div>';
+      document.getElementById('modalContent').innerText = op.content;
+      var ph = renderPhotoStrip(op.photos, 'large');
+      var mp = document.getElementById('modalPhotos');
+      mp.innerHTML = ph;
+      mp.style.display = ph ? 'flex' : 'none';
+    }
+
+    hideLoading();
+    // 完成评分界面显示原有回复，否则用时间线替代
+    if (isAuthor && isClosed && myScore === 0) {
+      renderReplies(repliesData, replyUserMap);
+    } else {
+      renderTimeline(op, repliesData, replyUserMap, myScore);
+    }
+
+    // 回复权限：只有作者和管理员可以回复，已完结时所有人都不能回复
+    var canReply = !isClosed && (isAuthor || currentUser.role === 'admin');
+    // 作者看已完结且未评分 → 隐藏输入框和评分区（已内嵌到完成界面中）
+    // 已评分作者走 else 分支，正常显示评分区用于修改
+    if (isAuthor && isClosed && myScore === 0) {
+      document.getElementById('replyInputArea').style.display = 'none';
+      document.getElementById('ratingArea').style.display = 'none';
+    } else {
+      if (currentUser.role === 'guest') {
+        document.getElementById('replyInputArea').style.display = 'none';
+      } else {
+        document.getElementById('replyInputArea').style.display = canReply ? 'flex' : 'none';
+      }
+      var isAdmin = currentUser.role === 'admin';
+      document.getElementById('adminActions').style.display = isAdmin ? 'block' : 'none';
+      document.getElementById('actionStart').style.display = 'none';
+      document.getElementById('actionInProgress').style.display = 'none';
+      document.getElementById('actionClosed').style.display = 'none';
+      if (isAdmin) {
+        if (op.status === 'open') document.getElementById('actionStart').style.display = 'block';
+        else if (op.status === 'in_progress') document.getElementById('actionInProgress').style.display = 'block';
+        else if (op.status === 'closed') document.getElementById('actionClosed').style.display = 'block';
+      }
+      var canRate = currentUser.role !== 'guest' && isAuthor && op.status === 'closed';
+      document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
+      if (canRate) {
+        selectedStars = myScore;
+        document.querySelectorAll('#starRating .star-svg').forEach(function(s) {
+          s.classList.toggle('active', parseInt(s.dataset.val) <= myScore);
+        });
+        document.getElementById('ratingText').textContent = myScore ? myScore + '.0' : '未评分';
+      }
     }
     document.getElementById('detailModal').classList.add('active');
+  };
+
+  var completionStarsVal = 0;
+  window.selectCompletionStar = function(val) {
+    completionStarsVal = val;
+    document.querySelectorAll('#completionStars .star-popup').forEach(function(s, i) {
+      s.style.color = i < val ? '#E8913A' : '#CCC';
+    });
+    var labels = ['','不太满意','一般般','还不错','很满意','非常满意'];
+    document.getElementById('completionRatingText').textContent = labels[val];
+  };
+
+  window.submitCompletionRating = async function() {
+    if (completionStarsVal === 0) { toast('请先选择评分','warn'); return; }
+    var res = await supabaseClient.from('ratings').upsert({ opinion_id: currentOpinionId, user_id: currentUser.id, score: completionStarsVal }, { onConflict: 'opinion_id,user_id' });
+    if (res.error) { toast('评分失败：'+res.error.message,'error'); return; }
+    toast('感谢评分！','success');
+    await openDetail(currentOpinionId);
+    loadOpinions(); updateDashboard();
   };
 
   window.closeModal = function() { document.getElementById('detailModal').classList.remove('active'); };
@@ -1190,18 +1366,25 @@
 
   document.getElementById('sendReplyBtn').addEventListener('click', async function() {
     if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
+    var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
+    if (op && op.status === 'closed') { toast('已完结的问题不能回复', 'warn'); return; }
+    if (op && currentUser.id !== op.author_id && currentUser.role !== 'admin') { toast('只有作者和管理员可以回复', 'warn'); return; }
     var content = document.getElementById('replyInput').value.trim();
     if (!content) { toast('请输入回复内容', 'warn'); return; }
     var id = crypto.randomUUID();
-    await supabaseClient.from('replies').insert({ id: id, opinion_id: currentOpinionId, user_id: currentUser.id, user_name: currentUser.real_name, content: content });
+    var replyRes = await supabaseClient.from('replies').insert({ id: id, opinion_id: currentOpinionId, user_id: currentUser.id, user_name: currentUser.real_name, content: content, created_at: new Date().toISOString() });
+    if (replyRes.error) { toast('回复失败：' + replyRes.error.message, 'error'); return; }
     var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
     if (op && op.author_id !== currentUser.id) addNotification(op.author_id, 'reply', currentOpinionId, op.title);
-    openDetail(currentOpinionId);
+    document.getElementById('replyInput').value = '';
+    document.getElementById('replyInput').focus();
+    toast('回复已发送', 'success');
+    await openDetail(currentOpinionId);
     loadOpinions();
   });
 
   document.getElementById('startProcessBtn').addEventListener('click', async function() {
-    await supabaseClient.from('opinions').update({ status: 'in_progress' }).eq('id', currentOpinionId);
+    await supabaseClient.from('opinions').update({ status: 'in_progress', assigned_at: new Date().toISOString() }).eq('id', currentOpinionId);
     var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
     if (op) addNotification(op.author_id, 'in_progress', currentOpinionId, op.title);
     loadOpinions(); closeModal(); updateDashboard();
@@ -1231,7 +1414,8 @@
     var finalReply = document.getElementById('finalReplyInput').value.trim();
     if (!finalReply) { toast('请输入最终解决方案', 'warn'); return; }
     var id = crypto.randomUUID();
-    await supabaseClient.from('replies').insert({ id: id, opinion_id: currentOpinionId, user_id: currentUser.id, user_name: currentUser.real_name, content: '【最终方案】' + finalReply });
+    var finalRes = await supabaseClient.from('replies').insert({ id: id, opinion_id: currentOpinionId, user_id: currentUser.id, user_name: currentUser.real_name, content: '【最终方案】' + finalReply, created_at: new Date().toISOString() });
+    if (finalRes.error) { toast('操作失败：' + finalRes.error.message, 'error'); return; }
     await supabaseClient.from('opinions').update({ status: 'closed', closed_at: new Date().toISOString() }).eq('id', currentOpinionId);
     var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
     if (op) addNotification(op.author_id, 'closed', currentOpinionId, op.title);
@@ -1241,18 +1425,17 @@
 
   document.getElementById('assignBtn').addEventListener('click', async function() {
     var assignTo = document.getElementById('assignSelect').value;
-    await supabaseClient.from('opinions').update({ assigned_to: assignTo, assigned_at: new Date().toISOString() }).eq('id', currentOpinionId);
     var op = opinionsData.find(function(o) { return o.id === currentOpinionId; });
+    if (op && op.assigned_to === assignTo) { toast('已经是 ' + assignTo + ' 负责，不能重复分配', 'warn'); return; }
+    var history = op.reassign_history || [];
+    if (typeof history === 'string') history = JSON.parse(history);
+    history.push({ to: assignTo, at: new Date().toISOString() });
+    await supabaseClient.from('opinions').update({ assigned_to: assignTo, reassigned_at: new Date().toISOString(), reassign_history: history }).eq('id', currentOpinionId);
     if (op) addNotification(op.author_id, 'reassign', currentOpinionId, op.title);
     loadOpinions(); closeModal(); updateDashboard();
     toast('已重新分配给 ' + assignTo);
   });
 
-  document.getElementById('reopenBtn').addEventListener('click', async function() {
-    await supabaseClient.from('opinions').update({ status: 'in_progress' }).eq('id', currentOpinionId);
-    loadOpinions(); closeModal(); updateDashboard();
-    toast('问题已重新打开');
-  });
 
   // 评分星星事件 (动态绑定在渲染后通过 event delegation)
   document.getElementById('starRating').addEventListener('click', function(e) {
@@ -1327,53 +1510,12 @@
 
   document.getElementById('skipRatingBtn').addEventListener('click', function() {
     document.getElementById('ratingPopup').classList.remove('active');
-    var op = opinionsData.find(function(o) { return o.id === popupOpinionId; });
-    if (op) {
-      currentOpinionId = popupOpinionId;
-      document.getElementById('modalTitle').innerText = op.title;
-      var statusText = { open: '待处理', in_progress: '解决中', closed: '已完结' };
-    document.getElementById('modalMeta').innerHTML = '发布者：' + (op.is_anonymous ? '匿名' : op.author_name) + ' | 状态：' + (statusText[op.status] || op.status);
-      document.getElementById('modalContent').innerText = op.content;
-      var ph2 = renderPhotoStrip(op.photos, 'large');
-      document.getElementById('modalPhotos').innerHTML = ph2;
-      document.getElementById('modalPhotos').style.display = ph2 ? 'flex' : 'none';
-      openDetailFallback(popupOpinionId);
-    }
+    openDetail(popupOpinionId);
   });
 
   document.getElementById('ratingPopup').addEventListener('click', function(e) {
     if (e.target === e.currentTarget) document.getElementById('ratingPopup').classList.remove('active');
   });
-
-  async function openDetailFallback(opinionId) {
-    showLoading();
-    var res = await supabaseClient.from('replies').select('*').eq('opinion_id', opinionId).order('created_at', { ascending: true });
-    hideLoading();
-    document.getElementById('repliesContainer').innerHTML = (res.data || []).map(function(r) {
-      return '<div class="reply-item"><strong>' + r.user_name + '</strong>：' + escapeHtml(r.content) +
-        ' <span style="font-size:12px;color:var(--text-muted);">' + new Date(r.created_at).toLocaleString() + '</span></div>';
-    }).join('') || '<div style="text-align:center;color:var(--text-light);padding:20px;">暂无回复</div>';
-    document.getElementById('replyInput').value = '';
-    if (currentUser.role === 'guest') {
-      document.getElementById('replyInputArea').style.display = 'none';
-    } else {
-      document.getElementById('replyInputArea').style.display = 'flex';
-    }
-    var op2 = opinionsData.find(function(o) { return o.id === opinionId; });
-    var isAdmin = currentUser.role === 'admin';
-    document.getElementById('adminActions').style.display = isAdmin ? 'block' : 'none';
-    document.getElementById('actionStart').style.display = 'none';
-    document.getElementById('actionInProgress').style.display = 'none';
-    document.getElementById('actionClosed').style.display = 'none';
-    if (isAdmin) {
-      if (op2.status === 'open') document.getElementById('actionStart').style.display = 'block';
-      else if (op2.status === 'in_progress') document.getElementById('actionInProgress').style.display = 'block';
-      else if (op2.status === 'closed') document.getElementById('actionClosed').style.display = 'block';
-    }
-    var canRate = currentUser.role !== 'guest' && currentUser.id === op2.author_id && op2.status === 'closed' && !op2.avgRating;
-    document.getElementById('ratingArea').style.display = canRate ? 'block' : 'none';
-    document.getElementById('detailModal').classList.add('active');
-  }
 
   // 通知
   function updateNotifDot() {
@@ -1468,6 +1610,168 @@
   document.addEventListener('click', function() {
     document.getElementById('notificationDropdown').style.display = 'none';
   });
+
+  function renderReplies(repliesData, replyUserMap) {
+    var container = document.getElementById('repliesContainer');
+    if (!repliesData.length) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text-light);padding:20px;">暂无回复</div>';
+      return;
+    }
+    var canDeleteAny = currentUser.role === 'admin';
+    container.innerHTML = repliesData.map(function(r) {
+      var isFinal = r.content && r.content.indexOf('【最终方案】') === 0;
+      var displayContent = isFinal ? r.content.replace('【最终方案】','') : r.content;
+      var rProfile = replyUserMap[r.user_id];
+      var rConfig = null; var rIsAdmin = false;
+      if (rProfile) {
+        rConfig = rProfile.avatar_config ? (typeof rProfile.avatar_config==='string'?JSON.parse(rProfile.avatar_config):rProfile.avatar_config) : null;
+        rIsAdmin = rProfile.role === 'admin';
+      }
+      var avatarHtml = renderAvatarElement(rConfig, r.user_name, 28, rIsAdmin);
+      var canDelete = canDeleteAny || currentUser.id === r.user_id;
+      var delBtn = canDelete ? '<button class="reply-delete-btn" onclick="deleteReply(\''+r.id+'\',\''+r.opinion_id+'\')" title="删除回复">'+getIcon('x',12)+'</button>' : '';
+      return '<div class="reply-item'+(isFinal?' reply-final':'')+'">' +
+        avatarHtml +
+        '<div class="reply-body">' +
+          '<div class="reply-name">' + escapeHtml(r.user_name) + (isFinal?' <span class="reply-final-badge">最终回复</span>':'') + '</div>' +
+          '<div class="reply-content">' + escapeHtml(displayContent) + '</div>' +
+          '<div class="reply-time">' + new Date(r.created_at).toLocaleString() + '</div>' +
+        '</div>' +
+        delBtn +
+      '</div>';
+    }).join('');
+  }
+
+  function renderTimeline(op, repliesData, replyUserMap, myScore) {
+    var events = [];
+
+    // 系统事件
+    events.push({ type:'system', label:'问题提出', time:op.created_at, icon:'clipboard' });
+    if (op.status==='in_progress'||op.status==='closed') {
+      events.push({ type:'system', label:'开始处理', time:op.assigned_at||'', icon:'clock' });
+    }
+    var reassignHistory = op.reassign_history || [];
+    if (typeof reassignHistory === 'string') reassignHistory = JSON.parse(reassignHistory);
+    reassignHistory.forEach(function(h) {
+      events.push({ type:'system', label:'重分配至 @'+h.to, time:h.at, icon:'refresh-cw' });
+    });
+    if (op.closed_at) {
+      events.push({ type:'system', label:'已完结', time:op.closed_at, icon:'check-circle', highlight:true });
+    }
+    if (myScore>0) {
+      events.push({ type:'system', label:'已评分 '+myScore+'.0', time:op.closed_at||'', icon:'star', highlight:true });
+    }
+
+    // 回复事件
+    repliesData.forEach(function(r) {
+      var isFinal = r.content && r.content.indexOf('【最终方案】')===0;
+      var displayContent = isFinal ? r.content.replace('【最终方案】','') : r.content;
+      var rProfile = replyUserMap[r.user_id];
+      var rConfig=null, rIsAdmin=false;
+      if (rProfile) { rConfig=rProfile.avatar_config?(typeof rProfile.avatar_config==='string'?JSON.parse(rProfile.avatar_config):rProfile.avatar_config):null; rIsAdmin=rProfile.role==='admin'; }
+      events.push({
+        type: isFinal?'final':'reply',
+        label: r.user_name,
+        content: displayContent,
+        time: r.created_at,
+        avatar: renderAvatarElement(rConfig,r.user_name,24,rIsAdmin),
+        isFinal: isFinal,
+        replyId: r.id,
+        opinionId: r.opinion_id,
+        userId: r.user_id
+      });
+    });
+
+    // 按时间排序（无时间的放在有时间的之后，相同时间按类型排：system 在前）
+    events.sort(function(a,b) {
+      var ta = a.time ? new Date(a.time).getTime() : Infinity;
+      var tb = b.time ? new Date(b.time).getTime() : Infinity;
+      if (ta !== tb) return ta - tb;
+      return a.type==='system' ? -1 : 1;
+    });
+
+    // 找最终回复
+    var finalEvent = null;
+    for (var i=events.length-1;i>=0;i--) { if (events[i].isFinal) { finalEvent=events[i]; break; } }
+
+    // 构建折叠态：最终回复金色卡片
+    var collapsedHtml = '';
+    if (finalEvent) {
+      collapsedHtml = '<div style="background:linear-gradient(135deg,rgba(199,123,92,0.06),rgba(232,145,58,0.1));border:1px solid rgba(232,145,58,0.2);border-radius:16px;padding:14px 18px;margin-bottom:12px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' + finalEvent.avatar +
+        '<span style="font-weight:600;color:var(--text);">'+escapeHtml(finalEvent.label)+'</span>' +
+        '<span class="reply-final-badge">最终回复</span>' +
+        '<span style="font-size:12px;color:var(--text-light);margin-left:auto;">'+new Date(finalEvent.time).toLocaleString()+'</span></div>' +
+        '<div style="font-size:14px;line-height:1.7;color:var(--text);">'+escapeHtml(finalEvent.content)+'</div></div>';
+    }
+
+    // 构建完整时间线
+    var fullHtml = '';
+    events.forEach(function(e) {
+      var dotCls = 'timeline-dot' + (e.highlight ? ' done' : '');
+      if (e.type==='system') {
+        fullHtml += '<div class="timeline-item">' +
+          '<div class="'+dotCls+'"></div>' +
+          '<div class="timeline-body"><div class="timeline-label">'+getIcon(e.icon,13).replace(/width="24"/g,'width="13"').replace(/height="24"/g,'height="13"')+' '+e.label+'</div>'+
+          (e.time?'<div class="timeline-time">'+new Date(e.time).toLocaleString()+'</div>':'')+
+          '</div></div>';
+      } else {
+        var canDelete = currentUser.role==='admin' || currentUser.id===e.userId;
+        var delBtn = canDelete ? '<button class="reply-delete-btn" onclick="event.stopPropagation();deleteReply(\''+e.replyId+'\',\''+e.opinionId+'\')" title="删除回复" style="opacity:0.6;position:absolute;top:8px;right:10px;">'+getIcon('x',12)+'</button>' : '';
+        fullHtml += '<div class="timeline-item'+(e.isFinal?' reply-final':'')+'" style="position:relative;">' +
+          '<div class="timeline-dot'+(e.isFinal?' done':'')+'"></div>' +
+          e.avatar +
+          '<div class="timeline-body"><div class="timeline-label">'+escapeHtml(e.label)+(e.isFinal?' <span class="reply-final-badge">最终回复</span>':'')+'</div>'+
+          '<div class="timeline-content">'+escapeHtml(e.content)+'</div>'+
+          '<div class="timeline-time">'+new Date(e.time).toLocaleString()+'</div></div>'+
+          delBtn+'</div>';
+      }
+    });
+
+    // 移除旧时间线和回复
+    var oldTimeline = document.getElementById('unifiedTimeline');
+    if (oldTimeline) oldTimeline.remove();
+    var rc = document.getElementById('repliesContainer');
+    rc.innerHTML = '';
+
+    var hasEvents = events.length > 0;
+    var hasFinal = !!finalEvent;
+    var timelineHtml = '<div id="unifiedTimeline" style="margin-bottom:16px;">';
+    if (hasFinal) {
+      timelineHtml += '<div id="timelineCollapsed">'+collapsedHtml+'</div>';
+    }
+    timelineHtml += '<div id="timelineFull" style="'+(hasFinal?'display:none;':'')+'">'+fullHtml+'</div>';
+    if (hasEvents && hasFinal) {
+      timelineHtml += '<div style="text-align:center;margin-top:4px;"><button class="btn-outline btn" id="toggleTimelineBtn" onclick="toggleTimeline()" style="padding:4px 16px;font-size:12px;">'+getIcon('clock',12).replace(/width="24"/g,'width="12"').replace(/height="24"/g,'height="12"')+' 展开完整时间线</button></div>';
+    }
+    timelineHtml += '</div>';
+
+    rc.insertAdjacentHTML('beforebegin', timelineHtml);
+  }
+
+  window.toggleTimeline = function() {
+    var collapsed = document.getElementById('timelineCollapsed');
+    var full = document.getElementById('timelineFull');
+    var btn = document.getElementById('toggleTimelineBtn');
+    if (full.style.display==='none') {
+      collapsed.style.display='none';
+      full.style.display='block';
+      btn.innerHTML = getIcon('arrow-up',12).replace(/width="24"/g,'width="12"').replace(/height="24"/g,'height="12"') + ' 收起时间线';
+    } else {
+      collapsed.style.display='block';
+      full.style.display='none';
+      btn.innerHTML = getIcon('clock',12).replace(/width="24"/g,'width="12"').replace(/height="24"/g,'height="12"') + ' 展开完整时间线';
+    }
+  };
+
+  window.deleteReply = async function(replyId, opinionId) {
+    if (!currentUser || currentUser.role === 'guest') { toast('请先登录','warn'); return; }
+    var res = await supabaseClient.from('replies').delete().eq('id', replyId);
+    if (res.error) { toast('删除失败：'+res.error.message,'error'); return; }
+    toast('回复已删除','success');
+    await openDetail(opinionId);
+    loadOpinions();
+  };
 
   function escapeHtml(text) {
     var div = document.createElement('div');
