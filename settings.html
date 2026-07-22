@@ -440,6 +440,31 @@
     </div>
   </div>
 
+  <!-- 关于与反馈 -->
+  <div class="card">
+    <div class="card-header"><h3><span id="infoIcon"></span>关于与反馈</h3></div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">用户反馈</div>
+        <div class="setting-desc">报告 Bug 或提出改进建议</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="setting-action" id="viewFeedbacksBtn" style="display:none;"><span id="viewFeedbacksIcon"></span>查看反馈</button>
+        <button class="setting-action" id="feedbackBtn"><span id="feedbackBtnIcon"></span>提交反馈</button>
+      </div>
+    </div>
+    <div class="setting-row" style="border-bottom:none;">
+      <div>
+        <div class="setting-label">班级办事通</div>
+        <div class="setting-desc"><span id="versionText"></span></div>
+      </div>
+      <a href="https://github.com/LiuTianZe070119/class_console" target="_blank" rel="noopener" class="setting-action" style="text-decoration:none;gap:8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+
   <!-- 退出登录 -->
   <div class="card" style="text-align:center;">
     <button class="btn btn-danger" id="logoutBtn" style="width:100%;justify-content:center;"><span id="logoutIcon"></span>退出登录</button>
@@ -518,6 +543,31 @@
   </div>
 </div>
 
+<!-- 反馈弹窗 -->
+<div class="modal" id="feedbackModal">
+  <div class="modal-content" style="max-width:440px;">
+    <span class="close-icon" id="closeFeedbackModalBtn"><span id="closeFeedbackIcon"></span></span>
+    <h3 style="margin-bottom:16px;">提交反馈</h3>
+    <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">反馈类型</label>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="btn-outline btn active" id="feedbackTypeBug" style="flex:1;justify-content:center;padding:8px;" onclick="selectFeedbackType('bug')">Bug 报告</button>
+      <button class="btn-outline btn" id="feedbackTypeSuggestion" style="flex:1;justify-content:center;padding:8px;" onclick="selectFeedbackType('suggestion')">改进建议</button>
+    </div>
+    <textarea id="feedbackContent" placeholder="请详细描述你遇到的问题或建议..." class="input-field" style="min-height:120px;resize:vertical;"></textarea>
+    <button class="btn" id="submitFeedbackBtn" style="width:100%;justify-content:center;margin-top:12px;">提交反馈</button>
+  </div>
+</div>
+
+<!-- 反馈列表弹窗 -->
+<div class="modal" id="feedbacksListModal">
+  <div class="modal-content" style="max-width:560px;max-height:80vh;overflow-y:auto;">
+    <span class="close-icon" id="closeFeedbacksListBtn"><span id="closeFeedbacksListIcon"></span></span>
+    <h3 style="margin-bottom:16px;">用户反馈列表</h3>
+    <div id="feedbacksListContainer"></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
 <script>
   // -- SVG Icon System --
@@ -540,6 +590,9 @@
       x: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
       lightbulb: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.59-.5 1.12-1.05 1.56-1.66A5 5 0 1 0 6.5 8.77c.4.65.9 1.24 1.48 1.73L9 11v5l3 3 3-3v-5Z"/><path d="M9 21h6"/><path d="M12 2v1"/></svg>',
       camera: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>',
+      info: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+      'message-square': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+      eye: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
       upload: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
     };
     return (icons[name] || '').replace(/width="24"/g,'width="'+ (arguments[1]||24) +'"').replace(/height="24"/g,'height="'+ (arguments[1]||24) +'"');
@@ -565,6 +618,11 @@
     if (closeAvatar) closeAvatar.innerHTML = getIcon('x', 24);
     var uploadAv = document.getElementById('uploadAvatarIcon');
     if (uploadAv) uploadAv.innerHTML = getIcon('upload', 14);
+    var infoIcon=document.getElementById('infoIcon');if(infoIcon)infoIcon.innerHTML=getIcon('info',20);
+    var fbIcon=document.getElementById('feedbackBtnIcon');if(fbIcon)fbIcon.innerHTML=getIcon('message-square',14);
+    var cfIcon=document.getElementById('closeFeedbackIcon');if(cfIcon)cfIcon.innerHTML=getIcon('x',24);
+    var vfIcon=document.getElementById('viewFeedbacksIcon');if(vfIcon)vfIcon.innerHTML=getIcon('eye',14);
+    var clIcon=document.getElementById('closeFeedbacksListIcon');if(clIcon)clIcon.innerHTML=getIcon('x',24);
   }
 
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
@@ -644,8 +702,8 @@
       sessionStorage.setItem('currentUser', JSON.stringify(userData));
       document.getElementById('profileAvatar').innerHTML = renderAvatarElement(config, currentUser.real_name, 56, currentUser.role==='admin');
       var res = await supabaseClient.from('profiles').update({avatar_config:config}).eq('id',currentUser.id);
-      if (res.error) { console.warn('头像同步失败：'+res.error.message); toast('头像已本地应用，服务器同步稍后重试','warn'); }
-      toast('头像已更新','success');
+      if (res.error) { toast('头像已本地应用，但服务器同步失败：' + res.error.message, 'error'); }
+      else { toast('头像已更新', 'success'); }
     } catch(e) { console.error(e); toast('操作失败','error'); }
     document.getElementById('avatarModal').classList.remove('active');
     hideLoading();
@@ -966,6 +1024,8 @@
       document.getElementById('defaultAnonToggle').disabled = true;
       document.getElementById('clearNotifsBtn').style.opacity = '0.5';
       document.getElementById('clearNotifsBtn').style.pointerEvents = 'none';
+      document.getElementById('feedbackBtn').style.opacity = '0.5';
+      document.getElementById('feedbackBtn').style.pointerEvents = 'none';
       document.getElementById('notifCount').textContent = '登录后可查看';
       // Theme still works
       initIcons();
@@ -973,6 +1033,7 @@
       if (theme !== 'brown') document.body.setAttribute('data-theme', theme);
       else document.body.removeAttribute('data-theme');
       updateThemeUI(theme);
+      var vt = document.getElementById('versionText'); if (vt) vt.textContent = '版本 ' + (typeof APP_VERSION!=='undefined'?APP_VERSION:'1.5.8');
       return;
     }
     currentUser = JSON.parse(userStr);
@@ -994,6 +1055,7 @@
         ? 'rgba(199,86,74,0.12)' : '';
       document.getElementById('profileRole').style.color = profile.role === 'admin'
         ? '#C7564A' : '';
+      if (profile.role === 'admin') document.getElementById('viewFeedbacksBtn').style.display = 'inline-flex';
       if (profile.position) {
         document.getElementById('profilePosition').textContent = profile.position;
         document.getElementById('profilePosition').style.display = 'inline-block';
@@ -1035,6 +1097,7 @@
 
     var allNotifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id; });
     document.getElementById('notifCount').textContent = '共 ' + allNotifs.length + ' 条通知记录';
+    var vt2 = document.getElementById('versionText'); if (vt2) vt2.textContent = '版本 ' + (typeof APP_VERSION!=='undefined'?APP_VERSION:'1.5.8');
   }
 
   // -- 主题色块点击 --
@@ -1115,6 +1178,74 @@
   });
   document.addEventListener('click', function() {
     document.getElementById('notificationDropdown').style.display = 'none';
+  });
+
+  // -- 反馈系统 --
+  var feedbackType = 'bug';
+  window.selectFeedbackType = function(type) {
+    feedbackType = type;
+    document.getElementById('feedbackTypeBug').classList.toggle('active', type==='bug');
+    document.getElementById('feedbackTypeSuggestion').classList.toggle('active', type==='suggestion');
+  };
+  document.getElementById('feedbackBtn').addEventListener('click', function() {
+    if (!currentUser || currentUser.role==='guest') { toast('请先登录','warn'); return; }
+    document.getElementById('feedbackModal').classList.add('active');
+  });
+  document.getElementById('closeFeedbackModalBtn').addEventListener('click', function() {
+    document.getElementById('feedbackModal').classList.remove('active');
+  });
+  document.getElementById('feedbackModal').addEventListener('click', function(e) {
+    if (e.target===e.currentTarget) document.getElementById('feedbackModal').classList.remove('active');
+  });
+  document.getElementById('submitFeedbackBtn').addEventListener('click', async function() {
+    var content = document.getElementById('feedbackContent').value.trim();
+    if (!content) { toast('请输入反馈内容','warn'); return; }
+    showLoading();
+    var id = crypto.randomUUID();
+    var res = await supabaseClient.from('feedbacks').insert({
+      id: id, user_id: currentUser.id, user_name: currentUser.real_name,
+      type: feedbackType, content: content, created_at: new Date().toISOString()
+    });
+    hideLoading();
+    if (res.error) { toast('提交失败：'+res.error.message,'error'); return; }
+    document.getElementById('feedbackModal').classList.remove('active');
+    document.getElementById('feedbackContent').value = '';
+    toast('感谢反馈！我们会尽快处理','success');
+  });
+
+  // 管理员查看反馈
+  var viewFeedbacksBtn = document.getElementById('viewFeedbacksBtn');
+  viewFeedbacksBtn.addEventListener('click', async function() {
+    showLoading();
+    var res = await supabaseClient.from('feedbacks').select('*').order('created_at',{ascending:false});
+    hideLoading();
+    if (res.error) { toast('加载失败：'+res.error.message,'error'); return; }
+    var data = res.data || [];
+    var html = '';
+    if (data.length===0) {
+      html = '<div style="text-align:center;color:var(--text-muted);padding:24px;">暂无反馈</div>';
+    } else {
+      data.forEach(function(f) {
+        var typeLabel = f.type==='bug' ? 'Bug' : '建议';
+        var typeColor = f.type==='bug' ? '#C7564A' : '#5D9B6F';
+        html += '<div style="background:var(--accent-light2);border-radius:14px;padding:14px 16px;margin-bottom:10px;">'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'+
+            '<span style="font-weight:600;color:var(--text);">'+escapeHtml(f.user_name)+'</span>'+
+            '<span style="font-size:11px;padding:2px 10px;border-radius:10px;background:'+typeColor+'20;color:'+typeColor+';font-weight:600;">'+typeLabel+'</span>'+
+          '</div>'+
+          '<div style="font-size:14px;color:var(--text);line-height:1.6;">'+escapeHtml(f.content)+'</div>'+
+          '<div style="font-size:11px;color:var(--text-light);margin-top:4px;">'+new Date(f.created_at).toLocaleString()+'</div>'+
+        '</div>';
+      });
+    }
+    document.getElementById('feedbacksListContainer').innerHTML = html;
+    document.getElementById('feedbacksListModal').classList.add('active');
+  });
+  document.getElementById('closeFeedbacksListBtn').addEventListener('click', function() {
+    document.getElementById('feedbacksListModal').classList.remove('active');
+  });
+  document.getElementById('feedbacksListModal').addEventListener('click', function(e) {
+    if (e.target===e.currentTarget) document.getElementById('feedbacksListModal').classList.remove('active');
   });
 
   // -- 头像编辑弹窗事件 --
