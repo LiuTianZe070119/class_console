@@ -1228,10 +1228,13 @@
       data.forEach(function(f) {
         var typeLabel = f.type==='bug' ? 'Bug' : '建议';
         var typeColor = f.type==='bug' ? '#C7564A' : '#5D9B6F';
-        html += '<div style="background:var(--accent-light2);border-radius:14px;padding:14px 16px;margin-bottom:10px;">'+
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'+
+        html += '<div class="feedback-item" style="background:var(--accent-light2);border-radius:14px;padding:14px 16px;margin-bottom:10px;position:relative;">'+
+          '<button class="feedback-delete-btn" data-id="'+f.id+'" title="删除" style="position:absolute;top:8px;right:10px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(0,0,0,0.1);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;padding:0;transition:all 0.2s;">'+
+            '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'+
+          '</button>'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding-right:28px;">'+
             '<span style="font-weight:600;color:var(--text);">'+escapeHtml(f.user_name)+'</span>'+
-            '<span style="font-size:11px;padding:2px 10px;border-radius:10px;background:'+typeColor+'20;color:'+typeColor+';font-weight:600;">'+typeLabel+'</span>'+
+            '<span style="font-size:11px;padding:2px 10px;border-radius:10px;background:'+typeColor+'20;color:'+typeColor+';font-weight:600;flex-shrink:0;">'+typeLabel+'</span>'+
           '</div>'+
           '<div style="font-size:14px;color:var(--text);line-height:1.6;">'+escapeHtml(f.content)+'</div>'+
           '<div style="font-size:11px;color:var(--text-light);margin-top:4px;">'+new Date(f.created_at).toLocaleString()+'</div>'+
@@ -1246,6 +1249,30 @@
   });
   document.getElementById('feedbacksListModal').addEventListener('click', function(e) {
     if (e.target===e.currentTarget) document.getElementById('feedbacksListModal').classList.remove('active');
+  });
+
+  // 管理员删除反馈（事件委托）
+  document.getElementById('feedbacksListContainer').addEventListener('click', async function(e) {
+    var btn = e.target.closest('.feedback-delete-btn');
+    if (!btn) return;
+    e.stopPropagation();
+    var feedbackId = btn.dataset.id;
+    // 先关掉反馈列表，避免确认框被遮挡
+    document.getElementById('feedbacksListModal').classList.remove('active');
+    showConfirm('删除反馈', '确定永久删除这条反馈吗？', async function() {
+      var res = await supabaseClient.from('feedbacks').delete().eq('id', feedbackId);
+      if (res.error) { toast('删除失败：'+res.error.message,'error'); return; }
+      toast('已删除');
+      // 重新打开列表（使用最新数据）
+      document.getElementById('viewFeedbacksBtn').click();
+    });
+    // 如果取消，重新打开反馈列表
+    var cancelBtn = document.getElementById('confirmCancelBtn');
+    var origCancel = cancelBtn.onclick;
+    cancelBtn.onclick = function() {
+      document.getElementById('feedbacksListModal').classList.add('active');
+      if (origCancel) origCancel();
+    };
   });
 
   // -- 头像编辑弹窗事件 --
