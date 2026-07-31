@@ -396,6 +396,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+<script src="ai-moderation.js"></script>
 
 <div class="tutorial-overlay" id="tutorialOverlay" style="display:none;"></div>
 <div class="tutorial-highlight" id="tutorialHighlight" style="display:none;"></div>
@@ -532,10 +533,13 @@
     okBtn.className = danger ? 'btn' : 'btn';
     if (danger) okBtn.style.background = 'var(--danger)';
     else okBtn.style.background = '';
-    document.getElementById('confirmModal').classList.add('active');
-    okBtn.onclick = function() { document.getElementById('confirmModal').classList.remove('active'); onConfirm(); };
-    document.getElementById('confirmCancelBtn').onclick = function() { document.getElementById('confirmModal').classList.remove('active'); };
-    document.getElementById('confirmModal').onclick = function(e) { if (e.target === e.currentTarget) document.getElementById('confirmModal').classList.remove('active'); };
+    var modal = document.getElementById('confirmModal');
+    modal.style.zIndex = '3000'; // 确保在详情弹窗上方
+    modal.classList.add('active');
+    var cleanup = function() { modal.classList.remove('active'); modal.style.zIndex = ''; };
+    okBtn.onclick = function() { cleanup(); onConfirm(); };
+    document.getElementById('confirmCancelBtn').onclick = cleanup;
+    modal.onclick = function(e) { if (e.target === e.currentTarget) cleanup(); };
   }
 
   function getRotation(id) {
@@ -686,8 +690,21 @@
   }
 
   document.getElementById('submitPostBtn').addEventListener('click', async function() {
+    var btn = this;
+    if (btn.disabled) return;
     var content = document.getElementById('postContent').value.trim();
     if (!content) { toast('请写点内容再贴上去~', 'warn'); return; }
+    // 防止重复提交
+    btn.disabled = true;
+    // AI 内容审核
+    if (window.AIModeration) {
+      var modResult = await window.AIModeration.check(content);
+      if (!modResult.safe) {
+        toast('内容可能包含' + (modResult.reason || '不合适的内容') + '，请修改后重试', 'warn');
+        btn.disabled = false;
+        return;
+      }
+    }
     showLoading();
     var id = crypto.randomUUID();
     var colorIdx = Math.floor(Math.random() * NOTE_COLORS.length);
@@ -699,12 +716,13 @@
       color: NOTE_COLORS[colorIdx]
     });
     hideLoading();
-    if (res.error) { toast('发布失败：' + res.error.message, 'error'); return; }
+    if (res.error) { toast('发布失败：' + res.error.message, 'error'); btn.disabled = false; return; }
     document.getElementById('postContent').value = '';
     document.getElementById('charCount').textContent = '0/500';
     localStorage.removeItem('draft_treehole_content');
     toast('便利贴已贴上墙！');
     loadPosts();
+    btn.disabled = false;
   });
 
   document.getElementById('postContent').addEventListener('keydown', function(e) {
@@ -832,8 +850,20 @@
 
   document.getElementById('sendDetailReplyBtn').addEventListener('click', async function() {
     if (currentUser.role === 'guest') { toast('请先登录', 'warn'); return; }
+    var btn = this;
+    if (btn.disabled) return;
     var content = document.getElementById('detailReplyInput').value.trim();
     if (!content) { toast('请输入回复内容', 'warn'); return; }
+    // 防止重复提交 + AI 内容审核
+    btn.disabled = true;
+    if (window.AIModeration) {
+      var modResult = await window.AIModeration.check(content);
+      if (!modResult.safe) {
+        toast('内容可能包含' + (modResult.reason || '不合适的内容') + '，请修改后重试', 'warn');
+        btn.disabled = false;
+        return;
+      }
+    }
     var id = crypto.randomUUID();
     var res = await supabaseClient.from('treehole_replies').insert({
       id: id,
@@ -842,13 +872,14 @@
       user_name: currentUser.real_name,
       content: content
     });
-    if (res.error) { toast('回复失败：' + res.error.message, 'error'); return; }
+    if (res.error) { toast('回复失败：' + res.error.message, 'error'); btn.disabled = false; return; }
     var post = postsData.find(function(p) { return p.id === currentPostId; });
     if (post && post.author_id !== currentUser.id) {
       addNotification(post.author_id, 'treehole_reply', post.content, '', post.id);
     }
     openDetail(currentPostId);
     loadPosts();
+    btn.disabled = false;
   });
 
   document.getElementById('detailReplyInput').addEventListener('keydown', function(e) {

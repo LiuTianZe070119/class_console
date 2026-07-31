@@ -584,6 +584,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8"></script>
+<script src="ai-moderation.js"></script>
 <script>
   // -- SVG Icon System --
   function getIcon(name) {
@@ -1155,16 +1156,30 @@
 
   document.getElementById('submitOpinionBtn').addEventListener('click', async function() {
     if (currentUser.role === 'guest') { sessionStorage.setItem('login_redirect',location.href);window.location.href='index.html'; return; }
+    var btn = this;
+    if (btn.disabled) return;
     var title = document.getElementById('titleInput').value.trim();
     var content = document.getElementById('contentInput').value.trim();
     var target = document.getElementById('targetLabel').dataset.val || '班长';
     var anonymous = document.getElementById('anonymousCheck').checked;
     if (!title || !content) { toast('请填写标题和内容', 'warn'); return; }
+    // 防止重复提交
+    btn.disabled = true;
+    // AI 内容审核
+    if (window.AIModeration) {
+      var checkText = title + ' ' + content;
+      var modResult = await window.AIModeration.check(checkText);
+      if (!modResult.safe) {
+        toast('内容可能包含' + (modResult.reason || '不合适的内容') + '，请修改后重试', 'warn');
+        btn.disabled = false;
+        return;
+      }
+    }
     showLoading();
     var id = crypto.randomUUID();
     var photoUrls = null;
     if (selectedFiles.length > 0) {
-      try { photoUrls = await uploadPhotos(id); } catch (e) { hideLoading(); toast(e.message, 'error'); return; }
+      try { photoUrls = await uploadPhotos(id); } catch (e) { hideLoading(); toast(e.message, 'error'); btn.disabled = false; return; }
     }
     var res = await supabaseClient.from('opinions').insert({
       id: id, title: title, content: content, target_role: target, assigned_to: target,
@@ -1175,6 +1190,7 @@
     if (res.error) {
       if (uploadedPhotoPaths.length) { await supabaseClient.storage.from('opinion-photos').remove(uploadedPhotoPaths); uploadedPhotoPaths = []; }
       toast(res.error.message, 'error');
+      btn.disabled = false;
     } else {
       document.getElementById('titleInput').value = '';
       document.getElementById('contentInput').value = '';
@@ -1185,6 +1201,7 @@
       clearDrafts();
       toast('发布成功！');
       loadOpinions();
+      btn.disabled = false;
       updateDashboard();
     }
   });

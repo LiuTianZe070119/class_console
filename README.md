@@ -4,7 +4,7 @@
 <p align="center"><strong>ClassConsole</strong> — 一站式班级管理平台</p>
 <p align="center">意见箱 · 树洞 · 课表统计 · AI 助手</p>
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.6.3-blue" alt="version">
+  <img src="https://img.shields.io/badge/version-1.7.0-blue" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
   <img src="https://img.shields.io/badge/WHUT-武汉理工-1a5c8a" alt="whut">
 </p>
@@ -60,6 +60,9 @@
 ---
 
 ## 更新日志
+
+### 1.7.0
+- 新增AI智能审核
 
 ### 1.6.3
 - 初步实现智慧理工大统一认证接口（是否启用有待商榷）
