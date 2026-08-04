@@ -4,7 +4,7 @@
 <p align="center"><strong>ClassConsole</strong> — 一站式班级管理平台</p>
 <p align="center">意见箱 · 树洞 · 课表统计 · AI 助手</p>
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.7.0-blue" alt="version">
+  <img src="https://img.shields.io/badge/version-1.7.1-blue" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
   <img src="https://img.shields.io/badge/WHUT-武汉理工-1a5c8a" alt="whut">
 </p>
@@ -15,10 +15,10 @@
 
 | 模块 | 页面 | 功能描述 |
 |------|------|----------|
-| **登录系统** | `index.html` | 学号+密码登录、注册、记住密码、智慧理工大统一认证（待完善） |
+| **登录系统** | `index.html` | 学号+密码登录、注册、记住密码、智慧理工大统一认证 |
 | **控制台** | `main.html` | 班级仪表盘、AI 名人名言、通知中心、快捷入口、新手导览 |
-| **意见箱** | `opinions.html` | 提交意见/反馈、分配班委处理、状态追踪、评分、图片上传 |
-| **匿名树洞** | `treehole.html` | 匿名便利贴墙、点赞、回复 |
+| **意见箱** | `opinions.html` | 提交意见/反馈、分配班委处理、状态追踪、评分、图片上传、AI 审核 |
+| **匿名树洞** | `treehole.html` | 匿名便利贴墙、点赞、回复、表情反应、AI 审核 |
 | **课表统计** | `schedule.html` | 编辑个人课表、管理员查看全班上课分布 |
 | **个人设置** | `settings.html` | 主题切换（4 种配色）、头像自定义、Bug 反馈、通知管理 |
 
@@ -27,42 +27,48 @@
 | 层级 | 技术 |
 |------|------|
 | 前端 | HTML5 · CSS3 · Vanilla JavaScript（无框架） |
-| 后端服务 | [Supabase](https://supabase.com) — Auth · Database · Edge Functions |
-| AI | 智谱 GLM-4-Flash（名言生成） |
+| 后端服务 | Supabase |
+| AI | 智谱 GLM-4-Flash（名人名言 + 内容安全审核） |
 | SSO | Cloudflare Workers（CAS 统一认证代理） |
 | 存储 | Supabase Storage（头像/意见箱图片） |
-| 字体 | Noto Serif SC（思源宋体） |
+| 字体 | Noto Serif SC |
 
 
 ## 目录结构
 
 ```
-班级办事通/
-├── index.html              # 登录/注册
-├── main.html               # 主页控制台
-├── opinions.html           # 班级意见箱
-├── treehole.html           # 匿名树洞
-├── schedule.html           # 课表统计
-├── settings.html           # 个人设置
-├── sso.js                  # 智慧理工大 SSO 模块
-├── config.js               # 版本配置
-│
+ClassConsole/
+├── index.html                   # 登录/注册
+├── main.html                    # 主页控制台
+├── opinions.html                # 班级意见箱
+├── treehole.html                # 匿名树洞
+├── schedule.html                # 课表统计
+├── settings.html                # 个人设置
+├── sso.js                       # 智慧理工大 SSO 模块
+├── ai-moderation.js             # AI 内容审核模块
+├── config.js                    # 版本配置
 ├── supabase/functions/
-│   └── ai-quote/index.ts   # AI 名言 Edge Function
-│
+│   ├── _shared/cors.ts          # 共享 CORS 头
+│   ├── ai-moderation/index.ts   # AI 内容审核
+│   ├── ai-quote/index.ts        # AI 名人名言
+│   ├── ai-reply/index.ts        # AI 树洞自动回复
+│   └── weather/index.ts         # 天气数据代理
 ├── workers/whut-sso/
-│   ├── index.js            # CAS 认证 Worker
-│   └── wrangler.toml       # Cloudflare 部署配置
-│
-└── .claude/skills/         # Claude Code 技能包
+│   ├── index.js                 # CAS 认证 Worker
+│   └── wrangler.toml            # Cloudflare 部署配置
+└── .claude/skills/              # Claude Code 技能包
 ```
 
 ---
 
 ## 更新日志
 
+### 1.7.1
+- AI自动回复树洞内容
+- 主页新增贴心天气数据（开发完毕，暂未开放）
+
 ### 1.7.0
-- 新增AI智能审核
+- 新增 AI 内容安全审核
 
 ### 1.6.3
 - 初步实现智慧理工大统一认证接口（是否启用有待商榷）
@@ -182,3 +188,5 @@
 
 ### 1.0.0
 - 项目初始化
+
+<p align="center"><strong>END</strong></p>

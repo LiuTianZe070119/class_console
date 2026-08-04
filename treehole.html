@@ -258,6 +258,38 @@
     .reply-bubble .reply-text { font-size: 15px; color: var(--text); line-height: 1.5; }
     .reply-bubble .reply-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; justify-content: inherit; }
 
+    /* AI 回复 */
+    .reply-bubble.ai-reply {
+      margin-right: 40px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-bottom-left-radius: 6px;
+    }
+    .reply-bubble.ai-reply .ai-badge {
+      display: inline-block;
+      font-family: 'Courier New', 'Fira Code', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #a855f7, #ff6b6b);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbow-text 3s linear infinite;
+      margin-bottom: 6px;
+    }
+    @keyframes rainbow-text {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reply-bubble.ai-reply .ai-badge {
+        animation: none;
+        -webkit-text-fill-color: #4d96ff;
+      }
+    }
+
     .reply-input-row { display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--divider); }
     .reply-input-row input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1.5px solid var(--input-border); outline: none; font-size: 15px; background: var(--input-bg); color: var(--text); transition: all 0.2s ease; }
     .reply-input-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); background: var(--card-bg); }
@@ -468,6 +500,7 @@
   const SUPABASE_URL = 'https://zmujidvqkihthhdbwuvw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptdWppZHZxa2lodGhoZGJ3dXZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjIxMDAsImV4cCI6MjA5MzAzODEwMH0.iWKqqpebMc3l3wjEBsP4X0QH1WwjtIovcJAEsDPr3kE';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const AI_REPLY_URL = SUPABASE_URL + '/functions/v1/ai-reply';
 
   const NOTE_COLORS = ['note-yellow', 'note-rose', 'note-sky', 'note-mint', 'note-amber', 'note-lavender', 'note-sage', 'note-peach'];
   const REACTION_EMOJIS = ['👍', '💪', '😊', '❤️', '🎉', '🌟', '🔥', '👏'];
@@ -484,6 +517,9 @@
 
   let currentUser = null;
   let postsData = [];
+  let visibleCount = 8;
+  let cachedReactionMap = {};
+  let cachedReplyCountMap = {};
   let currentPostId = null;
   let detailReactions = {};
   let pendingDelete = { postId: null, authorId: null, content: '', isAdminDelete: false };
@@ -525,6 +561,38 @@
 
   function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
   function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+
+  // AI 自动回复
+  async function generateAIReply(postId, content) {
+    try {
+      var controller = new AbortController();
+      var timeoutId = setTimeout(function() { controller.abort(); }, 8000);
+      var resp = await fetch(AI_REPLY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+        body: JSON.stringify({ content: content }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      if (!resp.ok) return;
+      var data = await resp.json();
+      if (!data.success || !data.reply) return;
+
+      // 插入 AI 回复（用当前用户 ID 通过 RLS）
+      var replyId = crypto.randomUUID();
+      var insRes = await supabaseClient.from('treehole_replies').insert({
+        id: replyId,
+        post_id: postId,
+        user_id: currentUser.id,
+        user_name: 'AI 助手',
+        content: data.reply,
+        is_ai: true
+      });
+      if (insRes.error) { console.warn('[ai-reply] 插入失败:', insRes.error.message); }
+    } catch (e) {
+      console.warn('[ai-reply] 生成失败:', e.message);
+    }
+  }
 
   function showConfirm(title, msg, onConfirm, danger) {
     document.getElementById('confirmTitle').textContent = title;
@@ -626,16 +694,22 @@
   }
 
   function renderWall(reactionMap, replyCountMap) {
+    // 缓存以便展开更多时复用
+    if (reactionMap) cachedReactionMap = reactionMap;
+    if (replyCountMap) cachedReplyCountMap = replyCountMap;
+
     var wall = document.getElementById('stickyWall');
     if (postsData.length === 0) {
       wall.innerHTML = '<div class="empty-state"><div class="empty-icon">' + getIcon('inbox', 64) + '</div><p style="font-size:18px;font-weight:600;color:var(--text);">墙上还没有便利贴</p><p style="margin-top:8px;color:var(--text-muted);">来贴第一张吧！</p></div>';
       return;
     }
-    wall.innerHTML = postsData.map(function(post) {
+
+    var visible = postsData.slice(0, visibleCount);
+    wall.innerHTML = visible.map(function(post) {
       var colorClass = getColorClass(post.id);
       var rotation = getRotation(post.id);
-      var reactions = reactionMap[post.id] || {};
-      var replyCount = replyCountMap[post.id] || 0;
+      var reactions = cachedReactionMap[post.id] || {};
+      var replyCount = cachedReplyCountMap[post.id] || 0;
       var isOwner = currentUser.id === post.author_id;
       var canDelete = isOwner || currentUser.role === 'admin';
 
@@ -676,6 +750,19 @@
         startDelete(postId, authorId, content);
       });
     });
+
+    // 展开更多按钮
+    if (visibleCount < postsData.length) {
+      var moreBtn = document.createElement('button');
+      moreBtn.className = 'btn-outline btn';
+      moreBtn.style.cssText = 'display:block;margin:12px auto 0;padding:8px 24px;border-radius:20px;font-size:13px;';
+      moreBtn.textContent = '展开更多（' + (postsData.length - visibleCount) + '）';
+      moreBtn.addEventListener('click', function() {
+        visibleCount += 8;
+        renderWall(null, null);
+      });
+      wall.appendChild(moreBtn);
+    }
   }
 
   function formatTime(dateStr) {
@@ -715,12 +802,15 @@
       author_name: currentUser.real_name,
       color: NOTE_COLORS[colorIdx]
     });
+    if (res.error) { hideLoading(); toast('发布失败：' + res.error.message, 'error'); btn.disabled = false; return; }
+    // 同步等待 AI 生成回复（loading 期间完成）
+    await generateAIReply(id, content);
     hideLoading();
-    if (res.error) { toast('发布失败：' + res.error.message, 'error'); btn.disabled = false; return; }
     document.getElementById('postContent').value = '';
     document.getElementById('charCount').textContent = '0/500';
     localStorage.removeItem('draft_treehole_content');
     toast('便利贴已贴上墙！');
+    visibleCount = 8;
     loadPosts();
     btn.disabled = false;
   });
@@ -768,6 +858,16 @@
       ? '<div style="text-align:center;color:var(--text-muted);padding:20px;">还没有回复，来写第一条吧~</div>'
       : replies.map(function(r, i) {
           var canDeleteReply = currentUser.id === r.user_id || currentUser.role === 'admin';
+          var isAI = r.is_ai === true;
+          if (isAI) {
+            return '<div class="reply-bubble ai-reply">' +
+              '<div class="ai-badge">AI 助手</div>' +
+              '<div class="reply-text">' + escapeHtml(r.content) + '</div>' +
+              '<div class="reply-time">' + formatTime(r.created_at) +
+                (canDeleteReply ? ' <button class="delete-reply-btn" data-reply-id="' + r.id + '" title="删除回复">' + getIcon('x', 14) + '</button>' : '') +
+              '</div>' +
+            '</div>';
+          }
           return '<div class="reply-bubble ' + (i % 2 === 0 ? 'odd' : 'even') + '">' +
             '<div class="reply-text">' + escapeHtml(r.content) + '</div>' +
             '<div class="reply-time">' + formatTime(r.created_at) +

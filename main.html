@@ -131,6 +131,53 @@ body[data-theme="black"] {
     .welcome h1 svg { color: var(--accent); animation: heartBeat 1.8s ease-in-out infinite; }
     @keyframes heartBeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } 45% { transform: scale(1.1); } 60% { transform: scale(1); } }
     .welcome p { color: var(--text-muted); font-size: 15px; }
+    .welcome .weather-tip { color: var(--accent); font-size: 14px; margin-top: 4px; font-weight: 500; }
+
+    .info-row { display: flex; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 640px) { .info-row { flex-direction: column; } }
+
+    .weather-card, .schedule-card {
+      flex: 1; background: var(--card-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border); border-radius: 18px;
+      padding: 16px 20px; box-shadow: 0 2px 12px var(--shadow);
+    }
+    .weather-now { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .weather-now .w-icon { font-size: 36px; line-height: 1; }
+    .weather-now .w-temp { font-size: 28px; font-weight: 600; color: var(--text); }
+    .weather-now .w-desc { font-size: 14px; color: var(--text-muted); margin-left: 4px; }
+    .weather-now .w-city { font-size: 12px; color: var(--text-light); margin-left: auto; }
+    .weather-forecast { display: flex; gap: 8px; margin-bottom: 10px; }
+    .weather-forecast .wf-day {
+      flex: 1; text-align: center; padding: 8px 4px;
+      background: var(--accent-light); border-radius: 12px;
+    }
+    .weather-forecast .wf-day .wf-date { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+    .weather-forecast .wf-day .wf-icon { font-size: 20px; margin: 2px 0; }
+    .weather-forecast .wf-day .wf-text { font-size: 11px; color: var(--text); }
+    .weather-forecast .wf-day .wf-temp { font-size: 11px; color: var(--text-light); }
+    .weather-tips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .weather-tips .wt-item, .schedule-card .wt-item {
+      font-size: 11px; padding: 3px 10px; border-radius: 10px;
+      background: var(--accent-light); color: var(--text-muted);
+    }
+
+    .schedule-card .sc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .schedule-card .sc-header .sc-day { font-size: 13px; color: var(--text-muted); }
+    .schedule-card .sc-header .sc-count { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+    .schedule-card .sc-items { display: flex; flex-direction: column; gap: 6px; }
+    .schedule-card .sc-item {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+      border-radius: 10px; background: var(--accent-light);
+    }
+    .schedule-card .sc-item .sc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .schedule-card .sc-item .sc-dot.upcoming { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+    .schedule-card .sc-item .sc-dot.ongoing { background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: pulse-dot 1.5s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100% { box-shadow: 0 0 4px #22c55e; } 50% { box-shadow: 0 0 14px #22c55e; } }
+    .schedule-card .sc-item .sc-num { font-size: 18px; font-weight: 600; color: var(--text); min-width: 28px; }
+    .schedule-card .sc-item .sc-info { flex: 1; }
+    .schedule-card .sc-item .sc-info .sc-time { font-size: 12px; color: var(--text-muted); }
+    .schedule-card .sc-item .sc-info .sc-status { font-size: 11px; color: var(--text-light); }
+    .schedule-card .sc-empty { text-align: center; color: var(--text-muted); font-size: 14px; padding: 12px 0; }
 
     .hub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
@@ -307,6 +354,29 @@ body[data-theme="black"] {
   <div class="welcome">
     <h1 id="welcomeTitle"><span id="welcomeIcon"></span></h1>
     <p id="welcomeSubtitle">选择一个板块开始使用</p>
+  </div>
+
+  <div class="info-row" style="display:none;">
+    <div class="weather-card" id="weatherCard">
+      <div class="weather-now">
+        <span class="w-icon" id="wIcon">🌤️</span>
+        <span class="w-temp" id="wTemp">--°</span>
+        <span class="w-desc" id="wDesc">加载中…</span>
+        <span class="w-city" id="wCity">武汉</span>
+      </div>
+      <div class="weather-forecast" id="wForecast"></div>
+      <div class="weather-tips" id="wTips"></div>
+    </div>
+
+    <div class="schedule-card" id="scheduleCard">
+      <div class="sc-header">
+        <span class="sc-day" id="scDay">今日课表</span>
+        <span class="sc-count" id="scCount"></span>
+      </div>
+      <div class="sc-items" id="scItems">
+        <div class="sc-empty">加载中…</div>
+      </div>
+    </div>
   </div>
 
   <div class="hub-grid">
@@ -521,9 +591,14 @@ body[data-theme="black"] {
       document.getElementById('welcomeSubtitle').textContent = '选择一个板块开始使用';
     }
 
+    // 天气/课表暂不上线
+    // if (weatherCache) renderWeather(weatherCache);
+    // fetchWeather();
+
     if (!isGuest) {
       updateNotifDot();
       checkScheduleStatus();
+      // fetchSchedule(); // 暂不上线
       // 登录用户：仅刚登录时刷新名言，普通刷新不重新生成
       if (sessionStorage.getItem('just_logged_in')) {
         sessionStorage.removeItem('just_logged_in');
@@ -542,6 +617,192 @@ body[data-theme="black"] {
     if (!currentUser || currentUser.role === 'guest') return;
     var notifs = getNotifs().filter(function(n) { return n.user_id === currentUser.id && !n.read; });
     document.getElementById('notificationDot').style.display = notifs.length ? 'block' : 'none';
+  }
+
+  // ── 天气 ──────────────────────────────────────────────
+  var WEATHER_URL = SUPABASE_URL + '/functions/v1/weather';
+  var WEATHER_ICON = {
+    '晴': '☀️', '多云': '⛅', '阴': '☁️', '小雨': '🌧️', '中雨': '🌧️', '大雨': '🌧️', '暴雨': '⛈️',
+    '阵雨': '🌦️', '雷阵雨': '⛈️', '雪': '❄️', '小雪': '🌨️', '中雪': '🌨️', '大雪': '❄️',
+    '雾': '🌫️', '霾': '😷', '浮尘': '💨', '扬沙': '💨',
+  };
+
+  function weatherIcon(text) {
+    if (!text) return '🌤️';
+    for (var k in WEATHER_ICON) { if (text.indexOf(k) !== -1) return WEATHER_ICON[k]; }
+    return '🌤️';
+  }
+
+  // 天气缓存：sessionStorage 恢复 + 30分钟有效
+  var weatherCache = (function() {
+    try {
+      var c = JSON.parse(sessionStorage.getItem('weather_cache'));
+      if (c && c.now && c.daily && c.daily.length && c.suggestion && Date.now() - c._time < 30*60*1000) return c;
+    } catch(e) {}
+    return null;
+  })();
+
+  async function fetchWeather(force) {
+    var nowTs = Date.now();
+    if (!force && weatherCache && (nowTs - weatherCache._time < 30 * 60 * 1000)) {
+      renderWeather(weatherCache);
+      return;
+    }
+    try {
+      var weatherHeaders = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY };
+      var results = await Promise.allSettled([
+        fetch(WEATHER_URL + '?type=now&location=wuhan', { headers: weatherHeaders }),
+        fetch(WEATHER_URL + '?type=daily&location=wuhan', { headers: weatherHeaders }),
+        fetch(WEATHER_URL + '?type=life&location=wuhan', { headers: weatherHeaders })
+      ]);
+
+      var nowData = results[0].status === 'fulfilled' ? await results[0].value.json() : null;
+      var dailyData = results[1].status === 'fulfilled' ? await results[1].value.json() : null;
+      var lifeData = results[2].status === 'fulfilled' ? await results[2].value.json() : null;
+
+      // daily/life 偶发失败，各自重试一次
+      if (!dailyData || !dailyData.results || !dailyData.results[0] || !dailyData.results[0].daily) {
+        try {
+          var retryResp = await fetch(WEATHER_URL + '?type=daily&location=wuhan', { headers: weatherHeaders });
+          if (retryResp.ok) dailyData = await retryResp.json();
+        } catch(e) {}
+      }
+      if (!lifeData || !lifeData.results || !lifeData.results[0] || !lifeData.results[0].suggestion) {
+        try {
+          var retryResp2 = await fetch(WEATHER_URL + '?type=life&location=wuhan', { headers: weatherHeaders });
+          if (retryResp2.ok) lifeData = await retryResp2.json();
+        } catch(e) {}
+      }
+
+      var now = (nowData && nowData.results && nowData.results[0]) ? nowData.results[0].now : null;
+      var daily = (dailyData && dailyData.results && dailyData.results[0]) ? (dailyData.results[0].daily || []) : [];
+      var suggestion = (lifeData && lifeData.results && lifeData.results[0]) ? (lifeData.results[0].suggestion || {}) : {};
+
+      if (!now) return;
+
+      weatherCache = { now: now, daily: daily, suggestion: suggestion, _time: Date.now() };
+      if (daily && daily.length && suggestion) {
+        try { sessionStorage.setItem('weather_cache', JSON.stringify(weatherCache)); } catch(e) {}
+      }
+      renderWeather(weatherCache);
+    } catch (e) {
+      console.warn('[weather] 获取失败:', e.message);
+    }
+  }
+
+  function renderWeather(cache) {
+    var now = cache.now, suggestion = cache.suggestion;
+    var text = now.text || '';
+    var temp = now.temperature || '--';
+
+    document.getElementById('wIcon').textContent = weatherIcon(text);
+    document.getElementById('wTemp').textContent = temp + '°';
+    document.getElementById('wDesc').textContent = text;
+    document.getElementById('wCity').textContent = '武汉';
+
+    var forecastHTML = '';
+    var days = cache.daily;
+    if (days && days.length) {
+      var labels = ['今天','明天','后天'];
+      for (var i = 0; i < Math.min(days.length, 3); i++) {
+        var d = days[i];
+        if (!d) continue;
+        forecastHTML += '<div class="wf-day"><div class="wf-date">' + labels[i] + '</div>' +
+          '<div class="wf-icon">' + weatherIcon(d.text_day || d.text_night || '') + '</div>' +
+          '<div class="wf-temp">' + (d.low || '') + '° ' + (d.high || '') + '°</div></div>';
+      }
+    }
+    document.getElementById('wForecast').innerHTML = forecastHTML;
+
+    var tipsHTML = '';
+    if (suggestion.dressing && suggestion.dressing.brief) tipsHTML += '<span class="wt-item">穿衣: ' + suggestion.dressing.brief + '</span>';
+    if (suggestion.sport && suggestion.sport.brief) tipsHTML += '<span class="wt-item">运动: ' + suggestion.sport.brief + '</span>';
+    if (suggestion.uv && suggestion.uv.brief) tipsHTML += '<span class="wt-item">紫外: ' + suggestion.uv.brief + '</span>';
+    document.getElementById('wTips').innerHTML = tipsHTML;
+
+    var tipText = '';
+    if (text.indexOf('雨') !== -1) tipText = '今天有雨，出门记得带伞 🌂';
+    else if (parseFloat(temp) >= 35) tipText = '天气炎热，记得多喝水 💧';
+    else if (text.indexOf('雪') !== -1) tipText = '下雪天注意保暖 ❄️';
+    else if (text.indexOf('霾') !== -1) tipText = '空气不佳，建议戴口罩 😷';
+
+    if (tipText && !(currentUser && currentUser.role === 'guest')) {
+      var subEl = document.getElementById('welcomeSubtitle');
+      var baseText = (currentUser && currentUser.role === 'guest') ? '请登录以使用完整功能' : '选择一个板块开始使用';
+      subEl.innerHTML = baseText + ' <span class="weather-tip">| ' + tipText + '</span>';
+    }
+  }
+
+  // ── 今日课表 ─────────────────────────────────────────
+  var PERIOD_TIMES = {
+    1:'8:00-8:45',2:'8:50-9:35',3:'9:55-10:40',4:'10:45-11:30',5:'11:35-12:20',
+    6:'14:00-14:45',7:'14:50-15:35',8:'15:40-16:25',9:'16:45-17:30',10:'17:35-18:20',
+    11:'19:00-19:45',12:'19:50-20:35',13:'20:40-21:25'
+  };
+  var DAY_NAMES = ['一','二','三','四','五','六','日'];
+
+  async function fetchSchedule() {
+    if (!currentUser || currentUser.role === 'guest') {
+      document.getElementById('scheduleCard').style.display = 'none';
+      return;
+    }
+    try {
+      var today = new Date().getDay();
+      var dow = today === 0 ? 7 : today;
+      var nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+
+      var res = await supabaseClient
+        .from('student_schedule')
+        .select('slot_id')
+        .eq('user_id', currentUser.id)
+        .eq('day_of_week', dow)
+        .eq('has_class', true);
+
+      if (res.error) return;
+      var slots = (res.data || []).map(function(r) { return r.slot_id; }).sort(function(a,b) { return a-b; });
+      var total = slots.length;
+
+      document.getElementById('scDay').textContent = '今日课表 · 周' + DAY_NAMES[dow-1];
+      document.getElementById('scCount').textContent = total + ' 节课';
+
+      // 取往后最多3节未结束的课
+      var upcoming = [];
+      for (var i = 0; i < slots.length && upcoming.length < 3; i++) {
+        var s = slots[i];
+        var time = PERIOD_TIMES[s];
+        if (!time) continue;
+        var endParts = time.split('-')[1].split(':');
+        var endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+        if (nowMin < endMin) {
+          var startParts = time.split('-')[0].split(':');
+          var startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+          var ongoing = nowMin >= startMin;
+          upcoming.push({ id: s, time: time, ongoing: ongoing });
+        }
+      }
+
+      var itemsHTML = '';
+      if (total === 0) {
+        itemsHTML = '<div class="sc-empty">今天没有课 🎉</div>';
+      } else if (upcoming.length === 0) {
+        itemsHTML = '<div class="sc-empty">全部已结束 ✓</div>';
+      } else {
+        upcoming.forEach(function(u) {
+          itemsHTML += '<div class="sc-item">' +
+            '<span class="sc-dot ' + (u.ongoing ? 'ongoing' : 'upcoming') + '"></span>' +
+            '<span class="sc-num">' + u.id + '</span>' +
+            '<div class="sc-info">' +
+              '<div class="sc-time">' + u.time + '</div>' +
+              '<div class="sc-status">' + (u.ongoing ? '正在进行' : '即将开始') + '</div>' +
+            '</div>' +
+          '</div>';
+        });
+      }
+      document.getElementById('scItems').innerHTML = itemsHTML;
+      document.getElementById('scheduleCard').style.display = 'block';
+    } catch (e) {
+      console.warn('[schedule] 获取失败:', e.message);
+    }
   }
 
   async function checkScheduleStatus() {
